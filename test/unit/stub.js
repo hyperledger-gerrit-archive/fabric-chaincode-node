@@ -163,6 +163,75 @@ test('Chaincode stub constructor tests', (t) => {
 
 test('Arguments JSON-ify Tests', (t) => {
 	let buf = ByteBuffer.fromUTF8('{\"a\":1,\"b\":2}');
+	let stub = new Stub(
+		'dummyClient',
+		'dummyTxid',
+		{
+			args: [buf]
+		},
+		{
+			proposal_bytes: newProposal().toBuffer()
+		});
+
+	t.equal(stub.args[0].a, 1, 'Test parsing JSON arguments payload: a');
+	t.equal(stub.args[0].b, 2, 'Test parsing JSON arguments payload: b');
+	t.end();
+});
+
+test('Arguments Tests', (t) => {
+	let buf1 = ByteBuffer.fromUTF8('invoke');
+	let buf2 = ByteBuffer.fromUTF8('key');
+	let buf3 = ByteBuffer.fromUTF8('value');
+	let stub = new Stub(
+		'dummyClient',
+		'dummyTxid',
+		{
+			args: [buf1, buf2, buf3]
+		},
+		{
+			proposal_bytes: newProposal().toBuffer()
+		});
+
+	t.equal(stub.getArgs().length, 3, 'Test getArgs() returns expected number of arguments');
+	t.equal(typeof stub.getArgs()[0], 'string', 'Test getArgs() returns the first argument as string');
+	t.equal(stub.getArgs()[1], 'key', 'Test getArgs() returns the 2nd argument as string "key"');
+	t.equal(stub.getStringArgs().length, 3, 'Test getStringArgs() returns expected number of arguments');
+	t.equal(stub.getStringArgs()[2], 'value', 'Test getStringArgs() returns 3rd argument as string "value"');
+	t.equal(typeof stub.getFunctionAndParameters(), 'object', 'Test getFunctionAndParameters() returns and object');
+	t.equal(stub.getFunctionAndParameters().fcn, 'invoke', 'Test getFunctionAndParameters() returns the function name properly');
+	t.equal(Array.isArray(stub.getFunctionAndParameters().params), true, 'Test getFunctionAndParameters() returns the params array');
+	t.equal(stub.getFunctionAndParameters().params.length, 2, 'Test getFunctionAndParameters() returns the params array with 2 elements');
+	t.equal(stub.getFunctionAndParameters().params[0], 'key', 'Test getFunctionAndParameters() returns the "key" string as the first param');
+	t.equal(stub.getFunctionAndParameters().params[1], 'value', 'Test getFunctionAndParameters() returns the "value" string as the 2nd param');
+
+	stub = new Stub(
+		'dummyClient',
+		'dummyTxid',
+		{
+			args: [buf1]
+		},
+		{
+			proposal_bytes: newProposal().toBuffer()
+		});
+	t.equal(stub.getFunctionAndParameters().fcn, 'invoke', 'Test getFunctionAndParameters() returns the function name properly');
+	t.equal(stub.getFunctionAndParameters().params.length, 0, 'Test getFunctionAndParameters() returns the params array with 0 elements');
+
+	stub = new Stub(
+		'dummyClient',
+		'dummyTxid',
+		{
+			args: []
+		},
+		{
+			proposal_bytes: newProposal().toBuffer()
+		});
+	t.equal(stub.getFunctionAndParameters().fcn, '', 'Test getFunctionAndParameters() returns empty function name properly');
+	t.equal(stub.getFunctionAndParameters().params.length, 0, 'Test getFunctionAndParameters() returns the params array with 0 elements');
+
+	t.end();
+});
+
+function newProposal() {
 	let sp = new _proposalProto.Proposal();
 	let signatureHeader = new _commonProto.SignatureHeader();
 	signatureHeader.setNonce(Buffer.from('12345'));
@@ -172,17 +241,6 @@ test('Arguments JSON-ify Tests', (t) => {
 	let ccpayload = new _proposalProto.ChaincodeProposalPayload();
 	ccpayload.setInput(Buffer.from('dummyChaincodeInput'));
 	sp.setPayload(ccpayload.toBuffer());
-	let stub = new Stub(
-		'dummyClient',
-		'dummyTxid',
-		{
-			args: [buf]
-		},
-		{
-			proposal_bytes: sp.toBuffer()
-		});
 
-	t.equal(stub.args[0].a, 1, 'Test parsing JSON arguments payload: a');
-	t.equal(stub.args[0].b, 2, 'Test parsing JSON arguments payload: b');
-	t.end();
-});
+	return sp;
+}
