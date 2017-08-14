@@ -19,6 +19,11 @@ const _proposalProto = grpc.load({
 	file: 'peer/proposal.proto'
 }).protos;
 
+const _eventProto = grpc.load({
+	root: path.join(__dirname, './protos'),
+	file: 'peer/chaincode_event.proto'
+}).protos;
+
 const logger = require('./logger').getLogger('lib/chaincode.js');
 
 const RESPONSE_CODE = {
@@ -77,6 +82,17 @@ var Stub = class {
 				throw new Error(util.format('Decoding SignatureHeader failed: %s', err));
 			}
 
+			this.creator = signatureHeader.creator;
+
+			let channelHeader;
+			try {
+				channelHeader = _commonProto.ChannelHeader.decode(header.channel_header);
+			} catch(err) {
+				throw new Error(util.format('Decoding ChannelHeader failed: %s', err));
+			}
+
+			this.txTimeStamp = channelHeader.timestamp;
+
 			let ccpp;
 			try {
 				ccpp = _proposalProto.ChaincodeProposalPayload.decode(this.proposal.payload);
@@ -84,7 +100,6 @@ var Stub = class {
 				throw new Error(util.format('Decoding ChaincodeProposalPayload failed: %s', err));
 			}
 
-			this.creator = signatureHeader.creator;
 			this.transientMap = ccpp.transientMap;
 
 			// TODO: compute binding based on nonce, creator and epoch
@@ -96,12 +111,71 @@ var Stub = class {
 		return this.args;
 	}
 
+	getStringArgs() {
+		return this.args.map((arg) => {
+			return arg.toString();
+		});
+	}
+
+	getFunctionAndParameters() {
+		let values = this.getStringArgs();
+		if (values.length >= 1) {
+			return {
+				fcn: values[0],
+				params: values.slice(1)
+			}
+		} else {
+			return {
+				fcn: '',
+				params: []
+			};
+		}
+	}
+
 	getTxID() {
 		return this.txId;
 	}
 
+	getCreator() {
+		return this.creator;
+	}
+
+	getTransient() {
+		return this.transientMap;
+	}
+
+	getSignedProposal() {
+		return this.signedProposal;
+	}
+
+	getTxTimestamp() {
+		return this.txTimestamp;
+	}
+
 	getState(key) {
 		return this.handler.handleGetState(key, this.txId);
+	}
+
+	putState(key, value) {
+		return this.handler.handlePutState(key, value, this.txId);
+	}
+
+	deleteState(key) {
+		return this.handler.handleDeleteState(key, this.txId);
+	}
+
+	getStateByRange(startKey, endKey) {
+		return this.handler.handleGetStateByRange(startKey, endKey, this.txId);
+	}
+
+	setEvent(name, payload) {
+		if (typeof name !== 'string' || name === '')
+			throw new Error('Event name must be a non-empty string');
+
+		let event = new _eventProto.ChaincodeEvent();
+		event.setEventName(name);
+		event.setPayload(payload);
+		this.chaincodeEvent = event;
 	}
 };
 
