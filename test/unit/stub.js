@@ -231,6 +231,102 @@ test('Arguments JSON-ify Tests', (t) => {
 	t.end();
 });
 
+
+test('CreateCompositeKey', (t) => {
+	let stub = new Stub(
+		'dummyClient',
+		'dummyTxid',
+		{
+			args: []
+		},
+		{
+			proposal_bytes: newProposal().toBuffer()
+		});
+			
+	t.throws(
+		() => {
+			stub.createCompositeKey();
+		},
+		/non-zero length/,
+		'Test catching invalid object type'
+	);
+	
+	t.throws(
+		() => {
+			stub.createCompositeKey('key');
+		},
+		/must be an array/,
+		'Test catching invalid attributes'
+	);
+	
+	t.throws(
+		() => {
+			stub.createCompositeKey('k\x99x33ey', []);
+		},
+		/Invalid UTF-8/,
+		'Test bad utf-8 in object type'
+	);
+	
+	t.throws(
+		() => {
+			stub.createCompositeKey('type', ['k\x99x33ey']);
+		},
+		/Invalid UTF-8/,
+		'Test bad utf-8 in attributes'
+	);
+	
+	
+	t.equal(stub.createCompositeKey('key', []), '\u0000key\u0000', 'Test createCompositeKey with no attributes returns expected key');
+	t.equal(stub.createCompositeKey('key', ['attr1']), '\u0000key\u0000attr1\u0000', 'Test createCompositeKey with single attribute returns expected key');
+	t.equal(stub.createCompositeKey('key', ['attr1', 'attr2','attr3']), '\u0000key\u0000attr1\u0000attr2\u0000attr3\u0000', 'Test createCompositeKey with multiple attributes returns expected key');
+	
+	t.end();
+});
+
+test('getStartByPartialCompositeKey', (t) => {
+		let stub = new Stub(
+		'dummyClient',
+		'dummyTxid',
+		{
+			args: []
+		},
+		{
+			proposal_bytes: newProposal().toBuffer()
+		});
+		
+		// TODO: Should move this to sinon
+		stub['getTestVal'] = (testval) => {
+			return this[testval];
+		};
+				
+		let expectedKey = '\u0000key\u0000attr1\u0000attr2\u0000';				
+		stub['testReset'] = () => {
+			this.createCompositeKeyCalled = 0;
+			this.createCompositeKeyArguments = null;
+			this.getStateByRangeCalled = 0;
+			this.getStateByRangeArguments = null;
+		};
+		stub['createCompositeKey'] = (...args) => {
+			this.createCompositeKeyArguments = args;
+			this.createCompositeKeyCalled++;
+			return expectedKey;
+		}
+		stub['getStateByRange'] = (...args) => {
+			this.getStateByRangeArguments = args;
+			this.getStateByRangeCalled++;
+		}
+
+		stub.testReset();
+		stub.getStateByPartialCompositeKey('key', ['attr1', 'attr2']);
+			
+		t.equal(stub.getTestVal('createCompositeKeyCalled'), 1, 'Test getStateByPartialCompositeKey calls createCompositeKey once');
+		t.deepEqual(stub.getTestVal('createCompositeKeyArguments'), ['key', ['attr1', 'attr2']], 'Test getStateByPartialCompositeKey calls createCompositeKey with the correct parameters');
+		t.equal(stub.getTestVal('getStateByRangeCalled'), 1, 'Test getStateByPartialCompositeKey calls getStateByRange Once');
+		t.deepEqual(stub.getTestVal('getStateByRangeArguments'), [expectedKey, expectedKey + '\u0010\uffff'], 'Test getStateByPartialCompositeKey calls getStateByRange with the right arguments');
+		t.end();
+		
+});
+
 test('Arguments Tests', (t) => {
 	let buf1 = ByteBuffer.fromUTF8('invoke');
 	let buf2 = ByteBuffer.fromUTF8('key');
