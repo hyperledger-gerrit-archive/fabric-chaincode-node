@@ -234,8 +234,6 @@ let Stub = class {
 		return compositeKey;
 	}
 
-
-
 	/**
 	 * Return the various values for a partial key
 	 * @param {string} objectType
