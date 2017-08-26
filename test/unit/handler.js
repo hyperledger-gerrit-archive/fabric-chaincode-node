@@ -56,7 +56,13 @@ test('handler.js constructor tests', (t) => {
 			new Handler({
 				Init: function() {},
 				Invoke: function() {}
-			}, 'https://localhost:7051');
+			}, 'https://localhost:7051',
+			{
+				'pem': 'dummyPEMString',
+				'ssl-target-name-override': 'dummyHost',
+				'request-timeout': 12345,
+				'another-property': 'dummyValue'
+			});
 		},
 		/Invalid protocol: https.  URLs must begin with grpc:\/\/ or grpcs:\/\//,
 		'Test error handling on invalid "https" url argument'
@@ -96,7 +102,9 @@ test('handler.js constructor tests', (t) => {
 		'pem': 'dummyPEMString',
 		'ssl-target-name-override': 'dummyHost',
 		'request-timeout': 12345,
-		'another-property': 'dummyValue'
+		'another-property': 'dummyValue',
+		'key':'dummyKeyString',
+		'cert':'dummyCertString'
 	});
 
 	t.equal(handler._options['grpc.ssl_target_name_override'], 'dummyHost', 'Test converting opts.ssl-target-name-override to grpc.ssl_target_name_override');

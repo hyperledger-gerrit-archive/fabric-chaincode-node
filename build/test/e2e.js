@@ -67,7 +67,10 @@ gulp.task('test-e2e-install-v0', ['copy-shim', 'copy-chaincode'], () => {
 gulp.task('test-e2e-instantiate-v0', ['test-e2e-install-v0'], () => {
 	return gulp.src('*.js', {read: false})
 		.pipe(shell([
-			util.format('docker exec cli peer chaincode instantiate -l node -C %s -n %s -v v0 -c %s -P %s',
+			util.format('docker exec cli peer chaincode instantiate -o %s --tls %s --cafile %s -l node -C %s -n %s -v v0 -c %s -P %s',
+			  'orderer.example.com:7050',
+				'true',
+				'/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem',
 				'mychannel',
 				'mycc',
 				'\'{"Args":["init"]}\'',
@@ -84,12 +87,16 @@ gulp.task('test-e2e-invoke-v0-test1-test2', ['test-e2e-instantiate-v0'], () => {
 		.pipe(shell([
 			// test1 and test2 of the chaincode are independent of each other,
 			// can be called in parallel
-			util.format('docker exec cli peer chaincode invoke -C %s -n %s -c %s',
-				'mychannel',
+			util.format('docker exec cli peer chaincode invoke --tls %s --cafile %s -C %s -n %s -c %s',
+			  'true',
+			  '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem',
+			  'mychannel',
 				'mycc',
 				'\'{"Args":["test1"]}\''),
-			util.format('docker exec cli peer chaincode invoke -C %s -n %s -c %s',
-				'mychannel',
+			util.format('docker exec cli peer chaincode invoke --tls %s --cafile %s -C %s -n %s -c %s',
+			  'true',
+			  '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem',
+			  'mychannel',
 				'mycc',
 				'\'{"Args":["test2"]}\'')
 		]));
@@ -101,19 +108,23 @@ gulp.task('test-e2e-invoke-v0-test3', ['test-e2e-invoke-v0-test1-test2'], () => 
 		.pipe(shell([
 			// test1 and test2 of the chaincode are independent of each other,
 			// can be called in parallel
-			util.format('docker exec cli peer chaincode invoke -C %s -n %s -c %s',
-				'mychannel',
+			util.format('docker exec cli peer chaincode invoke --tls %s --cafile %s -C %s -n %s -c %s',
+			  'true',
+			  '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem',
+			  'mychannel',
 				'mycc',
 				'\'{"Args":["test3"]}\'')
 		]));
 });
 
-gulp.task('test-e2e-invoke-v0-test6', ['test-e2e-invoke-v0-test1-test3'], () => {
+gulp.task('test-e2e-invoke-v0-test6', ['test-e2e-invoke-v0-test3'], () => {
 	return gulp.src('*.js', {read: false})
 		.pipe(wait(3000))
 		.pipe(shell([
-			util.format('docker exec cli peer chaincode invoke -C %s -n %s -c %s',
-				'mychannel',
+			util.format('docker exec cli peer chaincode invoke --tls %s --cafile %s -C %s -n %s -c %s',
+			  'true',
+			  '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem',
+			  'mychannel',
 				'mycc',
 				'\'{"Args":["test6"]}\'')
 		]));

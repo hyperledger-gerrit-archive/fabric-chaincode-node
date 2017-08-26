@@ -35,24 +35,8 @@ let testDir = test.BasicNetworkTestDir;
 let devmode = process.env.DEVMODE ? process.env.DEVMODE : 'true';
 gulp.task('docker-copy', ['clean-up'], function() {
 	gulp.src([
-		path.join(samplesPath, 'docker-compose.yml'),
-	], {base: samplesPath})
-		// use the locally built images
-		.pipe(replace(':x86_64-1.0.0', ':latest'))
-		// give the CLI docker access to configtx.yaml
-		// also have the CLI docker produce the genesis block
-		// and configtx payload binary back to the test dir
-		.pipe(replace(
-			'- ./../chaincode/:/opt/gopath/src/github.com/',
-			'- ./../chaincode/:/opt/gopath/src/github.com/\n' +
-			'        - ./:/etc/hyperledger/config\n' +
-			'        - ./config:/etc/hyperledger/configtx'))
-		// configure the CLI to find the configtx.yaml from
-		// the test directory
-		.pipe(replace(
-			'- CORE_PEER_ID=cli',
-			'- CORE_PEER_ID=cli\n' +
-			'      - FABRIC_CFG_PATH=/etc/hyperledger/config'))
+		path.join(__dirname, 'docker-compose.yml'),
+	], {base: __dirname})
 		.pipe(replace(
 			'command: peer node start',
 			util.format('command: peer node start --peer-chaincodedev=%s', devmode)))
