@@ -34,7 +34,7 @@ const _responseProto = grpc.load({
 	file: 'peer/proposal_response.proto'
 }).protos;
 
-var start = function(chaincode) {
+var start = async function(chaincode) {
 	if (typeof chaincode !== 'object' || chaincode === null)
 		throw new Error('Missing required argument: chaincode');
 
