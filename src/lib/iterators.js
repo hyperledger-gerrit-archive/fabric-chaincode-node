@@ -59,8 +59,10 @@ class CommonIterator extends EventEmitter {
 		queryResult.value = this._getResultFromBytes(this.response.results[this.currentLoc]);
 		this.currentLoc++;
 		queryResult.done = !(this.currentLoc < this.response.results.length || this.response.has_more);
-		this.emit('data', this, queryResult);
-		if (queryResult.done) {
+		if (this.listenerCount('data') > 0) {
+			this.emit('data', this, queryResult);
+		}
+		if (queryResult.done && this.listenerCount('end') > 0) {
 			this.emit('end', this);
 		}
 		return queryResult;
@@ -79,13 +81,25 @@ class CommonIterator extends EventEmitter {
 		else {
 			// check to see if there is more and go fetch it
 			if (this.response.has_more) {
-				let response = await this.handler.handleQueryStateNext(this.response.id, this.txID);
-				this.currentLoc = 0;
-				this.response = response;
-				return this._createAndEmitResult();
+				try {
+					let response = await this.handler.handleQueryStateNext(this.response.id, this.txID);
+					this.currentLoc = 0;
+					this.response = response;
+					return this._createAndEmitResult();
+				}
+				catch(err) {
+					// if someone is listening on data, then emit the error event
+					if (this.listenerCount('data') > 0) {
+						this.emit('error', this, err);
+						return;
+					}
+					throw err;
+				}
 			}
 			// no more, just return EMCA spec defined response
-			this.emit('end', this);
+			if (this.listenerCount('end') > 0) {
+				this.emit('end', this);
+			}
 			return {done: true};
 		}
 
