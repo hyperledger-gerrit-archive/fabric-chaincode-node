@@ -31,6 +31,7 @@ const packageJson = '{' +
 '}';
 const tls = process.env.TLS ? process.env.TLS : 'false';
 const CC_NAME = 'mycc';
+const CC2_NAME = 'mycc2';
 const CHANNEL_NAME = 'mychannel';
 function getTLSArgs() {
 	var args = '';
@@ -70,7 +71,13 @@ gulp.task('test-e2e-install-v0', ['copy-shim', 'copy-chaincode'], () => {
 				CC_NAME,
 				// the /etc/hyperledger/config has been mapped to the
 				// basic-network folder in the test setup for the CLI docker
-				'/etc/hyperledger/config/src/mycc.v0')
+				'/etc/hyperledger/config/src/mycc.v0'),
+			util.format('docker exec cli peer chaincode install -l node -n %s -v v0 -p %s',
+				CC_NAME2,
+				// the /etc/hyperledger/config has been mapped to the
+				// basic-network folder in the test setup for the CLI docker
+				'/etc/hyperledger/config/src/mycc.v0'),
+
 		]));
 });
 
@@ -83,7 +90,15 @@ gulp.task('test-e2e-instantiate-v0', ['test-e2e-install-v0'], () => {
 				CHANNEL_NAME,
 				CC_NAME,
 				'\'{"Args":["init"]}\'',
+				'\'OR ("Org1MSP.member")\''),
+			util.format('docker exec cli peer chaincode instantiate -o %s %s -l node -C %s -n %s -v v0 -c %s -P %s',
+				'orderer.example.com:7050',
+				getTLSArgs(),
+				CHANNEL_NAME,
+				CC_NAME2,
+				'\'{"Args":["init", "NoInit"]}\'',
 				'\'OR ("Org1MSP.member")\'')
+
 		]));
 });
 
@@ -113,8 +128,6 @@ gulp.task('test-e2e-invoke-v0-test3', ['test-e2e-invoke-v0-test1-test2'], () => 
 	return gulp.src('*.js', {read: false})
 		.pipe(wait(3000))
 		.pipe(shell([
-			// test1 and test2 of the chaincode are independent of each other,
-			// can be called in parallel
 			util.format('docker exec cli peer chaincode invoke %s -C %s -n %s -c %s',
 				getTLSArgs(),
 				CHANNEL_NAME,
@@ -123,7 +136,32 @@ gulp.task('test-e2e-invoke-v0-test3', ['test-e2e-invoke-v0-test1-test2'], () => 
 		]));
 });
 
-gulp.task('test-e2e-invoke-v0-test6', ['test-e2e-invoke-v0-test3'], () => {
+gulp.task('test-e2e-invoke-v0-test4', ['test-e2e-invoke-v0-test1-test3'], () => {
+	return gulp.src('*.js', {read: false})
+		.pipe(wait(3000))
+		.pipe(shell([
+			util.format('docker exec cli peer chaincode invoke %s -C %s -n %s -c %s',
+				getTLSArgs(),
+				CHANNEL_NAME,
+				CC_NAME,
+				'\'{"Args":["test4"]}\'')
+		]));
+});
+
+gulp.task('test-e2e-invoke-v0-test5', ['test-e2e-invoke-v0-test1-test4'], () => {
+	return gulp.src('*.js', {read: false})
+		.pipe(wait(3000))
+		.pipe(shell([
+			util.format('docker exec cli peer chaincode invoke %s -C %s -n %s -c %s',
+				getTLSArgs(),
+				CHANNEL_NAME,
+				CC_NAME,
+				'\'{"Args":["test5"]}\'')
+		]));
+});
+
+
+gulp.task('test-e2e-invoke-v0-test6', ['test-e2e-invoke-v0-test5'], () => {
 	return gulp.src('*.js', {read: false})
 		.pipe(wait(3000))
 		.pipe(shell([
@@ -135,5 +173,16 @@ gulp.task('test-e2e-invoke-v0-test6', ['test-e2e-invoke-v0-test3'], () => {
 		]));
 });
 
+gulp.task('test-e2e-invoke-v0-test7', ['test-e2e-invoke-v0-test6'], () => {
+	return gulp.src('*.js', {read: false})
+		.pipe(wait(3000))
+		.pipe(shell([
+			util.format('docker exec cli peer chaincode invoke %s -C %s -n %s -c %s',
+				getTLSArgs(),
+				CHANNEL_NAME,
+				CC_NAME,
+				'\'{"Args":["test7"]}\'')
+		]));
+});
 
-gulp.task('test-e2e', ['test-e2e-invoke-v0-test6']);
+gulp.task('test-e2e', ['test-e2e-invoke-v0-test7']);
