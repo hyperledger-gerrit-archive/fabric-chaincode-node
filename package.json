@@ -12,7 +12,9 @@
     "test": "gulp test-headless"
   },
   "dependencies": {
+    "elliptic": "^6.4.0",
     "fabric-shim": "file:./src",
+    "fabric-shim-crypto": "file:./fabric-shim-crypto",
     "jsrsasign": "^8.0.4"
   },
   "devDependencies": {
