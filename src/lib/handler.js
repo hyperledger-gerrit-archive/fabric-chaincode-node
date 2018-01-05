@@ -492,6 +492,12 @@ class ChaincodeSupportClient {
 		if (message.type === _serviceProto.ChaincodeMessage.Type.COMPLETED) {
 			return _responseProto.Response.decode(message.payload);
 		}
+
+		// Catch the transaction and rethrow the data
+		if (message.type === _serviceProto.ChaincodeMessage.Type.ERROR) {
+			const errorData = Buffer.from(message.payload.buffer).toString('utf8');
+			throw new Error(errorData);
+		}
 	}
 
 	/*
