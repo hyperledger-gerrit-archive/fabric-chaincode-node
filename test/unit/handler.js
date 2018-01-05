@@ -66,7 +66,7 @@ test('handler.js constructor tests', (t) => {
 		() => {
 			new Handler(chaincodeObj);
 		},
-		/Parameter "url" must be a string/,
+		/Invalid URL: undefined/,
 		'Test error handling on missing "url" argument'
 	);
 
