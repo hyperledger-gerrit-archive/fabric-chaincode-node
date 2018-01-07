@@ -16,6 +16,7 @@ const Logger = require('./logger');
 const logger = Logger.getLogger('lib/chaincode.js');
 const Handler = require('./handler.js');
 const Stub = require('./stub.js');
+const MockStub = require('./mockstub');
 const fs = require('fs');
 
 const argsDef = [{
@@ -379,7 +380,8 @@ function normalizeX509(raw) {
 	// make sure '-----BEGIN CERTIFICATE-----' and '-----END CERTIFICATE-----' are in their own lines
 	// and that it ends in a new line
 	return matches.join('\n') + '\n';
-};
+}
 
 module.exports = Shim;
 module.exports.ClientIdentity = ClientIdentity;
+module.exports.MockStub = MockStub;
