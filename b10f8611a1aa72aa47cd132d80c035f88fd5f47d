@@ -1,0 +1,9 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+1: Christopher Ferris <chris.ferris@gmail.com>
+Code-Review+1: David Enyeart <enyeart@us.ibm.com>
+Code-Review+2: Bret Harrison <beharrison@nc.rr.com>
+Submitted-by: Bret Harrison <beharrison@nc.rr.com>
+Submitted-at: Fri, 26 Jan 2018 18:02:54 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/17201
+Project: fabric-chaincode-node
+Branch: refs/heads/master
