@@ -34,7 +34,7 @@ let samplesPath = test.BasicNetworkSamplePath;
 let testDir = test.BasicNetworkTestDir;
 let devmode = process.env.DEVMODE ? process.env.DEVMODE : 'true';
 let tls = process.env.TLS ? process.env.TLS : 'false';
-gulp.task('docker-copy', ['clean-up'], function() {
+gulp.task('docker-copy', [], function() {
 	gulp.src([
 		path.join(__dirname, 'docker-compose.yml'),
 	], {base: __dirname})
