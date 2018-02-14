@@ -146,6 +146,11 @@ test('handler.js constructor tests', (t) => {
 	t.equal(handler._options['request-timeout'], 12345, 'Test processing request-time option');
 	t.equal(handler._options['another-property'], 'dummyValue7', 'Test processing another-property option');
 
+	// The DNS in for example Docker is case sensitive
+	// therefore it's importantant that casing is preserved
+	handler = new Handler(chaincodeObj, 'grpc://Peer.Example.com:7051');
+	t.equal(handler._endpoint.addr, 'Peer.Example.com:7051', 'Test handler.addr value preserves casing');
+
 	t.end();
 });
 
