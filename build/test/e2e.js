@@ -324,4 +324,10 @@ gulp.task('test-e2e-invoke-v0-test15', ['test-e2e-invoke-v0-test14'], () => {
 		]));
 });
 
-gulp.task('test-e2e', ['test-e2e-invoke-v0-test15']);
+// kick off the tests and then clean up
+gulp.task('test-e2e', ['test-e2e-invoke-v0-test15'], () =>{
+	// some tests create temporary files or directories
+	// they are all created in the same temp folder
+	fs.removeSync(test.tempdir);
+	return fs.ensureFileSync(debugPath);
+});
