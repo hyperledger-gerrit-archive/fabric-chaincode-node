@@ -16,13 +16,15 @@
     "node": "^8.9.0",
     "npm": "^5.5.1"
   },
+  "types": "./lib/main.d.ts",
   "license": "Apache-2.0",
   "dependencies": {
+    "@types/node": "^9.4.6",
     "command-line-args": "^4.0.6",
     "grpc": "^1.4.1",
     "jsrsasign": "^8.0.4",
     "log4js": "^2.2.0",
-    "utf8":"2.1.2",
+    "utf8": "2.1.2",
     "x509": "^0.3.2"
   }
 }
