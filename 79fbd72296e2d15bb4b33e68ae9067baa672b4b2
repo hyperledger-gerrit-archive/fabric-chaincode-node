@@ -1,0 +1,8 @@
+Code-Review+2: Bret Harrison <beharrison@nc.rr.com>
+Code-Review+2: Dave Kelsey <d_kelsey@uk.ibm.com>
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Submitted-by: Bret Harrison <beharrison@nc.rr.com>
+Submitted-at: Mon, 05 Mar 2018 22:05:33 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/17849
+Project: fabric-chaincode-node
+Branch: refs/heads/master
