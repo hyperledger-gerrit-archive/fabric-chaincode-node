@@ -51,6 +51,9 @@ const MSG_TYPE = {
 	COMPLETED: 'COMPLETED',		// _serviceProto.ChaincodeMessage.Type.COMPLETED
 };
 
+const MAX_SEND = 'grpc.max_send_message_length';
+const MAX_RECEIVE = 'grpc.max_receive_message_length';
+
 /*
  * Simple class to represent a message to be queued with the associated
  * promise methods to be driven around this message
@@ -247,6 +250,28 @@ class ChaincodeSupportClient {
 			if (key !== 'pem' && key !== 'ssl-target-name-override') {
 				this._options[key] = opts[key];
 			}
+		}
+
+		let grpc_receive_max = -1; //default is unlimited
+		if(opts && opts[MAX_RECEIVE]) {
+			grpc_receive_max = opts[MAX_RECEIVE];
+		}
+		// if greater than 0, set to that specific limit
+		// if equal to -1, set to that to have no limit
+		// if 0 or anything else, do not set anything, will use the grpc default
+		if (grpc_receive_max > 0 || grpc_receive_max === -1){
+			this._options[MAX_RECEIVE] = grpc_receive_max;
+		}
+
+		let grpc_send_max = -1; //default is unlimited
+		if(opts && opts[MAX_SEND]) {
+			grpc_send_max = opts[MAX_SEND];
+		}
+		// if greater than 0, set to that specific limit
+		// if equal to -1, set to that to have no limit
+		// if 0 or anything else, do not set anything, will use the grpc default
+		if (grpc_send_max > 0 || grpc_send_max === -1){
+			this._options[MAX_SEND] = grpc_send_max;
 		}
 
 		// service connection
