@@ -5,3 +5,5 @@
 */
 
 module.exports = require('./lib/chaincode.js');
+
+module.exports.go = require('./lib/router/bootstrap.js');

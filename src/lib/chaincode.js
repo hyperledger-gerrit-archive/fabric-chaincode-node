@@ -15,9 +15,8 @@ const jsrsasign = require('jsrsasign');
 const Logger = require('./logger');
 
 const logger = Logger.getLogger('lib/chaincode.js');
-const Handler = require('./handler.js');
-const Iterators = require('./iterators.js');
-const Stub = require('./stub.js');
+const Handler = require('./handler');
+const Stub = require('./stub');
 const fs = require('fs');
 
 const argsDef = [
