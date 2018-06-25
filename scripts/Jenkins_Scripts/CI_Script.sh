@@ -168,9 +168,11 @@ sdk_E2e_Tests() {
 
         echo "npm version ------> $(npm -v)"
         echo "node version ------> $(node -v)"
+        echo "npm install ------> starting"
 
         npm install || err_Check "ERROR!!! npm install failed"
         npm config set prefix ~/npm && npm install -g gulp
+        
 
         echo "###################"
         echo "Run Headless Tests"

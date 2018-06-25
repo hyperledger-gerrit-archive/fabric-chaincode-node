@@ -3,8 +3,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
-
-const shim = require('../../src/lib/chaincode.js');
+/*global describe it beforeEach afterEach before after  */
+const shim = require('../../fabric-shim/lib/shim/chaincode.js');
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -76,7 +76,7 @@ describe('Client-Identity', () => {
 		});
 
 		it ('should have correct attrs', () => {
-			expect(cid.attrs['attr1']).to.deep.equal('val1');
+			expect(cid.attrs.attr1).to.deep.equal('val1');
 		});
 
 		it ('should return correct value on getX509Certificate()', () => {
@@ -116,7 +116,7 @@ describe('Client-Identity', () => {
 		});
 
 		it ('should have not attributes', () => {
-			expect(cid['attrs']).to.deep.equal({});
+			expect(cid.attrs).to.deep.equal({});
 		});
 	});
 

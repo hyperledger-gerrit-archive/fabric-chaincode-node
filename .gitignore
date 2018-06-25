@@ -20,3 +20,4 @@ yarn.lock
 .nyc_output
 test/typescript/chaincode.js
 test/typescript/chaincode.js.map
+fabric*.tgz

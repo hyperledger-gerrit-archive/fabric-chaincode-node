@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
-
+/*global describe it beforeEach afterEach before after  */
 'use strict';
 
 const sinon = require('sinon');
@@ -11,13 +11,13 @@ const chai = require('chai');
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 const rewire = require('rewire');
-let Handler = rewire('../../src/lib/handler.js');
+let Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 
-const Stub = require('../../src/lib/stub.js');
+const Stub = require('../../fabric-shim/lib/shim/stub.js');
 const MsgQueueHandler = Handler.__get__('MsgQueueHandler');
 const QMsg = Handler.__get__('QMsg');
-const StateQueryIterator = require('../../src/lib/iterators.js').StateQueryIterator;
-const HistoryQueryIterator = require('../../src/lib/iterators.js').HistoryQueryIterator;
+const StateQueryIterator = require('../../fabric-shim/lib/shim/iterators.js').StateQueryIterator;
+const HistoryQueryIterator = require('../../fabric-shim/lib/shim/iterators.js').HistoryQueryIterator;
 
 const grpc = require('grpc');
 
@@ -388,7 +388,7 @@ describe('Handler', () => {
 		it ('should throw an error if URL argument does not use grpc as protocol', () => {
 			expect(() => {
 				new Handler(mockChaincodeImpl, 'https://'+mockPeerAddress.base);
-			}).to.throw(/Invalid protocol: https. {2}URLs must begin with grpc:\/\/ or grpcs:\/\//);
+			}).to.throw(/Invalid protocol: https: {2}URLs must begin with grpc:\/\/ or grpcs:\/\//);
 		});
 
 		it ('should set endpoint, client and default timeout', () => {
@@ -396,11 +396,11 @@ describe('Handler', () => {
 
 			let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 
-			expect(handler['_request_timeout']).to.deep.equal(30000);
-			expect(handler['_endpoint'].addr).to.deep.equal(mockPeerAddress.base);
+			expect(handler._request_timeout).to.deep.equal(30000);
+			expect(handler._endpoint.addr).to.deep.equal(mockPeerAddress.base);
 			expect(credsSpy.calledOnce).to.be.ok;
-			expect(handler['_endpoint'].creds.constructor.name).to.deep.equal('ChannelCredentials');
-			expect(handler['_client'].constructor.name).to.deep.equal('ServiceClient');
+			expect(handler._endpoint.creds.constructor.name).to.deep.equal('ChannelCredentials');
+			expect(handler._client.constructor.name).to.deep.equal('ServiceClient');
 
 			credsSpy.restore();
 		});
@@ -410,7 +410,7 @@ describe('Handler', () => {
 				'request-timeout': 123456
 			});
 
-			expect(handler['_request_timeout']).to.deep.equal(123456);
+			expect(handler._request_timeout).to.deep.equal(123456);
 		});
 
 		it ('should store additional options', () => {
@@ -418,13 +418,13 @@ describe('Handler', () => {
 				'another-value': 'another string'
 			});
 
-			expect(handler['_options']['another-value']).to.deep.equal('another string');
+			expect(handler._options['another-value']).to.deep.equal('another string');
 		});
 
 		it ('should preserve casing in handler addr', () => {
 			let handler = new Handler(mockChaincodeImpl, 'grpc://'+mockPeerAddress.base.toUpperCase());
 
-			expect(handler['_endpoint'].addr).to.deep.equal(mockPeerAddress.base.toUpperCase());
+			expect(handler._endpoint.addr).to.deep.equal(mockPeerAddress.base.toUpperCase());
 		});
 
 		it ('should throw an error if connection secure and certificate not passed', () => {
@@ -455,13 +455,13 @@ describe('Handler', () => {
 
 			let handler = new Handler(mockChaincodeImpl, mockPeerAddress.secure, mockOpts);
 
-			expect(handler['_options'].cert).to.deep.equal(mockOpts.cert);
-			expect(handler['_request_timeout']).to.deep.equal(30000);
-			expect(handler['_endpoint'].addr).to.deep.equal(mockPeerAddress.base);
+			expect(handler._options.cert).to.deep.equal(mockOpts.cert);
+			expect(handler._request_timeout).to.deep.equal(30000);
+			expect(handler._endpoint.addr).to.deep.equal(mockPeerAddress.base);
 			expect(credsSpy.calledOnce).to.be.ok;
 			expect(credsSpy.calledWith(Buffer.from(mockOpts.pem), Buffer.from(mockOpts.key,'base64'), Buffer.from(mockOpts.cert,'base64'))).to.be.ok;
-			expect(handler['_endpoint'].creds.constructor.name).to.deep.equal('ChannelCredentials');
-			expect(handler['_client'].constructor.name).to.deep.equal('ServiceClient');
+			expect(handler._endpoint.creds.constructor.name).to.deep.equal('ChannelCredentials');
+			expect(handler._client.constructor.name).to.deep.equal('ServiceClient');
 		});
 
 		it ('should set grpc ssl options when ssl-target-name-override passed', () => {
@@ -470,8 +470,8 @@ describe('Handler', () => {
 
 			let handler = new Handler(mockChaincodeImpl, mockPeerAddress.secure, opts);
 
-			expect(handler['_options']['grpc.ssl_target_name_override']).to.deep.equal('dummy override');
-			expect(handler['_options']['grpc.default_authority']).to.deep.equal('dummy override');
+			expect(handler._options['grpc.ssl_target_name_override']).to.deep.equal('dummy override');
+			expect(handler._options['grpc.default_authority']).to.deep.equal('dummy override');
 		});
 
 		describe('close', () => {
@@ -487,7 +487,7 @@ describe('Handler', () => {
 
 		describe('chat', () => {
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 			});
 
 			it ('should create instance of MsgQueueHandler, register the client, setup listeners and write', () => {
@@ -582,7 +582,7 @@ describe('Handler', () => {
 						type: 'NOT REGISTERED'
 					};
 
-					eventReg['data'](badRegisteredMsg);
+					eventReg.data(badRegisteredMsg);
 
 					expect(mockStream.write.calledTwice).to.be.ok;
 					expect(mockNewErrorMsg.calledOnce).to.be.ok;
@@ -595,8 +595,8 @@ describe('Handler', () => {
 						type: 'NOT REGISTERED'
 					};
 
-					eventReg['data'](registeredMsg);
-					eventReg['data'](badEstablishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(badEstablishedMsg);
 
 					expect(mockStream.write.calledTwice).to.be.ok;
 					expect(mockNewErrorMsg.calledOnce).to.be.ok;
@@ -605,9 +605,9 @@ describe('Handler', () => {
 				});
 
 				it ('should do nothing when in state ready and MSG_TYPE equals REGISTERED', () => {
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
-					eventReg['data'](registeredMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
+					eventReg.data(registeredMsg);
 
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
@@ -617,9 +617,9 @@ describe('Handler', () => {
 				});
 
 				it ('should do nothing when in state ready and MSG_TYPE equals READY', () => {
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
-					eventReg['data'](establishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
+					eventReg.data(establishedMsg);
 
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
@@ -629,14 +629,14 @@ describe('Handler', () => {
 				});
 
 				it ('should call handleMsgResponse when in state ready and MSG_TYPE equals RESPONSE', () => {
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
 
 					let readyMsg = {
 						type: MSG_TYPE.RESPONSE
 					};
 
-					eventReg['data'](readyMsg);
+					eventReg.data(readyMsg);
 
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
@@ -647,14 +647,14 @@ describe('Handler', () => {
 				});
 
 				it ('should call handleMsgResponse when in state ready and MSG_TYPE equals ERROR', () => {
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
 
 					let readyMsg = {
 						type: MSG_TYPE.ERROR
 					};
 
-					eventReg['data'](readyMsg);
+					eventReg.data(readyMsg);
 
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
@@ -665,14 +665,14 @@ describe('Handler', () => {
 				});
 
 				it ('should call handleInit when in state ready and MSG_TYPE equals INIT', () => {
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
 
 					let readyMsg = {
 						type: MSG_TYPE.INIT
 					};
 
-					eventReg['data'](readyMsg);
+					eventReg.data(readyMsg);
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
 					expect(handleMsgResponseSpy.notCalled).to.be.ok;
@@ -682,14 +682,14 @@ describe('Handler', () => {
 				});
 
 				it ('should call handleTransaction when in state ready and MSG_TYPE equals TRANSACTION', () => {
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
 
 					let readyMsg = {
 						type: MSG_TYPE.TRANSACTION
 					};
 
-					eventReg['data'](readyMsg);
+					eventReg.data(readyMsg);
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
 					expect(handleMsgResponseSpy.notCalled).to.be.ok;
@@ -701,14 +701,14 @@ describe('Handler', () => {
 				it ('should end the process with value 1', () => {
 					let processStub = sinon.stub(process, 'exit');
 
-					eventReg['data'](registeredMsg);
-					eventReg['data'](establishedMsg);
+					eventReg.data(registeredMsg);
+					eventReg.data(establishedMsg);
 
 					let readyMsg = {
 						type: 'something else'
 					};
 
-					eventReg['data'](readyMsg);
+					eventReg.data(readyMsg);
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockNewErrorMsg.notCalled).to.be.ok;
 					expect(handleMsgResponseSpy.notCalled).to.be.ok;
@@ -734,7 +734,7 @@ describe('Handler', () => {
 					handler._client.register = sinon.stub().returns(mockStream);
 					handler.chat('some starter message');
 
-					eventReg['end']();
+					eventReg.end();
 
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockStream.cancel.calledOnce).to.be.ok;
@@ -754,8 +754,24 @@ describe('Handler', () => {
 					handler._client.register = sinon.stub().returns(mockStream);
 					handler.chat('some starter message');
 
-					eventReg['error']({});
+					eventReg.error({});
+					expect(mockStream.write.calledOnce).to.be.ok;
+					expect(mockStream.end.calledOnce).to.be.ok;
+				});
 
+				it ('should end the stream with filled out error', () => {
+					let eventReg = {};
+					let mockEventEmitter = (event, cb) => {
+						eventReg[event] = cb;
+					};
+
+					let mockStream = {write: sinon.stub(), on: mockEventEmitter, end: sinon.stub()};
+
+					let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+					handler._client.register = sinon.stub().returns(mockStream);
+					handler.chat('some starter message');
+
+					eventReg.error({stack:'a stack'});
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockStream.end.calledOnce).to.be.ok;
 				});
@@ -817,7 +833,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -870,7 +886,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -921,7 +937,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -973,7 +989,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -1021,7 +1037,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -1069,7 +1085,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -1119,7 +1135,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -1167,7 +1183,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 
@@ -1227,7 +1243,7 @@ describe('Handler', () => {
 			});
 
 			afterEach(() => {
-				Handler = rewire('../../src/lib/handler.js');
+				Handler = rewire('../../fabric-shim/lib/shim/handler.js');
 				sandbox.restore();
 			});
 

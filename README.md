@@ -2,13 +2,19 @@
 
 This is the project for the fabric shim for node.js chaincodes development. The following instructions are oriented to a contributor or an early adopter and describes the steps to build and test the library.
 
-As an application developer, to learn about how to implement **"Smart Contracts"** for the Hyperledger Fabric using Node.js, Please visit the [documentation](https://fabric-shim.github.io/).
+As an application developer, to learn about how to implement **"Smart Contracts"** for the Hyperledger Fabric using Node.js, Please visit the [api documentation](https://fabric-shim.github.io/)
+and the [introductory material](./WRITINGCHAINCODE.md)
 
-This project publishes `fabric-shim` public npm package for developers consumption.
+This project publishes 3 npm modules
+  - *fabric-contract-api* - the api definitions for to use when developing contracts
+  - *fabric-shim* - used at runtime, and also the spi for low-level development
+  - *fabric-shim-crypto* - crypto functions for use within the chaincode
 
 ### Folder structure
 
-The "src" folder contains the resources to become part of the npm package, including javascript files, protobuf definition files (.proto) that the code depends on, and a package.json to describe the package.
+The "fabric-shim" folder contains the resources to become part of the fabric-shim npm package, including javascript files, protobuf definition files (.proto) that the code depends on, and a package.json to describe the package.
+
+The "fabric-contract-api" folder contains the resources for the API to write contracts against. 
 
 The "build" folder contains the "build" steps. This being javascript there's no need to compile, but special build steps are still needed to accomplish the following:
 * linting: to make sure we enforce a somewhat consistent coding style
@@ -188,6 +194,8 @@ The above runs the peer in *chaincode dev mode*. It calls the locally launched c
 First of all, you need to provide all the necessary files for running the chaincode in the network mode.
 
 #### Writing your own chaincode
+
+**THIS IS DESCRIBING THE SPI APPROACH TO CHAINCODE**
 
 To write your own chaincode is very easy. Create a file named `mychaincode.js` anywhere in the file system, and put in it the following minimum implementation:
 ```
