@@ -33,7 +33,7 @@ const _idProto = grpc.load({
 	file: 'msp/identities.proto'
 }).msp;
 
-const logger = require('./logger').getLogger('lib/chaincode.js');
+const logger = require('./logger').getLogger('shim/chaincode.js');
 
 const RESPONSE_CODE = {
 	// OK constant - status code less than 400, endorser will endorse it.
@@ -530,7 +530,7 @@ class ChaincodeStub {
 	 */
 	setEvent(name, payload) {
 		if (typeof name !== 'string' || name === '')
-			throw new Error('Event name must be a non-empty string');
+		{throw new Error('Event name must be a non-empty string');}
 
 		let event = new _eventProto.ChaincodeEvent();
 		event.setEventName(name);
@@ -584,14 +584,14 @@ class ChaincodeStub {
 		let result = {objectType: null, attributes: []};
 		if (compositeKey && compositeKey.length > 1 && compositeKey.charAt(0) === COMPOSITEKEY_NS) {
 			let splitKey = compositeKey.substring(1).split(MIN_UNICODE_RUNE_VALUE);
-			if (splitKey[0]) {
-				result.objectType = splitKey[0];
-				splitKey.pop();
-				if (splitKey.length > 1) {
-					splitKey.shift();
-					result.attributes = splitKey;
-				}
+
+			result.objectType = splitKey[0];
+			splitKey.pop();
+			if (splitKey.length > 1) {
+				splitKey.shift();
+				result.attributes = splitKey;
 			}
+
 		}
 		return result;
 	}

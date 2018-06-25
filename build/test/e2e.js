@@ -30,6 +30,7 @@ const packageJson = '{' +
 '  "dependencies": {' +
 '    "fabric-shim": "file:./fabric-shim",' +
 '    "fabric-shim-crypto": "file:./fabric-shim-crypto",' +
+'    "fabric-contract-api": "file:./fabric-contract-api",' +
 '    "chai": "^4.1.1",' +
 '    "chai-as-promised": "^7.1.1"' +
 '  }' +
@@ -48,14 +49,23 @@ function getTLSArgs() {
 }
 gulp.task('copy-shim', ['protos'], () => {
 	// first ensure the chaincode folder has the latest shim code
-	let srcPath = path.join(__dirname, '../../src/**');
+	let srcPath = path.join(__dirname, '../../fabric-shim/**');
 	let destPath = path.join(constants.BasicNetworkTestDir, 'src/mycc.v0/fabric-shim');
 	fs.ensureDirSync(destPath);
 	return gulp.src(srcPath)
 		.pipe(gulp.dest(destPath));
 });
 
-gulp.task('copy-shim-crypto', ['copy-shim'], () => {
+gulp.task('copy-api', ['copy-shim'], () => {
+	// first ensure the chaincode folder has the latest shim code
+	let srcPath = path.join(__dirname, '../../fabric-contract-api/**');
+	let destPath = path.join(constants.BasicNetworkTestDir, 'src/mycc.v0/fabric-contract-api');
+	fs.ensureDirSync(destPath);
+	return gulp.src(srcPath)
+		.pipe(gulp.dest(destPath));
+});
+
+gulp.task('copy-shim-crypto', ['copy-api'], () => {
 	// first ensure the chaincode folder has the latest shim code
 	let srcPath = path.join(__dirname, '../../fabric-shim-crypto/**');
 	let destPath = path.join(constants.BasicNetworkTestDir, 'src/mycc.v0/fabric-shim-crypto');
@@ -117,9 +127,9 @@ gulp.task('test-e2e-instantiate-v0', ['test-e2e-install-v0'], () => {
 
 gulp.task('test-e2e-invoke-v0-test1-test2', ['test-e2e-instantiate-v0'], () => {
 	return gulp.src('*.js', {read: false})
-		// because the peer CLI for the instantiate call returns
-		// before the transaction gets committed to the ledger, we
-		// introduce a wait for 3 sec before running the invoke
+	// because the peer CLI for the instantiate call returns
+	// before the transaction gets committed to the ledger, we
+	// introduce a wait for 3 sec before running the invoke
 		.pipe(wait(3000))
 		.pipe(shell([
 			// test1 and test2 of the chaincode are independent of each other,
@@ -292,11 +302,11 @@ gulp.task('test-e2e-invoke-v0-test13', ['test-e2e-invoke-v0-test12'], () => {
 // Test decryption support in fabric-shim-crypto
 gulp.task('test-e2e-invoke-v0-test14', ['test-e2e-invoke-v0-test13'], () => {
 	const cmd = 'docker exec cli peer chaincode query %s -C %s -n %s -c %s --transient ' +
-				'\'{"sign-key":"LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tTUlHSEFnRUFNQk1HQnlxR1NNNDlB' +
-				'Z0VHQ0NxR1NNNDlBd0VIQkcwd2F3SUJBUVFnWllNdmYzdzVWa3p6c1RRWUk4WjhJWHVHRlptbWZqSVg' +
-				'yWVNTY3FDdkFraWhSQU5DQUFTNkJoRmdXL3EwUHpya3dUNVJsV1R0NDFWZ1hMZ3VQdjZRS3ZHc1c3U3' +
-				'FLNlRrY0NmeHNXb1NqeTYvcjFTenpUTW5pM0o4aVFSb0ozcm9QbW94UExLNC0tLS0tRU5EIFBSSVZBV' +
-				'EUgS0VZLS0tLS0="}\'';
+	'\'{"sign-key":"LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tTUlHSEFnRUFNQk1HQnlxR1NNNDlB' +
+	'Z0VHQ0NxR1NNNDlBd0VIQkcwd2F3SUJBUVFnWllNdmYzdzVWa3p6c1RRWUk4WjhJWHVHRlptbWZqSVg' +
+    'yWVNTY3FDdkFraWhSQU5DQUFTNkJoRmdXL3EwUHpya3dUNVJsV1R0NDFWZ1hMZ3VQdjZRS3ZHc1c3U3' +
+    'FLNlRrY0NmeHNXb1NqeTYvcjFTenpUTW5pM0o4aVFSb0ozcm9QbW94UExLNC0tLS0tRU5EIFBSSVZBV' +
+    'EUgS0VZLS0tLS0="}\'';
 
 	return gulp.src('*.js', {read: false})
 		.pipe(wait(3000))
@@ -324,3 +334,4 @@ gulp.task('test-e2e-invoke-v0-test15', ['test-e2e-invoke-v0-test14'], () => {
 });
 
 gulp.task('test-e2e', ['test-e2e-invoke-v0-test15']);
+

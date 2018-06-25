@@ -3,12 +3,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
+/*global describe it beforeEach afterEach before after  */
 'use strict';
 
 const chai = require('chai');
 const expect = chai.expect;
 
-const theModule = require('../../src');
+const theModule = require('../../fabric-shim');
 
 describe('Exports', () => {
 	it ('should export the start function', () => {

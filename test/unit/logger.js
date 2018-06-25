@@ -3,6 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
+/*global describe it beforeEach afterEach before after  */
 'use strict';
 
 const winston = require('winston');
@@ -10,7 +11,8 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const rewire = require('rewire');
-const Logger = rewire('../../src/lib/logger.js');
+const Logger = rewire('../../fabric-shim/lib/shim/logger.js');
+const sinon = require('sinon');
 
 describe('Logger', () => {
 	describe('getLogger', () => {
@@ -37,7 +39,7 @@ describe('Logger', () => {
 		});
 
 		it ('should set the log level to fatal when env var set to CRITICAL', () => {
-			process.env['CORE_CHAINCODE_LOGGING_SHIM'] = 'CRITICAL';
+			process.env.CORE_CHAINCODE_LOGGING_SHIM = 'CRITICAL';
 
 			let log = Logger.getLogger();
 
@@ -46,7 +48,7 @@ describe('Logger', () => {
 		});
 
 		it ('should set the log level to error when env var set to ERROR', () => {
-			process.env['CORE_CHAINCODE_LOGGING_SHIM'] = 'ERROR';
+			process.env.CORE_CHAINCODE_LOGGING_SHIM = 'ERROR';
 
 			let log = Logger.getLogger();
 
@@ -55,7 +57,7 @@ describe('Logger', () => {
 		});
 
 		it ('should set the log level to warn when env var set to WARNING', () => {
-			process.env['CORE_CHAINCODE_LOGGING_SHIM'] = 'WARNING';
+			process.env.CORE_CHAINCODE_LOGGING_SHIM = 'WARNING';
 
 			let log = Logger.getLogger();
 
@@ -64,12 +66,33 @@ describe('Logger', () => {
 		});
 
 		it ('should set the log level to debug when env var set to DEBUG', () => {
-			process.env['CORE_CHAINCODE_LOGGING_SHIM'] = 'DEBUG';
+			process.env.CORE_CHAINCODE_LOGGING_SHIM = 'DEBUG';
 
 			let log = Logger.getLogger();
 
 			expect(log instanceof winston.Logger).to.be.ok;
 			expect(log.level).to.deep.equal('debug');
+		});
+	});
+
+
+	describe('formatter',()=>{
+		it('',()=>{
+			process.env.CORE_CHAINCODE_LOGGING_SHIM = 'DEBUG';
+
+			let log = Logger.getLogger();
+			log.debug();
+			log.debug('hello');
+			log.debug('hello',{'one':'two'});
+			// sinon.assert.calledWith(logSpy,'wibble');
+		});
+
+		it('',()=>{
+			process.env.CORE_CHAINCODE_LOGGING_SHIM = 'DEBUG';
+
+			let log = Logger.getLogger('fred');
+			log.debug('hello','fred');
+			// sinon.assert.calledWith(logSpy,'wibble');
 		});
 	});
 });
