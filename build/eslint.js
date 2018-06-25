@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
+'use strict';
+
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 const path = require('path');

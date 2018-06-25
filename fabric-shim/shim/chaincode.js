@@ -92,13 +92,13 @@ class Shim {
 	 */
 	static start(chaincode) {
 		if (typeof chaincode !== 'object' || chaincode === null)
-			throw new Error('Missing required argument: chaincode');
+		{throw new Error('Missing required argument: chaincode');}
 
 		if (typeof chaincode.Init !== 'function')
-			throw new Error('The "chaincode" argument must implement the "Init()" method');
+		{throw new Error('The "chaincode" argument must implement the "Init()" method');}
 
 		if (typeof chaincode.Invoke !== 'function')
-			throw new Error('The "chaincode" argument must implement the "Invoke()" method');
+		{throw new Error('The "chaincode" argument must implement the "Invoke()" method');}
 
 		let url = parsePeerUrl(opts['peer.address']);
 		if (isTLS()){
@@ -267,8 +267,8 @@ class ClientIdentity {
 	 */
 	getAttributeValue(attrName) {
 		let attr = this.attrs[attrName];
-		if (attr) return attr;
-		else return null;
+		if (attr) {return attr;}
+		else {return null;}
 	}
 
 	/**
@@ -283,11 +283,11 @@ class ClientIdentity {
 	assertAttributeValue(attrName, attrValue) {
 		let attr = this.getAttributeValue(attrName);
 		if (attr === null)
-			return false;
+		{return false;}
 		else if (attrValue === attr)
-			return true;
+		{return true;}
 		else
-			return false;
+		{return false;}
 	}
 
 	/**
@@ -346,9 +346,9 @@ function parsePeerUrl(url) {
 			// if the url has grpc(s) prefix, use it, otherwise decide based on the TLS enablement
 			if (url.indexOf('grpc://') !== 0 && url.indexOf('grpcs://') !== 0) {
 				if (isTLS())
-					url = 'grpcs://' + url;
+				{url = 'grpcs://' + url;}
 				else
-					url = 'grpc://' + url;
+				{url = 'grpc://' + url;}
 			}
 		}
 	}
@@ -368,8 +368,8 @@ function isTLS(){
  */
 function normalizeX509(raw) {
 	logger.debug(`[normalizeX509]raw cert: ${raw}`);
-	var regex = /(\-\-\-\-\-\s*BEGIN ?[^-]+?\-\-\-\-\-)([\s\S]*)(\-\-\-\-\-\s*END ?[^-]+?\-\-\-\-\-)/;
-	var matches = raw.match(regex);
+	let regex = /(\-\-\-\-\-\s*BEGIN ?[^-]+?\-\-\-\-\-)([\s\S]*)(\-\-\-\-\-\s*END ?[^-]+?\-\-\-\-\-)/;
+	let matches = raw.match(regex);
 	if (!matches || matches.length !== 4) {
 		throw new Error('Failed to find start line or end line of the certificate.');
 	}

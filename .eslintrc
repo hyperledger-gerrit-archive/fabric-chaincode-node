@@ -8,6 +8,8 @@
         "sourceType": "module"
     },
     "rules": {
+        "no-undef":"warn",
+        "no-unused-vars":"warn",
         "indent": ["error", "tab"],
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "single"],
@@ -16,7 +18,7 @@
         "max-len": [
             "error",
             {
-                "code": 150,
+                "code": 1500,
                 "ignoreTrailingComments": true,
                 "ignoreUrls": true,
                 "ignoreStrings": true,

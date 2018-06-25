@@ -14,18 +14,6 @@ const replace = require('gulp-replace');
 
 const constants = require('../../test/constants.js');
 
-// by default for running the tests print debug to a file
-let debugPath = path.join(constants.tempdir, 'logs/test-debug.log');
-console.log('\n####################################################');
-console.log(util.format('# debug log: %s', debugPath));
-console.log('####################################################\n');
-
-gulp.task('clean-up', function() {
-	// some tests create temporary files or directories
-	// they are all created in the same temp folder
-	fs.removeSync(constants.tempdir);
-	return fs.ensureFileSync(debugPath);
-});
 
 // re-use the "basic-network" artifacts from fabric-samples
 // by copying them to the temp folder and override the
@@ -34,6 +22,24 @@ let samplesPath = constants.BasicNetworkSamplePath;
 let testDir = constants.BasicNetworkTestDir;
 let devmode = process.env.DEVMODE ? process.env.DEVMODE : 'true';
 let tls = process.env.TLS ? process.env.TLS : 'false';
+
+// by default for running the tests print debug to a file
+let debugPath = path.join(constants.tempdir, 'logs/test-debug.log');
+console.log('\n####################################################');
+console.log(util.format('# debug log: %s', debugPath));
+console.log(util.format('# samplesPath: %s', samplesPath));
+console.log(util.format('# testDir: %s', testDir));
+console.log(util.format('# devmode: %s', devmode));
+console.log(util.format('# tls: %s', tls));
+console.log('####################################################\n');
+console.log(path.join(__dirname,'conf/*'));
+gulp.task('clean-up', function() {
+	// some tests create temporary files or directories
+	// they are all created in the same temp folder
+	fs.removeSync(constants.tempdir);
+	return fs.ensureFileSync(debugPath);
+});
+
 gulp.task('docker-copy', ['clean-up'], function() {
 	gulp.src([
 		path.join(__dirname, 'docker-compose.yml'),
@@ -59,6 +65,8 @@ gulp.task('docker-copy', ['clean-up'], function() {
 		path.join(samplesPath, '../chaincode') // copy the empty folder only
 	], {base: samplesPath})
 		.pipe(gulp.dest(testDir));
+
+	gulp.src([path.join(__dirname, 'conf/config.yaml')]).pipe(gulp.dest(path.join(testDir,'conf')));
 
 	return gulp.src([
 		'test/fixtures/channel-init.sh'

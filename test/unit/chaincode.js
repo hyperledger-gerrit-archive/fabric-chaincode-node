@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
-
+/*global describe it beforeEach afterEach before after  */
 'use strict';
 
 const sinon = require('sinon');
@@ -13,16 +13,39 @@ const rewire = require('rewire');
 const grpc = require('grpc');
 const path = require('path');
 
-const Logger = require('../../src/lib/logger');
+const Logger = require('../../fabric-shim/shim/logger');
 
-const chaincodePath = '../../src/lib/chaincode.js';
+const chaincodePath = '../../fabric-shim/shim/chaincode.js';
 
 const _serviceProto = grpc.load({
-	root: path.join(__dirname, '../../src/lib/protos'),
+	root: path.join(__dirname, '../../fabric-shim/shim/protos'),
 	file: 'peer/chaincode_shim.proto'
 }).protos;
 
 describe('Chaincode', () => {
+
+
+	describe('Chaincode \'spi\' interface',()=>{
+		it ('should be able to call the init method',()=>{
+			let Chaincode = new (require(chaincodePath).ChaincodeInterface)();
+			Chaincode.Init();
+		});
+
+		it ('should be able to call the init method',()=>{
+			let Chaincode = new (require(chaincodePath).ChaincodeInterface)();
+			Chaincode.Invoke();
+		});
+		it('should only have the Init and Invoke',()=>{
+			let Chaincode = new (require(chaincodePath).ChaincodeInterface)();
+			const propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(Chaincode));
+
+			propNames.length.should.equal(3);
+			propNames.should.have.members(['constructor','Init','Invoke']);
+
+
+		});
+	});
+
 	describe('Command line arguments', () => {
 		it ('should return undefined for zero argument', () => {
 			let Chaincode = rewire(chaincodePath);
@@ -251,10 +274,10 @@ describe('Chaincode', () => {
 		});
 	});
 
-	describe('response', () => {
+	describe('reponse', () => {
 		let Chaincode;
 		let respProto;
-		let ChaincodeStub;
+		let Stub;
 		let mockResponse;
 		let saveClass;
 
@@ -262,7 +285,7 @@ describe('Chaincode', () => {
 			Chaincode = rewire(chaincodePath);
 
 			respProto = Chaincode.__get__('_responseProto');
-			ChaincodeStub = Chaincode.__get__('ChaincodeStub');
+			Stub = Chaincode.__get__('ChaincodeStub');
 			mockResponse = sinon.createStubInstance(respProto.Response);
 			saveClass = respProto.Response;
 
@@ -283,21 +306,21 @@ describe('Chaincode', () => {
 			let result = Chaincode.error('error msg');
 
 			expect(result.message).to.deep.equal('error msg');
-			expect(result.status).to.deep.equal(ChaincodeStub.RESPONSE_CODE.ERROR);
+			expect(result.status).to.deep.equal(Stub.RESPONSE_CODE.ERROR);
 		});
 
 		it ('should handle an empty success', () => {
 			let result = Chaincode.success();
 
 			expect(result.payload).to.deep.equal(Buffer.from(''));
-			expect(result.status).to.deep.equal(ChaincodeStub.RESPONSE_CODE.OK);
+			expect(result.status).to.deep.equal(Stub.RESPONSE_CODE.OK);
 		});
 
 		it ('should handle a success with message', () => {
 			let result = Chaincode.success('msg');
 
 			expect(result.payload).to.deep.equal('msg');
-			expect(result.status).to.deep.equal(ChaincodeStub.RESPONSE_CODE.OK);
+			expect(result.status).to.deep.equal(Stub.RESPONSE_CODE.OK);
 		});
 	});
 

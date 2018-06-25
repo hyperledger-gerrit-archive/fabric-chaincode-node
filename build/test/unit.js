@@ -16,20 +16,14 @@ const instrumenter = function(opts) {
 
 gulp.task('instrument', function() {
 	return gulp.src([
-		'src/lib/**/*.js',
+		'fabric-contract-api/**/*.js',
+		'fabric-shim/**/*.js',
 		'fabric-shim-crypto/lib/*.js'])
 		.pipe(istanbul({instrumenter: instrumenter}))
 		.pipe(istanbul.hookRequire());
 });
 
-gulp.task('compile', shell.task([
-	'npm run compile',
-], {
-	verbose: true, // so we can see the docker command output
-	ignoreErrors: false // once compile failed, throw error
-}));
-
-gulp.task('test-headless', ['clean-up', 'lint', 'compile', 'instrument', 'protos'], function() {
+gulp.task('test-headless', ['clean-up', 'lint', 'instrument', 'protos'], function() {
 	// this is needed to avoid a problem in tape-promise with adding
 	// too many listeners to the "unhandledRejection" event
 	process.setMaxListeners(0);
@@ -43,6 +37,6 @@ gulp.task('test-headless', ['clean-up', 'lint', 'compile', 'instrument', 'protos
 		}))
 		.pipe(istanbul.writeReports({
 			reporters: ['lcov', 'json', 'text',
-				'text-summary', 'cobertura']
+				'text-summary', 'cobertura','html']
 		}));
 });
