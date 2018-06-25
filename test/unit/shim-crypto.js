@@ -500,7 +500,7 @@ describe('enc-sign', () => {
 
 			getKeyStub.restore();
 		});
-
+	
 		it ('should return a new ECDSAKey', () => {
 			let mockECDSAKey = sinon.spy(() => {
 				return sinon.createStubInstance(ECDSAKey);
