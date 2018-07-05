@@ -12,6 +12,7 @@
     "test": "gulp test-headless"
   },
   "dependencies": {
+    "eslint": "^5.0.1",
     "fabric-shim": "file:src",
     "fabric-shim-crypto": "file:./fabric-shim-crypto",
     "jsrsasign": "^8.0.4"
