@@ -36,7 +36,7 @@ function go(){
     logger.debug('starting up and reading package.json at %s',jsonPath);
     if (json.contracts){
         logger.debug('Using contracts spec in the package.json');
-        // this is the declarate way of specifing the classes that should be used.
+        // this is the declaratitivee way of specifing the classes that should be used.
         if (json.contracts.classes){
             let classesToRegister = json.contracts.classes.map((value)=>{
                 let p =(path.resolve(__dirname,'..','..',value));
@@ -51,10 +51,9 @@ function go(){
         logger.debug('Using the main entry %s',json.main);
         let p = (path.resolve(__dirname,'..','..','..',json.main));
         let r = require(p);
-
-        register(r.contracts);
+        register([r]);
     } else {
-        throw new Error('Can not detect any of the idications of how this is a contact instaance');
+        throw new Error('Can not detect any of the indications of how this is a contact instaance');
     }
 
 }

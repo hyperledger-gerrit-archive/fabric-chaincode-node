@@ -33,6 +33,10 @@ class ChaincodeFromSmartContract {
         // {  namespace : { smartContractClass,  smartContract,  functionNames[] }}
         this.contracts = {};
 
+        if (!contractClasses){
+            throw new Error('Missing argument: array of contract classes');
+        }
+
         for (let smartContractClass of contractClasses){
 
             const smartContract = new(smartContractClass);

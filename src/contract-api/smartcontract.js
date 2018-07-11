@@ -24,18 +24,31 @@ class SmartContract {
             this.namespace = 'smartcontract';
         }
 
-        this.unkownFn = () => {
+        this.unknownFn = () => {
             throw new Error('You\'ve asked to invoke a function that does not exist');
         };
     }
 
-    /**
-     * Sets the fn to call if something unknown comes in
-     * @param {function} fn fn - (if null then ignored)
+    /** Is the object a function?
+     *
+     * @param {function} fn to be checked
+     * @return {boolean} true if function
      */
-    $setUnkownFn(fn){
-        if (fn){
-            this.unkownFn = fn;
+    _isFunction(fn){
+        return !!(fn && fn.constructor && fn.call && fn.apply);
+    }
+
+    /**
+     * Sets the fn to call if something unknown comes in;
+     * If function is not passed a error will be thrown
+     *
+     * @param {function} fn fn -
+     */
+    $setUnknownFn(fn){
+        if (this._isFunction(fn)){
+            this.unknownFn = fn;
+        } else {
+            throw new Error('Argument is not a function');
         }
     }
 
@@ -43,8 +56,8 @@ class SmartContract {
      * Gets the fn to call to use if nothing specified
      * @return {function} function
      */
-    $getUnkownFn(){
-        return this.unkownFn;
+    $getUnknownFn(){
+        return this.unknownFn;
     }
 
     /**
@@ -53,8 +66,10 @@ class SmartContract {
      * @param {function} fn fn to invoke prior to the transaction function being called
      */
     $setBeforeFn(fn){
-        if (fn){
+        if (this._isFunction(fn)){
             this.beforeFn = fn;
+        } else {
+            throw new Error('Argument is not a function');
         }
     }
 
