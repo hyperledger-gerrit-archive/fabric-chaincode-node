@@ -4,8 +4,6 @@
 # SPDX-License-Identifier: Apache-2.0
 */
 
-'use strict';
-
 process.env.GRPC_SSL_CIPHER_SUITES = 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384';
 
 const grpc = require('grpc');
@@ -561,7 +559,6 @@ async function handleMessage(msg, client, action) {
 				txid: msg.txid,
 				channel_id : msg.channel_id
 			};
-
 			client._stream.write(nextStateMsg);
 		}
 
@@ -646,10 +643,6 @@ function newErrorMsg(msg, state) {
 }
 
 function shortTxid(txId) {
-	if (txId.length < 8) {
-		return txId;
-	}
-
 	return txId.substring(0, 8);
 }
 
