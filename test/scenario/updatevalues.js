@@ -14,64 +14,64 @@ const util = require('util');
  */
 class UpdateValues extends SmartContract {
 
-	/** 
-	 * Sets a namespace so that the functions in this particular class can 
+    /**
+	 * Sets a namespace so that the functions in this particular class can
 	 * be separated from others.
 	 */
-	constructor() {
-		super('org.mynamespace.updates');
-		this.$setUnkownFn(this.unkownFn);
-	}
+    constructor() {
+        super('org.mynamespace.updates');
+        this.$setUnknownFn(this.unknownFn);
+    }
 
-	/** The function to invoke if something unkown comes in.
-	 * 
+    /** The function to invoke if something unkown comes in.
+	 *
 	 */
-	async uknownFn(api){
-		console.log("Big Friendly letters ->>> DON\'T PANIC")
-	}
+    async uknownFn(api){
+        throw new Error('Big Friendly letters ->>> DON\'T PANIC');
+    }
 
-	/**
+    /**
 	 * A function that will setup a starting value
 	 * Note that this is not expliclity called from init.  IF you want it called from init, then
 	 * specifiy it in the fn name when init is invoked.
-	 * 
-	 * @param {api} api 
+	 *
+	 * @param {api} api
 	 */
-	async setup(api){
-		return api.putState('dummyKey', Buffer.from('Starting Value'));
-	}
+    async setup(api){
+        return api.putState('dummyKey', Buffer.from('Starting Value'));
+    }
 
-	/**
-	 * 
-	 * @param {api} api 
+    /**
+	 *
+	 * @param {api} api
 	 * @param {int|string} newAssetValue new asset value to set
 	 */
-	async setNewAssetValue(api, newAssetValue) {
-		console.info(`Transaction ID: ${api.getTxID()}`);
-		console.info(`New Asset value will be ${newAssetValue}`);
+    async setNewAssetValue(api, newAssetValue) {
+        console.info(`Transaction ID: ${api.getTxID()}`);
+        console.info(`New Asset value will be ${newAssetValue}`);
 
-		return api.putState('dummyKey', Buffer.from(newAssetValue));
-	}
+        return api.putState('dummyKey', Buffer.from(newAssetValue));
+    }
 
-	/**
+    /**
 	 * Doubles the api if it is a number fail otherwise
-	 * @param {api} api 
+	 * @param {api} api
 	 */
-	async doubleAssetValue(api) {
-		console.info(`Transaction ID: ${api.getTxID()}`);
+    async doubleAssetValue(api) {
+        console.info(`Transaction ID: ${api.getTxID()}`);
 
-		let value = await api.getState('dummyKey')
-		if (isNaN(value)) {
-			let str = `'Need to have numerc value set to double it, ${value}`;
-			console.error(str);
-			throw new Error(str);
-		} else {
-			let v = value*2;
-			await api.putState('dummyKey', v)
-			return v;						
-		}
-	}
+        let value = await api.getState('dummyKey');
+        if (isNaN(value)) {
+            let str = `'Need to have numerc value set to double it, ${value}`;
+            console.error(str);
+            throw new Error(str);
+        } else {
+            let v = value*2;
+            await api.putState('dummyKey', v);
+            return v;
+        }
+    }
 
-};
+}
 
 module.exports = UpdateValues;

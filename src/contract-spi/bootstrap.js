@@ -34,6 +34,7 @@ function go(){
     // let's find the package.json file
     let json = require(jsonPath);
     logger.debug('starting up and reading package.json at %s',jsonPath);
+    logger.debug(json);
     if (json.contracts){
         logger.debug('Using contracts spec in the package.json');
         // this is the declaratitivee way of specifing the classes that should be used.
@@ -51,8 +52,8 @@ function go(){
         logger.debug('Using the main entry %s',json.main);
         let p = (path.resolve(__dirname,'..','..','..',json.main));
         let r = require(p);
-        register([r]);
-    } else {
+        register(r.contracts);
+    } else  {
         throw new Error('Can not detect any of the indications of how this is a contact instaance');
     }
 

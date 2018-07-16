@@ -1,7 +1,7 @@
 // if you haven't provided a 'npm start' script that runs the startChaincode app
 // then you can do so programmatically, but using the standard convetions by
 //
-require('fabric-shim').spi.startChaincode();
+// require('fabric-shim').spi.startChaincode();
 
 
 

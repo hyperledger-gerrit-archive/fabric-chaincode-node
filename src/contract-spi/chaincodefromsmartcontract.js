@@ -36,7 +36,7 @@ class ChaincodeFromSmartContract {
         if (!contractClasses){
             throw new Error('Missing argument: array of contract classes');
         }
-
+        logger.debug(contractClasses);
         for (let smartContractClass of contractClasses){
 
             const smartContract = new(smartContractClass);
