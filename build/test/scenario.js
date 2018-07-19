@@ -20,7 +20,7 @@ const fs = require('fs-extra');
 const path = require('path');
 let runSequence = require('run-sequence');
 const log = require('fancy-log');
-const test = require('../../test/base.js');
+const test = require('../../test/constants.js');
 
 
 const execFile = util.promisify(require('child_process').execFile);

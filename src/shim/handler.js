@@ -686,32 +686,29 @@ module.exports = ChaincodeSupportClient;
 // The Endpoint class represents a remote grpc or grpcs target
 //
 class Endpoint {
-	constructor(url /*string*/, opts ) {
-		let purl = new URL(url);
-		let protocol;
-		if (purl.protocol) {
-			protocol = purl.protocol.toLowerCase().slice(0, -1);
-		}
-		if (protocol === 'grpc') {
-			this.addr = purl.host;
-			this.creds = grpc.credentials.createInsecure();
-		} else if (protocol === 'grpcs') {
-			if(!opts || !opts.pem || !(typeof opts.pem === 'string')) {
-				throw new Error('PEM encoded certificate is required.');
-			}
-			if(!opts.key || !(typeof opts.key === 'string')) {
-				throw new Error('encoded Private key is required.');
-			}
-			if(!opts.cert || !(typeof opts.cert === 'string')) {
-				throw new Error('encoded client certificate is required.');
-			}
-			this.addr = purl.host;
-			this.creds = grpc.credentials.createSsl(Buffer.from(opts.pem), Buffer.from(opts.key,'base64'), Buffer.from(opts.cert,'base64'));
-		} else {
-			let error = new Error();
-			error.name = 'InvalidProtocol';
-			error.message = 'Invalid protocol: ' + protocol + '.  URLs must begin with grpc:// or grpcs://';
-			throw error;
-		}
-	}
+    constructor(url /*string*/, opts ) {
+        let purl = new URL(url);
+
+        if (purl.protocol === 'grpc:') {
+            this.addr = purl.host;
+            this.creds = grpc.credentials.createInsecure();
+        } else if (purl.protocol === 'grpcs:') {
+            if(!opts || !opts.pem || !(typeof opts.pem === 'string')) {
+                throw new Error('PEM encoded certificate is required.');
+            }
+            if(!opts.key || !(typeof opts.key === 'string')) {
+                throw new Error('encoded Private key is required.');
+            }
+            if(!opts.cert || !(typeof opts.cert === 'string')) {
+                throw new Error('encoded client certificate is required.');
+            }
+            this.addr = purl.host;
+            this.creds = grpc.credentials.createSsl(Buffer.from(opts.pem), Buffer.from(opts.key,'base64'), Buffer.from(opts.cert,'base64'));
+        } else {
+            let error = new Error();
+            error.name = 'InvalidProtocol';
+            error.message = 'Invalid protocol: ' + purl.protocol + '  URLs must begin with grpc:// or grpcs://';
+            throw error;
+        }
+    }
 }

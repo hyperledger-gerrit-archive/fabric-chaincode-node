@@ -3,7 +3,7 @@
 // SDK Library to asset with writing the logic
 
 // imaginee the next line to be
-// const SmartContract = require('fabric-contract-api').SmartContract;
+
 const SmartContract = require('fabric-shim').contractapi.SmartContract;
 
 // Business logic (well just util but still it's general purpose logic)

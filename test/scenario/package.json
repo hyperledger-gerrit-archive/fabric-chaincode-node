@@ -15,6 +15,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fabric-shim": "1.2.0-snapshot-test"
+    "fabric-shim": "1.2.0-test"
   }
 }

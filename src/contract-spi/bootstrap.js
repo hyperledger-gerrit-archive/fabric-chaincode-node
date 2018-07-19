@@ -52,7 +52,11 @@ function go(){
         logger.debug('Using the main entry %s',json.main);
         let p = (path.resolve(__dirname,'..','..','..',json.main));
         let r = require(p);
-        register(r.contracts);
+        if (r.contracts){
+            register(r.contracts);
+        }else {
+            register([r]);
+        }
     } else  {
         throw new Error('Can not detect any of the indications of how this is a contact instaance');
     }

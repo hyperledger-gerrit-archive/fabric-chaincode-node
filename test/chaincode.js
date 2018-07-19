@@ -1,3 +1,8 @@
+/*
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+*/
 'use strict';
 
 const _ = require('lodash');
@@ -16,9 +21,10 @@ class Chaincode /*extends Exec */ {
     constructor(){
 
     }
-    //docker exec cli peer chaincode invoke <%= options.tlsArgs %> -C <%= options.channelName %> -n <%= options.ccName %> -c \'{"Args":["org.mynamespace.removes_getAssetValue"]}\' 2>&1
+
     /**
      * @param {String} args options to pass to invoke
+     * @return
      */
     invoke(args) {
         let options= {

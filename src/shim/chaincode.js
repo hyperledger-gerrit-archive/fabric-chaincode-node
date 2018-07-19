@@ -14,7 +14,7 @@ const X509 = require('x509');
 const jsrsasign = require('jsrsasign');
 const Logger = require('./logger');
 
-const logger = Logger.getLogger('lib/chaincode.js');
+const logger = Logger.getLogger('shim/chaincode.js');
 const Handler = require('./handler');
 const Stub = require('./stub');
 const fs = require('fs');
@@ -392,7 +392,7 @@ module.exports.ClientIdentity = ClientIdentity;
 
 // expose the Stub and Iterators to allow ability to write unit tests for users of fabric chaincode node
 module.exports.Stub = Stub;
-module.exports.Iterators = Iterators;
-module.exports.HistoryQueryIterator = Iterators.HistoryQueryIterator;
-module.exports.StateQueryIterator = Iterators.StateQueryIterator;
+module.exports.Iterators = require('./iterators.js');
+module.exports.HistoryQueryIterator = require('./iterators.js').HistoryQueryIterator;
+module.exports.StateQueryIterator = require('./iterators.js').StateQueryIterator;
 module.exports.ChaincodeInterface = ChaincodeInterface;

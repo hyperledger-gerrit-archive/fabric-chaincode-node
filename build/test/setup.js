@@ -14,11 +14,12 @@ const replace = require('gulp-replace');
 
 const constants = require('../../test/constants.js');
 
+
 // re-use the "basic-network" artifacts from fabric-samples
 // by copying them to the temp folder and override the
 // docker-compose.yml's content to fit the needs of the test environment
-let samplesPath = test.BasicNetworkSamplePath;
-let testDir = test.BasicNetworkTestDir;
+let samplesPath = constants.BasicNetworkSamplePath;
+let testDir = constants.BasicNetworkTestDir;
 let devmode = process.env.DEVMODE ? process.env.DEVMODE : 'true';
 let tls = process.env.TLS ? process.env.TLS : 'false';
 
@@ -33,19 +34,12 @@ console.log(util.format('# tls: %s', tls));
 console.log('####################################################\n');
 console.log(path.join(__dirname,'conf/*'));
 gulp.task('clean-up', function() {
-	// some tests create temporary files or directories
-	// they are all created in the same temp folder
-	fs.removeSync(constants.tempdir);
-	return fs.ensureFileSync(debugPath);
+    // some tests create temporary files or directories
+    // they are all created in the same temp folder
+    fs.removeSync(constants.tempdir);
+    return fs.ensureFileSync(debugPath);
 });
 
-// re-use the "basic-network" artifacts from fabric-samples
-// by copying them to the temp folder and override the
-// docker-compose.yml's content to fit the needs of the test environment
-let samplesPath = constants.BasicNetworkSamplePath;
-let testDir = constants.BasicNetworkTestDir;
-let devmode = process.env.DEVMODE ? process.env.DEVMODE : 'true';
-let tls = process.env.TLS ? process.env.TLS : 'false';
 gulp.task('docker-copy', ['clean-up'], function() {
     gulp.src([
         path.join(__dirname, 'docker-compose.yml'),

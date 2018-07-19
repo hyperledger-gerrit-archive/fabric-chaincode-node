@@ -107,7 +107,7 @@ describe('',()=>{
         });
 
         it('should correctly create valid chaincode instance',()=>{
-
+            SCBeta.prototype.fred='fred';
             let cc = new ChaincodeFromSmartContract([SCAlpha,SCBeta]);
 
             // get the contracts that have been defined

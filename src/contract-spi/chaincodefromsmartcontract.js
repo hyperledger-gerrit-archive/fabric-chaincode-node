@@ -38,7 +38,7 @@ class ChaincodeFromSmartContract {
         }
         logger.debug(contractClasses);
         for (let smartContractClass of contractClasses){
-
+            
             const smartContract = new(smartContractClass);
             if (!(smartContract instanceof SmartContract)) {
                 throw new Error(`invalid smart contract instance ${smartContract}`);
