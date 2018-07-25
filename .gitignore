@@ -18,3 +18,4 @@ test/.DS_Store
 .idea
 yarn.lock
 .nyc_output
+.gitreview

@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es6",
+      "sourceMap": true,
+      "types" : [
+        "node",
+        "chai",
+        "mocha",
+        "sinon",
+        "sinon-chai"
+    ]},
+    "exclude": [
+        "node_modules"
+    ]
+}
