@@ -636,7 +636,7 @@ describe('Stub', () => {
 				function CustomEvent () {
 					this.setEventName = setEventNameSpy;
 					this.setPayload = setPayloadSpy;
-				};
+				}
 
 				let eventProtoStub = {
 					ChaincodeEvent: CustomEvent

@@ -21,24 +21,6 @@ gulp.task('instrument', function() {
 		.pipe(istanbul.hookRequire());
 });
 
-gulp.task('mocha', ['clean-up', 'lint', 'instrument', 'protos'], function() {
-	// this is needed to avoid a problem in tape-promise with adding
-	// too many listeners to the "unhandledRejection" event
-	process.setMaxListeners(0);
-
-	return gulp.src([
-		'test/typescript/**/*.ts'
-	])
-		.pipe(mocha({
-			reporter: 'list',
-			require: ['ts-node/register']
-		}))
-		.pipe(istanbul.writeReports({
-			reporters: ['lcov', 'json', 'text',
-				'text-summary', 'cobertura']
-		}));
-});
-
 gulp.task('test-headless', ['clean-up', 'lint', 'instrument', 'protos'], function() {
 	// this is needed to avoid a problem in tape-promise with adding
 	// too many listeners to the "unhandledRejection" event

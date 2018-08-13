@@ -1,3 +1,8 @@
+/*
+ Copyright 2018 IBM All Rights Reserved.
+
+ SPDX-License-Identifier: Apache-2.0
+*/
 {
     "compilerOptions": {
       "removeComments": false,
@@ -11,13 +16,9 @@
       "moduleResolution": "node",
       "module": "commonjs",
       "target": "es6",
+      "rootDir": ".",
       "outDir": "dist",
       "baseUrl": ".",
-      "paths": {
-        "*": [
-          "node_modules/*"
-        ]
-      }
     },
     "files": [
         "index.d.ts"
@@ -27,6 +28,6 @@
       "tabSize": 2
     },
     "exclude": [
-        "node_modules"
-    ]
+      "node_modules"
+  ]
   }

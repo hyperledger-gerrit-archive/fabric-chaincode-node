@@ -19,3 +19,4 @@ test/.DS_Store
 yarn.lock
 .nyc_output
 .gitreview
+test/typescript/out

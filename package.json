@@ -10,7 +10,10 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "gulp test-headless",
-    "testMocha": "gulp mocha"
+    "pretest": "npm run lint & npm run compile",
+    "compile": "tsc -p ./test/typescript & tsc -p ./src/types",
+    "tslint": "tslint",
+    "lint": "npm run tslint './test/typescript/*.ts' './src/types/*.d.ts'"
   },
   "dependencies": {
     "@types/winston": "^2.3.9",
@@ -26,9 +29,10 @@
     "@types/sinon-chai": "3.2.0",
     "chai": "^4.1.1",
     "chai-as-promised": "^7.1.1",
+    "codelyzer": "4.4.3",
     "eslint": "3.17.1",
     "fs-extra": "^4.0.1",
-    "gulp": "^3.0.0",
+    "gulp": "^3.9.1",
     "gulp-debug": "^3.1.0",
     "gulp-eslint": "^4.0.0",
     "gulp-istanbul": "^1.1.2",
@@ -47,7 +51,8 @@
     "sinon-test": "^2.2.0",
     "tap-colorize": "^1.2.0",
     "ts-node": "^7.0.0",
-    "typescript": "^2.9.2",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1",
     "typescript-tools": "^0.3.1"
   }
 }

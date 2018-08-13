@@ -1,17 +1,24 @@
-// Type definitions for fabric-shim 1.1.0-alpha 
+/*
+ Copyright 2018 IBM All Rights Reserved.
 
+ SPDX-License-Identifier: Apache-2.0
+
+*/
 declare module 'fabric-shim' {
 
     import { LoggerInstance } from 'winston';
+
     import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
-    
-    export function error(...args: any[]): ErrorResponse;
 
-    export function newLogger(name: string): LoggerInstance;
+    export class Shim {
+        static error(msg: Buffer): ErrorResponse;
 
-    export function start(chaincode: ChaincodeInterface): any;
+        static newLogger(name: string): LoggerInstance;
 
-    export function success(payload?: Buffer): SuccessResponse;
+        static start(chaincode: ChaincodeInterface): any;
+
+        static success(payload?: Buffer): SuccessResponse;
+    }
 
     interface SuccessResponse extends ChaincodeResponse {
     }
@@ -46,34 +53,34 @@ declare module 'fabric-shim' {
         proposal: Proposal;
     }
 
-    type Proposal = {
+    interface Proposal {
         header: Header;
         payload: ChaincodeProposalPayload;
-    };
+    }
 
-    type Header = {
+    interface Header {
         channel_header: ChannelHeader;
         signature_header: SignatureHeader;
-    };
+    }
 
-    type ChannelHeader = {
+    interface ChannelHeader {
         type: ChannelHeaderType;
         version: number;
         timestamp: any;
         channel_id: string;
         tx_id: string;
         epoch: number;
-    };
+    }
 
-    type SignatureHeader = {
+    interface SignatureHeader {
         creator: ProposalCreator;
         nonce: Buffer;
-    };
+    }
 
-    type ChaincodeProposalPayload = {
+    interface ChaincodeProposalPayload {
         input: Buffer;
         transientMap: Map<string, Buffer>;
-    };
+    }
 
     enum ChannelHeaderType {
         MESSAGE = 0,
@@ -85,33 +92,19 @@ declare module 'fabric-shim' {
         CHAINCODE_PACKAGE,
     }
 
-    type ChaincodeResponse = {
+    interface ChaincodeResponse {
         status: number;
         message: string;
         payload: Buffer;
-    };
-
-    // export class MockStub extends Stub {
-    //     mockTransactionStart(txid: string): void
-
-    //     mockTransactionEnd(uuid: string): void
-
-    //     mockInit(uuid: string, args: string[]): Promise<ChaincodeResponse>
-
-    //     mockInvoke(uuid: string, args: string[]): Promise<ChaincodeResponse>
-
-    //     mockPeerChaincode(invokableChaincodeName: string, otherStub: MockStub): void
-
-    //     mockInvokeWithSignedProposal(uuid: string, args: string[], sp: SignedProposal): Promise<ChaincodeResponse>
-
-    //     setSignedProposal(sp: SignedProposal): void
-
-    //     setTxTimestamp(timestamp: Timestamp): void;
-    // }
-
-    type collection = string;
+    }
 
     export class Stub {
+        static RESPONSE_CODE: {
+            ERROR: number;
+            ERRORTHRESHOLD: number;
+            OK: number;
+        };
+        
         constructor(client: any, channel_id: any, txId: any, chaincodeInput: any, signedProposal?: any);
 
         createCompositeKey(objectType: string, attributes: string[]): string;
@@ -136,15 +129,17 @@ declare module 'fabric-shim' {
 
         getState(key: string): Promise<Buffer>;
 
-        getPrivateData(collection: collection, key: string): Promise<Buffer>;
+        getPrivateData(collection: string, key: string): Promise<Buffer>;
 
-        putPrivateData(collection: collection, key: string, value: Buffer): Promise<any>; // TODO promise contains what?????
-        deletePrivateData(collection: collection, key: string): Promise<any>; // TODO promise contains what?????
-        getPrivateDataByRange(collection: collection, startKey: string, endKey: string): Promise<Iterators.StateQueryIterator>;
+        putPrivateData(collection: string, key: string, value: Buffer): Promise<void>;
 
-        getPrivateDataByPartialCompositeKey(collection: collection, objectType: string, attributes: string[]): Promise<Iterators.StateQueryIterator>;
+        deletePrivateData(collection: string, key: string): Promise<void>;
 
-        getPrivateDataQueryResult(collection: collection, query: string): Promise<Iterators.StateQueryIterator>;
+        getPrivateDataByRange(collection: string, startKey: string, endKey: string): Promise<Iterators.StateQueryIterator>;
+
+        getPrivateDataByPartialCompositeKey(collection: string, objectType: string, attributes: string[]): Promise<Iterators.StateQueryIterator>;
+
+        getPrivateDataQueryResult(collection: string, query: string): Promise<Iterators.StateQueryIterator>;
 
         getStateByPartialCompositeKey(objectType: string, attributes: string[]): Promise<Iterators.StateQueryIterator>;
 
@@ -160,31 +155,23 @@ declare module 'fabric-shim' {
 
         invokeChaincode(chaincodeName: string, args: Buffer[], channel: string): Promise<ChaincodeResponse>;
 
-        putState(key: string, value: Buffer): Promise<any>; // TODO promise contains what?????
+        putState(key: string, value: Buffer): Promise<void>;
+
         setEvent(name: string, payload: Buffer): void;
 
         splitCompositeKey(compositeKey: string): SplitCompositekey;
-
-        static RESPONSE_CODE: {
-            ERROR: number;
-            ERRORTHRESHOLD: number;
-            OK: number;
-        };
-
     }
 
     interface SplitCompositekey {
-        objectType: string,
-        attributes: string[]
+        objectType: string;
+        attributes: string[];
     }
-
 
     interface ChaincodeInterface {
-        Init(stub: Stub): Promise<ChaincodeResponse>
+        Init(stub: Stub): Promise<ChaincodeResponse>;
 
-        Invoke(stub: Stub): Promise<ChaincodeResponse>
+        Invoke(stub: Stub): Promise<ChaincodeResponse>;
     }
-
 
     export namespace Iterators {
 
@@ -205,13 +192,13 @@ declare module 'fabric-shim' {
     }
 
     interface NextResult {
-        value: KV,
-        done: boolean
+        value: KV;
+        done: boolean;
     }
 
     interface NextKeyModificationResult {
-        value: KeyModification,
-        done: boolean
+        value: KeyModification;
+        done: boolean;
     }
 
     interface X509 {
@@ -258,12 +245,17 @@ declare module 'fabric-shim' {
 
     export class HistoryQueryIterator {
         constructor(handler: any, channel_id: any, txID: any, response: any, type: any);
+
         next(): Promise<NextKeyModificationResult>;
-        close(key: string): Promise<any>;
+
+        close(): Promise<any>;
     }
+
     export class StateQueryIterator {
         constructor(handler: any, channel_id: any, txID: any, response: any, type: any);
+
         next(): Promise<NextResult>;
-        close(key: string): Promise<any>;
+
+        close(): Promise<any>;
     }
 }
