@@ -16,6 +16,7 @@ const instrumenter = function(opts) {
 
 gulp.task('instrument', function() {
 	return gulp.src([
+		'fabric-contract-api/lib/**/*.js',
 		'fabric-shim/lib/**/*.js',
 		'fabric-shim-crypto/lib/*.js'])
 		.pipe(istanbul({instrumenter: instrumenter}))
@@ -43,6 +44,7 @@ gulp.task('test-headless', ['clean-up', 'lint', 'compile', 'instrument', 'protos
 		}))
 		.pipe(istanbul.writeReports({
 			reporters: ['lcov', 'json', 'text',
-				'text-summary', 'cobertura']
-		}));
+				'text-summary', 'cobertura','html']
+		}))
+		.pipe(istanbul.enforceThresholds({ thresholds: { global: 100 } }));;
 });

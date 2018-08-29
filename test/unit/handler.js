@@ -759,6 +759,23 @@ describe('Handler', () => {
 					expect(mockStream.write.calledOnce).to.be.ok;
 					expect(mockStream.end.calledOnce).to.be.ok;
 				});
+				it ('should end the  with error', () => {
+					let eventReg = {};
+					let mockEventEmitter = (event, cb) => {
+						eventReg[event] = cb;
+					};
+
+					let mockStream = {write: sinon.stub(), on: mockEventEmitter, end: sinon.stub()};
+
+					let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+					handler._client.register = sinon.stub().returns(mockStream);
+					handler.chat('some starter message');
+					let error = new Error();
+					eventReg['error'](error);
+
+					expect(mockStream.write.calledOnce).to.be.ok;
+					expect(mockStream.end.calledOnce).to.be.ok;
+				});
 			});
 		});
 

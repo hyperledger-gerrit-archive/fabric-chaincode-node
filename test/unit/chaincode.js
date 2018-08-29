@@ -23,6 +23,28 @@ const _serviceProto = grpc.load({
 }).protos;
 
 describe('Chaincode', () => {
+
+	describe('Chaincode \'spi\' interface',()=>{
+		it ('should be able to call the init method',()=>{
+			let Chaincode = new (require(chaincodePath).ChaincodeInterface)();
+			Chaincode.Init();
+		});
+
+		it ('should be able to call the init method',()=>{
+			let Chaincode = new (require(chaincodePath).ChaincodeInterface)();
+			Chaincode.Invoke();
+		});
+		it('should only have the Init and Invoke',()=>{
+			let Chaincode = new (require(chaincodePath).ChaincodeInterface)();
+			const propNames = Object.getOwnPropertyNames(Object.getPrototypeOf(Chaincode));
+
+			propNames.length.should.equal(3);
+			propNames.should.have.members(['constructor','Init','Invoke']);
+
+
+		});
+	});
+
 	describe('Command line arguments', () => {
 		it ('should return undefined for zero argument', () => {
 			let Chaincode = rewire(chaincodePath);
