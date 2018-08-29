@@ -16,25 +16,30 @@ const instrumenter = function(opts) {
 
 gulp.task('instrument', function() {
 	return gulp.src([
+		'fabric-contract-api/lib/**/*.js',
 		'fabric-shim/lib/**/*.js',
 		'fabric-shim-crypto/lib/*.js'])
 		.pipe(istanbul({instrumenter: instrumenter}))
 		.pipe(istanbul.hookRequire());
 });
 
-gulp.task('compile', shell.task([
-	'npm run compile',
+gulp.task('typescript_check', shell.task([
+	// 'npm run compile --prefix fabric-contract-api'
+	'npm run compile --prefix fabric-shim',
 ], {
 	verbose: true, // so we can see the docker command output
 	ignoreErrors: false // once compile failed, throw error
 }));
 
-gulp.task('test-headless', ['clean-up', 'lint', 'compile', 'instrument', 'protos'], function() {
+gulp.task('test-headless', ['clean-up', 'lint', 'typescript_check', 'instrument', 'protos'], function() {
 	// this is needed to avoid a problem in tape-promise with adding
 	// too many listeners to the "unhandledRejection" event
 	process.setMaxListeners(0);
 
 	return gulp.src([
+		'fabric-contract-api/test/**/*.js',
+		'fabric-shim-crypto/test/**/*.js',
+		'fabric-shim/test/unit/**/*.js',
 		'test/unit/**/*.js',
 		'!test/unit/util.js'
 	])
@@ -43,6 +48,7 @@ gulp.task('test-headless', ['clean-up', 'lint', 'compile', 'instrument', 'protos
 		}))
 		.pipe(istanbul.writeReports({
 			reporters: ['lcov', 'json', 'text',
-				'text-summary', 'cobertura']
-		}));
+				'text-summary', 'cobertura','html']
+		}))
+		.pipe(istanbul.enforceThresholds({ thresholds: { global: 100 } }));;
 });
