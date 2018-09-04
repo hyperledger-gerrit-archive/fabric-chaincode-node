@@ -41,7 +41,7 @@ For 1.3 Fabric, please also add in `fabric-shim` as a dependency, and `node star
 
 ```
   "scripts": {
-    "start": "startChaincode",
+    "start": "fabric-chaincode-node start",
     "test": "nyc mocha test",
     ....
   },
@@ -131,7 +131,7 @@ Note that ALL the functions defined in these modules will be called by the clien
 - The constructor contains a 'namespace' to help indentifiy the sets of functions
 
 
-### 5: Alteratnive ways of specifing the contracts
+### 5: Alteratnative ways of specifing the contracts
 
 *package.json*
 
@@ -166,7 +166,7 @@ $ npx startChaincode --peer.address localhost:7052
 Each of the functions can be invoked with arbitary arguements. The name of the function is of the format
 
 ```
-[namespace_]functionname
+[namespace.]functionname
 ```
 
 If a namespace is given in the constructor then it will be prefixed separated by a _ (underscore)
@@ -175,14 +175,14 @@ If a namespace is given in the constructor then it will be prefixed separated by
 
 ```
 $ peer chaincode install --lang node --name mycontract --version v0 --path ~/chaincode-examples
-$ peer chaincode instantiate --orderer localhost:7050 --channelID mychannel --lang node --name mycontract --version v0 -c '{"Args":["org.mynamespace.updates_setup"]}'
+$ peer chaincode instantiate --orderer localhost:7050 --channelID mychannel --lang node --name mycontract --version v0 -c '{"Args":["org.mynamespace.updates.setup"]}'
 ```
 
 Will get things working...
 Then you can invoke the chaincode via this command.
 
 ```
-$ peer chaincode invoke --orderer localhost:7050 --channelID mychannel -c '{"Args":["org.mynamespace.removes_getAssetValue"]}' -n mycontract4  
+$ peer chaincode invoke --orderer localhost:7050 --channelID mychannel -c '{"Args":["org.mynamespace.removes.getAssetValue"]}' -n mycontract4  
 ```
 
 
@@ -201,7 +201,6 @@ For example
 	 */
 	constructor() {
 		super('org.mynamespace.updates');
-		this.$setUnkownFn(this.unkownFn);
 	}
 
 	/** The function to invoke if something unkown comes in.
@@ -212,8 +211,58 @@ For example
         throw new Error('Big Friendly letters ->>> DON\'T PANIC')
 	}
 
+	async beforeTransaction(ctx){
+		console.info(`Transaction ID: ${ctx.stub.getTxID()}`);
+	}
+
+	async afterTransaction(ctx,result){
+		// log result to preferred log implementation
+		// emit events etc...
+	}
+
 ```
 
+### Structure of the Tranaction Context
+
+In Fabric 1.2, there is a *stub* api that provides chaincode with functionality. 
+No functionality has been removed, but a new approach to providing abstractions on this to faciliate programming.
+
+*user additions*:  additional properties can be added to the object to support for example common handling of the data serialization.
+
+The context object contains 
+
+- `ctx.stub`  the same stub instance as in earlier versions for compatibility
+- `ctx.identity` and instance of the Client Identity object 
+
+You are at liberty to create a subclass of the Context to provide additional functions, or per-transaction context storage. For example
+
+```
+	/**
+	 * Custom context for use within this contract
+	 */
+	createContext(){
+		return new ScenarioContext();
+	}
+```
+
+and the Context class itself is 
+
+```
+const { Context } = require('fabric-contract-api');
+
+class ScenarioContext extends Context{
+
+	constructor(){
+		super();
+	}
+
+	generateKey(){
+		return this.stub.createCompositeKey('type',['keyvalue']);
+	}
+
+}
+
+```
 
 ## Node.js Chaincode API rules
 
@@ -257,28 +306,8 @@ In any subsequent innvocation, the value would be seen to be updated.
 Note that if you have use any Flux archiecture implications such as Redux, the above restrictions will be familar. 
 
 
-### Structure of the Tranaction Context
 
-In Fabric 1.2, there is a *stub* api that provides chaincode with functionality. 
-No functionality has been removed, but a new approach to providing abstractions on this to faciliate programming.
 
-*user additions*:  additional properties can be added to the object to support for example common handling of the data serialization.
-
-The context object contains 
-
-- `ctx.stub`  the same stub instance as in earlier versions for compatibility
-- `ctx.identity` and instance of the Client Identity object 
-
-### Extending the transaction context
-
-If for example, we have a set of utilities functions that help with marhsalling data to and from the world state, we can 'inject' that into the context as 
-follows
-
-```
-        this.setBeforeFn = (ctx)=>{
-            ctx.datautil = new DataModel(ctx);
-        };
-```
 
 
 

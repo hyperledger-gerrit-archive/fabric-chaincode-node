@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 */
-
+/* eslint-disable */
 const jsrsa = require('jsrsasign');
 const KEYUTIL = jsrsa.KEYUTIL;
 const ECDSA = jsrsa.ECDSA;
