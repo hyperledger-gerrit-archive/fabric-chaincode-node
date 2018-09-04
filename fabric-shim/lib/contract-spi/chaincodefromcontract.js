@@ -7,10 +7,10 @@
 
 const shim = require('../chaincode');
 const Contract = require('fabric-contract-api').Contract;
-const stub = require('../stub');
+
 const Logger = require('../logger');
 const logger = Logger.getLogger('contracts-spi/chaincodefromcontract.js');
-const util = require('util');
+
 const ClientIdentity = require('../chaincode').ClientIdentity;
 
 /**
@@ -98,31 +98,31 @@ class ChaincodeFromContract {
 				throw new Error(`Namespace is not known :${ns}:`);
 			}
 
+			let contractInstance = this.contracts[ns].contract;
+			let ctx = this.createCtx(stub);
+
 			const functionExists = this.contracts[ns].functionNames.indexOf(fn) !== -1;
 			if (functionExists) {
 
-				let contractInstance = this.contracts[ns].contract;
-				let ctx = this.createCtx(stub);
-
-				let afterFn = contractInstance.getAfterFn();
-				let beforeFn = contractInstance.getBeforeFn();
-
-				if (beforeFn){
-					ctx = beforeFn(ctx);
+				let beforeHooks = contractInstance.getBeforeHooks();
+				if (beforeHooks.length>1){
+					ctx = await this._executeHooks(beforeHooks,ctx);
 				}
 
 				// use the spread operator to make this pass the arguments seperately not as an array
 				const result = await contractInstance[fn](ctx,...params);
 
-				if (afterFn){
-					afterFn(ctx,result);
+				let afterHooks = contractInstance.getAfterHooks();
+				if (afterHooks.length >1){
+					ctx = await this._executeHooks(afterHooks,ctx,result);
 				}
+
 				return shim.success(result);
 			} else {
-				throw new Error(`No contract function ${fn}`);
+				let unknownHook = contractInstance.getUnknownHook();
+				await unknownHook(ctx);
 			}
 		} catch (error) {
-
 			return shim.error(error);
 		}
 	}
@@ -134,6 +134,23 @@ class ChaincodeFromContract {
 		};
 		return ctx;
 	}
+
+	/** Execute each hook in sequence passing on the ctx to the next
+	 * Each hook is marked as async, but the next hook is only executed when the previous one has resolvedl
+	 * any errors immediatebly thrown
+	 *
+	 * @param {fn[]} hooks array of functions to call
+	 * @param {Context} ctx transactional context
+	 * @param {...args} args arguments to pass to the function to call.
+	 */
+	async _executeHooks(hooks,ctx,...args){
+		// type of these has been checked on the way in
+		// so assume these are fns, and call
+		for (let fn of hooks) {
+			ctx = await fn(ctx,...args);
+		}
+	}
+
 }
 
 module.exports = ChaincodeFromContract;

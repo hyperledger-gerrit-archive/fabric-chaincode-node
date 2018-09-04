@@ -6,8 +6,6 @@
 
 'use strict';
 
-const ClientIdentity = require('fabric-shim').ClientIdentity;
-
 /**
  * The main Contact class that all code working within a Chaincode Container must be extending. Provides indentification
  * and helper functions to work with
@@ -27,9 +25,15 @@ class Contract {
 		}
 		this.metadata = metadata;
 
-		this.unknownFn = () => {
+		this.unknownHook = () => {
 			throw new Error('You\'ve asked to invoke a function that does not exist');
 		};
+
+		this.beforeHooks = [];
+		this.afterHooks = [];
+
+		this.hooksSet = { before:false, after:false, unknown:false};
+
 	}
 
 	/** Is the object a function?
@@ -47,9 +51,15 @@ class Contract {
      *
      * @param {function} fn fn -
      */
-	setUnknownFn(fn){
-		if (this._isFunction(fn)){
-			this.unknownFn = fn;
+	setUnknownHook(hook){
+		if (this.hooksSet.unknown){
+			throw new Error('Unknown hook can not be updated once set');
+		} else {
+			this.hooksSet.unknown=true;
+		}
+
+		if (this._isFunction(hook)){
+			this.unknownHook = hook;
 		} else {
 			throw new Error('Argument is not a function');
 		}
@@ -59,18 +69,44 @@ class Contract {
      * Gets the fn to call to use if nothing specified
      * @return {function} function
      */
-	getUnknownFn(){
-		return this.unknownFn;
+	getUnknownHook(){
+		return this.unknownHook;
 	}
 
 	/**
-     * This is invoked before each function
+     * These are the hooks that are invoked before each transaction. An array of functions should be passed,
+	 * and they will be executed in order.
+	 *
+	 * Each function should have the prototype
+	 *
+	 *    async <name> (Context ctx){
+	 *       return ctx
+	 *    }
      *
-     * @param {function} fn fn to invoke prior to the transaction function being called
+     * @param {function[]} hooks array of fn to invoke prior to the transaction function being called
      */
-	setBeforeFn(fn){
-		if (this._isFunction(fn)){
-			this.beforeFn = fn;
+	setBeforeHooks(hooks){
+
+		if (this.hooksSet.before){
+			throw new Error('Before hooks can not be updated once set');
+		} else {
+			this.hooksSet.before=true;
+		}
+
+		if( !Array.isArray(hooks)){
+			throw new Error('Argument should be an array of functions');
+		}
+
+		let allValid = hooks.reduce((sofarvalid,current)=>{
+			if (sofarvalid){
+				return this._isFunction(current);
+			} else {
+				return false;
+			}
+		}, true);
+
+		if (allValid){
+			this.beforeHooks = hooks;
 		} else {
 			throw new Error('Argument is not a function');
 		}
@@ -81,8 +117,8 @@ class Contract {
      *
      * @return {function} fn
      */
-	getBeforeFn(){
-		return this.beforeFn;
+	getBeforeHooks(){
+		return this.beforeHooks;
 	}
 
 	/**
@@ -90,18 +126,43 @@ class Contract {
      *
      * @return {function} fn
      */
-	getAfterFn(){
-		return this.afterFn;
+	getAfterHooks(){
+		return this.afterHooks;
 	}
 
 	/**
-     * This is invoked after each function
+     * These are the hooks that are invoked before each transaction. An array of functions should be passed,
+	 * and they will be executed in order.
+	 *
+	 * Each function should have the prototype
+	 *
+	 *    async <name> (Context ctx){
+	 *       return ctx
+	 *    }
      *
-     * @param {function} fn fn to invoke after the transaction function being called
+     * @param {function[]} hooks array of fn to invoke prior to the transaction function being called
      */
-	setAfterFn(fn){
-		if (this._isFunction(fn)){
-			this.afterFn = fn;
+	setAfterHooks(hooks){
+		if (this.hooksSet.after){
+			throw new Error('After hooks can not be updated once set');
+		} else {
+			this.hooksSet.after=true;
+		}
+
+		if( !Array.isArray(hooks)){
+			throw new Error('Argument should be an array of functions');
+		}
+
+		let allValid = hooks.reduce((sofarvalid,current)=>{
+			if (sofarvalid){
+				return this._isFunction(current);
+			} else {
+				return false;
+			}
+		}, true);
+
+		if (allValid){
+			this.afterHooks = hooks;
 		} else {
 			throw new Error('Argument is not a function');
 		}

@@ -2,9 +2,6 @@
 
 const {Contract} = require('fabric-contract-api');
 
-// Business logic (well just util but still it's general purpose logic)
-const util = require('util');
-
 /**
  * Support the Updating of values within the SmartContract
  */
@@ -16,13 +13,13 @@ class UpdateValues extends Contract {
 	 */
 	constructor() {
 		super('org.mynamespace.updates');
-		this.setUnknownFn(this.unknownFn);
+		this.setUnknownHook(this.unknown);
 	}
 
 	/** The function to invoke if something unkown comes in.
 	 *
 	 */
-	async uknownFn(ctx){
+	async unknown(ctx){    //eslint-disable-line
 		throw new Error('Big Friendly letters ->>> DON\'T PANIC');
 	}
 
@@ -40,8 +37,8 @@ class UpdateValues extends Contract {
 	 * @param {int|string} newAssetValue new asset value to set
 	 */
 	async setNewAssetValue({stub},newAssetValue) {
-		console.info(`Transaction ID: ${stub.getTxID()}`);
-		console.info(`New Asset value will be ${newAssetValue}`);
+		console.info(`Transaction ID: ${stub.getTxID()}`);   //eslint-disable-line
+		console.info(`New Asset value will be ${newAssetValue}`); //eslint-disable-line
 
 		return stub.putState('dummyKey', Buffer.from(newAssetValue));
 	}
@@ -51,12 +48,12 @@ class UpdateValues extends Contract {
 
 	 */
 	async doubleAssetValue({stub}) {
-		console.info(`Transaction ID: ${stub.getTxID()}`);
+		console.info(`Transaction ID: ${stub.getTxID()}`);//eslint-disable-line
 
 		let value = await stub.getState('dummyKey');
 		if (isNaN(value)) {
 			let str = `'Need to have numerc value set to double it, ${value}`;
-			console.error(str);
+			console.error(str);//eslint-disable-line
 			throw new Error(str);
 		} else {
 			let v = value*2;

@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: Apache-2.0
 */
 
+/* eslint-disable */
+
 const ecdsaKey = require('../lib/ecdsa-key.js');
 
 const jsrsa = require('jsrsasign');
