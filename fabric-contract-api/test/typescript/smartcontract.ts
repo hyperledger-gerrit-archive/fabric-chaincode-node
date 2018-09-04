@@ -5,47 +5,57 @@
 
 */
 
-import { Contract, Context, IntermediaryFn } from 'fabric-contract-api';
+import { Contract, Context } from 'fabric-contract-api';
 import { ChaincodeStub, ClientIdentity } from 'fabric-shim';
+
+export class ScenarioContext extends Context{
+
+	customFunction(){
+
+	}
+}
 
 export default class TestContractOne extends Contract {
 
     constructor() {
-        super('org.papernet.commercialpaper', {key: 'value'});
-
-        const intermediaryFn: IntermediaryFn  = (ctx: Context) => {
-            return ctx;
-        }
-
-        this.setBeforeFn(intermediaryFn);
-        this.setAfterFn(intermediaryFn);
-        this.setUnknownFn(intermediaryFn);
+        super('org.papernet.commercialpaper');
     }
 
-    async Transaction(ctx: Context)  {
+	async beforeTransaction(ctx: ScenarioContext){
+        const stubApi: ChaincodeStub = ctx.stub;
+		const clientIdentity: ClientIdentity = ctx.clientIdentity;
+
+		ctx.customFunction();
+	}
+
+	async afterTransaction(ctx: ScenarioContext,result:any){
+
+	}
+
+	async unknownTransaction(ctx: ScenarioContext){
+
+	}
+
+	createContext(){
+		return new ScenarioContext();
+	}
+
+
+    async Transaction(ctx: ScenarioContext)  {
         const stubApi: ChaincodeStub = ctx.stub;
         const clientIdentity: ClientIdentity = ctx.clientIdentity;
 
-        const afterFn: IntermediaryFn  = this.getAfterFn();
-        const testCtxAfter: Context = afterFn(ctx);
-        const beforeFn: IntermediaryFn = this.getBeforeFn();
-        const testCtxBefore: Context = beforeFn(ctx);
-        const unknownFn: IntermediaryFn = this.getUnknownFn();
-        const testCtxUnkown: Context = beforeFn(ctx);
-        const testCtx: Context = afterFn(ctx);
-        const data: object = this.getMetadata();
         const ns: string = this.getNamespace();
-    }
-}
-
-export class TestContractTwo extends Contract {
-    constructor() {
-        super('org.papernet.commercialpaper');
     }
 }
 
 export class TestContractThree extends Contract {
     constructor() {
         super();
+	}
+
+	async Transaction(ctx: Context)  {
+        const stubApi: ChaincodeStub = ctx.stub;
+        const clientIdentity: ClientIdentity = ctx.clientIdentity;
     }
 }
