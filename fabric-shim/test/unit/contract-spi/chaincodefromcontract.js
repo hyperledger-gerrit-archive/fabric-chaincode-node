@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*global describe it beforeEach afterEach before after  */
+/*global describe it beforeEach afterEach   */
 'use strict';
 
 // test specific libraries
@@ -21,7 +21,7 @@ const expect = chai.expect;
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
-const mockery = require('mockery');
+
 
 
 // standard utility fns
@@ -29,20 +29,27 @@ const path = require('path');
 
 // class under test
 const pathToRoot = '../../../..';
-const bootstrap = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/bootstrap'));
+
 const Contract = require(path.join(pathToRoot, 'fabric-contract-api/lib/contract'));
 const ChaincodeFromContract = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/chaincodefromcontract'));
 const shim = require(path.join(pathToRoot, 'fabric-shim/lib/chaincode'));
 const FarbicStubInterface = require(path.join(pathToRoot,'fabric-shim/lib/stub'));
-const alphaStub = sinon.stub().named('alphaStub');
-const betaStub = sinon.stub().named('betaStub');
+let alphaStub;
+let betaStub;
 
-const beforeFnStub = sinon.stub();
-const afterFnStub = sinon.stub();
+let beforeFnStubA;
+let beforeFnStubB;
+let afterFnStubA;
+let afterFnStubB;
 
 
-const ClientIdentity = require('fabric-contract-api').ClientIdentity;
+function log(...e){
+	// eslint-disable-next-line no-console
+	console.log(...e);
+}
+
 describe('chaincodefromcontract',()=>{
+
 
 	/**
      * A fake  contract class;
@@ -70,8 +77,8 @@ describe('chaincodefromcontract',()=>{
 		constructor() {
 			super('beta');
 			this.property='value';
-			this.setAfterFn(afterFnStub);
-			this.setBeforeFn(beforeFnStub);
+			this.setAfterHooks([afterFnStubA,afterFnStubB]);
+			this.setBeforeHooks([beforeFnStubA,beforeFnStubB]);
 		}
 		/**
          * @param {object} api api
@@ -86,7 +93,12 @@ describe('chaincodefromcontract',()=>{
 
 	beforeEach('Sandbox creation', () => {
 		sandbox = sinon.createSandbox();
-
+		beforeFnStubA = sandbox.stub().named('beforeFnStubA');
+		beforeFnStubB = sandbox.stub().named('beforeFnStubB');
+		afterFnStubA = sandbox.stub().named('afterFnStubA');
+		afterFnStubB = sandbox.stub().named('afterFnStubB');
+		alphaStub = sandbox.stub().named('alphaStub');
+		betaStub = sandbox.stub().named('betaStub');
 	});
 
 	afterEach('Sandbox restoration', () => {
@@ -153,12 +165,17 @@ describe('chaincodefromcontract',()=>{
 			});
 			sandbox.replace(shim,'error',fakeerror);
 			let fakesuccess = sinon.fake((e)=>{
-
+				log(e);
 			});
 			sandbox.replace(shim,'success',fakesuccess);
 
+			beforeFnStubA.resolves();
+			beforeFnStubB.resolves();
+			afterFnStubA.resolves();
+			afterFnStubB.resolves();
+
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
-			// cc.createCtx = sandbox.stub().returns({});
+
 			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'alpha_alpha',
@@ -204,9 +221,13 @@ describe('chaincodefromcontract',()=>{
 			});
 			sandbox.replace(shim,'error',fakeerror);
 			let fakesuccess = sinon.fake((e)=>{
-
+				log(e);
 			});
 			sandbox.replace(shim,'success',fakesuccess);
+			beforeFnStubA.resolves();
+			beforeFnStubB.resolves();
+			afterFnStubA.resolves();
+			afterFnStubB.resolves();
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
 			// cc.createCtx = sandbox.stub().returns({});
@@ -245,17 +266,83 @@ describe('chaincodefromcontract',()=>{
 
 			await cc.Invoke(stubInterface);
 			sinon.assert.calledOnce(betaStub);
-			sinon.assert.calledOnce(afterFnStub);
-			sinon.assert.calledOnce(beforeFnStub);
+			sinon.assert.calledOnce(afterFnStubA);
+			sinon.assert.calledOnce(afterFnStubB);
+			sinon.assert.calledOnce(beforeFnStubA);
+			sinon.assert.calledOnce(beforeFnStubB);
+			sinon.assert.callOrder(beforeFnStubA,beforeFnStubB,afterFnStubA,afterFnStubB);
 		});
 
-		it('should throw correct error with missing namespace',async ()=>{
+		it('should correctly handle case of failing before hook',async ()=>{
 			let fakeerror = sinon.fake((e)=>{
-				console.log(e);
+				log(e);
+
 			});
 			sandbox.replace(shim,'error',fakeerror);
 			let fakesuccess = sinon.fake((e)=>{
-				console.log(e);
+				log(e);
+			});
+			sandbox.replace(shim,'success',fakesuccess);
+			beforeFnStubA.rejects(new Error('failure failure'));
+			beforeFnStubB.resolves();
+			afterFnStubA.resolves();
+			afterFnStubB.resolves();
+
+			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
+			// cc.createCtx = sandbox.stub().returns({});
+			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			stubInterface.getFunctionAndParameters.returns({
+				fcn:'beta_beta',
+				params: [   'arg1','arg2'   ]
+			}  );
+			const certWithoutAttrs = '-----BEGIN CERTIFICATE-----' +
+			'MIICXTCCAgSgAwIBAgIUeLy6uQnq8wwyElU/jCKRYz3tJiQwCgYIKoZIzj0EAwIw' +
+			'eTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
+			'biBGcmFuY2lzY28xGTAXBgNVBAoTEEludGVybmV0IFdpZGdldHMxDDAKBgNVBAsT' +
+			'A1dXVzEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMTcwOTA4MDAxNTAwWhcNMTgw' +
+			'OTA4MDAxNTAwWjBdMQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xp' +
+			'bmExFDASBgNVBAoTC0h5cGVybGVkZ2VyMQ8wDQYDVQQLEwZGYWJyaWMxDjAMBgNV' +
+			'BAMTBWFkbWluMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFq/90YMuH4tWugHa' +
+			'oyZtt4Mbwgv6CkBSDfYulVO1CVInw1i/k16DocQ/KSDTeTfgJxrX1Ree1tjpaodG' +
+			'1wWyM6OBhTCBgjAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4E' +
+			'FgQUhKs/VJ9IWJd+wer6sgsgtZmxZNwwHwYDVR0jBBgwFoAUIUd4i/sLTwYWvpVr' +
+			'TApzcT8zv/kwIgYDVR0RBBswGYIXQW5pbHMtTWFjQm9vay1Qcm8ubG9jYWwwCgYI' +
+			'KoZIzj0EAwIDRwAwRAIgCoXaCdU8ZiRKkai0QiXJM/GL5fysLnmG2oZ6XOIdwtsC' +
+			'IEmCsI8Mhrvx1doTbEOm7kmIrhQwUVDBNXCWX1t3kJVN' +
+			'-----END CERTIFICATE-----';
+			let idBytes = {
+				toBuffer: ()=>{return new Buffer(certWithoutAttrs);}
+			};
+
+			let mockSigningId = {
+				getMspid: sinon.stub(),
+				getIdBytes: sinon.stub().returns(idBytes)
+			};
+			stubInterface.getCreator.returns(
+				mockSigningId
+			);
+
+
+			await cc.Invoke(stubInterface);
+
+			sinon.assert.calledOnce(shim.error);
+			expect(fakeerror.args[0][0]).to.be.instanceOf(Error);
+			expect(fakeerror.args[0][0].toString()).to.match(/failure failure/);
+			sinon.assert.notCalled(betaStub);
+			sinon.assert.notCalled(afterFnStubA);
+			sinon.assert.notCalled(afterFnStubB);
+			sinon.assert.calledOnce(beforeFnStubA);
+			sinon.assert.notCalled(beforeFnStubB);
+		});
+
+
+		it('should throw correct error with missing namespace',async ()=>{
+			let fakeerror = sinon.fake((e)=>{
+				log(e);
+			});
+			sandbox.replace(shim,'error',fakeerror);
+			let fakesuccess = sinon.fake((e)=>{
+				log(e);
 			});
 			sandbox.replace(shim,'success',fakesuccess);
 
@@ -274,11 +361,11 @@ describe('chaincodefromcontract',()=>{
 
 		it('should throw correct error with wrong function name',async ()=>{
 			let fakeerror = sinon.fake((e)=>{
-				console.log(e);
+				log(e);
 			});
 			sandbox.replace(shim,'error',fakeerror);
 			let fakesuccess = sinon.fake((e)=>{
-				console.log(e);
+				log(e);
 			});
 			sandbox.replace(shim,'success',fakesuccess);
 
@@ -288,11 +375,36 @@ describe('chaincodefromcontract',()=>{
 				fcn:'alpha_wibble',
 				params: [   'arg1','arg2'   ]
 			}  );
+			const certWithoutAttrs = '-----BEGIN CERTIFICATE-----' +
+			'MIICXTCCAgSgAwIBAgIUeLy6uQnq8wwyElU/jCKRYz3tJiQwCgYIKoZIzj0EAwIw' +
+			'eTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
+			'biBGcmFuY2lzY28xGTAXBgNVBAoTEEludGVybmV0IFdpZGdldHMxDDAKBgNVBAsT' +
+			'A1dXVzEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMTcwOTA4MDAxNTAwWhcNMTgw' +
+			'OTA4MDAxNTAwWjBdMQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xp' +
+			'bmExFDASBgNVBAoTC0h5cGVybGVkZ2VyMQ8wDQYDVQQLEwZGYWJyaWMxDjAMBgNV' +
+			'BAMTBWFkbWluMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFq/90YMuH4tWugHa' +
+			'oyZtt4Mbwgv6CkBSDfYulVO1CVInw1i/k16DocQ/KSDTeTfgJxrX1Ree1tjpaodG' +
+			'1wWyM6OBhTCBgjAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4E' +
+			'FgQUhKs/VJ9IWJd+wer6sgsgtZmxZNwwHwYDVR0jBBgwFoAUIUd4i/sLTwYWvpVr' +
+			'TApzcT8zv/kwIgYDVR0RBBswGYIXQW5pbHMtTWFjQm9vay1Qcm8ubG9jYWwwCgYI' +
+			'KoZIzj0EAwIDRwAwRAIgCoXaCdU8ZiRKkai0QiXJM/GL5fysLnmG2oZ6XOIdwtsC' +
+			'IEmCsI8Mhrvx1doTbEOm7kmIrhQwUVDBNXCWX1t3kJVN' +
+			'-----END CERTIFICATE-----';
+			let idBytes = {
+				toBuffer: ()=>{return new Buffer(certWithoutAttrs);}
+			};
 
+			let mockSigningId = {
+				getMspid: sinon.stub(),
+				getIdBytes: sinon.stub().returns(idBytes)
+			};
+			stubInterface.getCreator.returns(
+				mockSigningId
+			);
 			await cc.Invoke(stubInterface);
 			sinon.assert.calledOnce(shim.error);
 			expect(fakeerror.args[0][0]).to.be.instanceOf(Error);
-			expect(fakeerror.args[0][0].toString()).to.match(/Error: No contract function wibble/);
+			expect(fakeerror.args[0][0].toString()).to.match(/Error: You've asked to invoke a function that does not exist/);
 		});
 
 	});

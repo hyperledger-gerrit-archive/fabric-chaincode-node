@@ -7,12 +7,8 @@
 
 const gulp = require('gulp');
 const shell = require('gulp-shell');
-const rename = require('gulp-rename');
 const using = require('gulp-using');
 const filter = require('gulp-filter');
-const wait = require('gulp-wait');
-const map   = require('map-stream');
-
 const jsonTransform = require('gulp-json-transform');
 
 const util = require('util');
@@ -25,7 +21,6 @@ const test = require('../../test/constants.js');
 
 const execFile = util.promisify(require('child_process').execFile);
 const CHANNEL_NAME = 'mychannel';
-const CC_NAME = 'mysmartcontract';
 const tls = process.env.TLS ? process.env.TLS : 'false';
 const delay = require('delay');
 
@@ -55,7 +50,7 @@ gulp.task('invokeAllFns',(done)=>{
 
 	];
 
-	console.log('=== Starting Scenario Tests');
+	console.log('=== Starting Scenario Tests'); // eslint-disable-line
 	runSequence(...tasks,done);
 
 });
@@ -91,8 +86,8 @@ gulp.task('invoke_functions',async (done)=>{
 		done(error);
 	}else {
 		// validate the stdout/stderr
-		console.log(stdout);
-		console.log(stderr);
+		console.log(stdout); // eslint-disable-line
+		console.log(stderr); // eslint-disable-line
 	}
 });
 
@@ -107,7 +102,7 @@ gulp.task('st-copy-shim', ['protos'], () => {
 	return gulp.src(srcPath)
 		.pipe(f)
 		.pipe(using())
-		.pipe(jsonTransform((data, file) => {
+		.pipe(jsonTransform((data, file) => { // eslint-disable-line
 			data.version = data.version+'-test';
 			return data;
 		}))
@@ -126,7 +121,7 @@ gulp.task('st-copy-api', ['st-copy-shim'], () => {
 	return gulp.src(srcPath)
 		.pipe(f)
 		.pipe(using())
-		.pipe(jsonTransform((data, file) => {
+		.pipe(jsonTransform((data, file) => { // eslint-disable-line
 			data.version = data.version+'-test';
 			return data;
 		}))
@@ -145,7 +140,7 @@ gulp.task('st-copy-shim-crypto', ['st-copy-api'], () => {
 	return gulp.src(srcPath)
 		.pipe(f)
 		.pipe(using())
-		.pipe(jsonTransform((data, file) => {
+		.pipe(jsonTransform((data, file) => {  // eslint-disable-line
 			data.version = data.version+'-test';
 			return data;
 		}))
