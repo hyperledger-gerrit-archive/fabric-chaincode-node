@@ -967,7 +967,7 @@ describe('Handler', () => {
 			});
 		});
 
-		describe('handleGetState', () => {
+		describe('handleGetStateByRange', () => {
 			let startKey = 'theStartKey';
 			let endKey = 'theEndKey';
 			let collection = '';
@@ -998,7 +998,7 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
 
-				let result = await handler.handleGetStateByRange(collection, startKey, endKey, 'theChannelID', 'theTxID');
+				let result = await handler.handleGetStateByRange(collection, startKey, endKey, null, 'theChannelID', 'theTxID');
 
 				expect(result).to.deep.equal('some response');
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1010,9 +1010,37 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
 
-				let result = handler.handleGetStateByRange(collection, startKey, endKey, 'theChannelID', 'theTxID');
+				let result = handler.handleGetStateByRange(collection, startKey, endKey, null, 'theChannelID', 'theTxID');
 
 				await expect(result).to.eventually.be.rejected;
+				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
+				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
+				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('GetStateByRange');
+			});
+
+			it('should resolve with metadata when _askPeerAndListen resolves', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
+				const metadata = Buffer.from('metadata');
+
+				let result = await handler.handleGetStateByRange(collection, startKey, endKey, metadata, 'theChannelID', 'theTxID');
+
+				let serviceProto = Handler.__get__('_serviceProto');
+
+				let payload = new serviceProto.GetStateByRange();
+				payload.setStartKey(startKey);
+				payload.setEndKey(endKey);
+				payload.setCollection(collection);
+				payload.setMetadata(metadata);
+
+				expectedMsg = {
+					type: serviceProto.ChaincodeMessage.Type.GET_STATE_BY_RANGE,
+					payload: payload.toBuffer(),
+					channel_id: 'theChannelID',
+					txid: 'theTxID'
+				};
+
+				expect(result).to.deep.equal('some response');
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
 				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
 				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('GetStateByRange');
@@ -1120,8 +1148,9 @@ describe('Handler', () => {
 			let query = 'some query';
 
 			let expectedMsg;
+			let serviceProto;
 			before(() => {
-				let serviceProto = Handler.__get__('_serviceProto');
+				serviceProto = Handler.__get__('_serviceProto');
 
 				let payload = new serviceProto.GetQueryResult();
 				payload.setQuery(query);
@@ -1144,7 +1173,7 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
 
-				let result = await handler.handleGetQueryResult(collection, query, 'theChannelID', 'theTxID');
+				let result = await handler.handleGetQueryResult(collection, query, null, 'theChannelID', 'theTxID');
 
 				expect(result).to.deep.equal('some response');
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1152,11 +1181,35 @@ describe('Handler', () => {
 				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('GetQueryResult');
 			});
 
-			it ('should reject when _askPeerAndListen resolves', async () => {
+			it ('should reject when _askPeerAndListen rejects', async () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
 
-				let result = handler.handleGetQueryResult(collection, query, 'theChannelID', 'theTxID');
+				let result = handler.handleGetQueryResult(collection, query, null, 'theChannelID', 'theTxID');
+
+				await expect(result).to.eventually.be.rejected;
+				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
+				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
+				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('GetQueryResult');
+			});
+
+			it ('handleGetQueryResult with metadata should resolve when _askPeerAndListen resolves', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
+				const metadata = Buffer.from('some metadata');
+
+				let result = handler.handleGetQueryResult(collection, query, metadata, 'theChannelID', 'theTxID');
+				let payload = new serviceProto.GetQueryResult();
+				payload.setQuery(query);
+				payload.setCollection(collection);
+				payload.setMetadata(metadata);
+
+				expectedMsg = {
+					type: serviceProto.ChaincodeMessage.Type.GET_QUERY_RESULT,
+					payload: payload.toBuffer(),
+					channel_id: 'theChannelID',
+					txid: 'theTxID'
+				};
 
 				await expect(result).to.eventually.be.rejected;
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1165,7 +1218,7 @@ describe('Handler', () => {
 			});
 		});
 
-		describe('handleGetQueryResult', () => {
+		describe('handleGetHistoryForKey', () => {
 			let key = 'theKey';
 
 			let expectedMsg;
