@@ -967,7 +967,7 @@ describe('Handler', () => {
 			});
 		});
 
-		describe('handleGetState', () => {
+		describe('handleGetStateByRange', () => {
 			let startKey = 'theStartKey';
 			let endKey = 'theEndKey';
 			let collection = '';
@@ -998,7 +998,7 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
 
-				let result = await handler.handleGetStateByRange(collection, startKey, endKey, 'theChannelID', 'theTxID');
+				let result = await handler.handleGetStateByRange(collection, startKey, endKey, null, 'theChannelID', 'theTxID');
 
 				expect(result).to.deep.equal('some response');
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1010,7 +1010,7 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
 
-				let result = handler.handleGetStateByRange(collection, startKey, endKey, 'theChannelID', 'theTxID');
+				let result = handler.handleGetStateByRange(collection, startKey, endKey, null, 'theChannelID', 'theTxID');
 
 				await expect(result).to.eventually.be.rejected;
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1144,7 +1144,7 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
 
-				let result = await handler.handleGetQueryResult(collection, query, 'theChannelID', 'theTxID');
+				let result = await handler.handleGetQueryResult(collection, query, null, 'theChannelID', 'theTxID');
 
 				expect(result).to.deep.equal('some response');
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1156,7 +1156,7 @@ describe('Handler', () => {
 				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
 				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
 
-				let result = handler.handleGetQueryResult(collection, query, 'theChannelID', 'theTxID');
+				let result = handler.handleGetQueryResult(collection, query, null, 'theChannelID', 'theTxID');
 
 				await expect(result).to.eventually.be.rejected;
 				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
@@ -1165,7 +1165,7 @@ describe('Handler', () => {
 			});
 		});
 
-		describe('handleGetQueryResult', () => {
+		describe('handleGetHistoryForKey', () => {
 			let key = 'theKey';
 
 			let expectedMsg;

@@ -30,7 +30,7 @@ const path = require('path');
 // class under test
 const pathToRoot = '../../../..';
 const bootstrap = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/bootstrap'));
-const Contract = require(path.join(pathToRoot, 'fabric-contract-api/lib/contract'));
+const Contract = require('fabric-contract-api').Contract;
 const ChaincodeFromContract = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/chaincodefromcontract'));
 const shim = require(path.join(pathToRoot, 'fabric-shim/lib/chaincode'));
 const FarbicStubInterface = require(path.join(pathToRoot,'fabric-shim/lib/stub'));

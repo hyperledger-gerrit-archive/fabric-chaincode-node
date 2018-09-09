@@ -539,7 +539,7 @@ describe('Stub', () => {
 
 				expect(result).to.deep.equal('some state');
 				expect(handleGetStateByRangeStub.calledOnce).to.be.ok;
-				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['', 'start key', 'end key', 'dummyChannelId', 'dummyTxid']);
+				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['', 'start key', 'end key', null, 'dummyChannelId', 'dummyTxid']);
 			});
 
 			it ('should return handler.handleGetStateByRange using empty key substitute', async () => {
@@ -557,7 +557,7 @@ describe('Stub', () => {
 
 				expect(result).to.deep.equal('some state');
 				expect(handleGetStateByRangeStub.calledOnce).to.be.ok;
-				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['', EMPTY_KEY_SUBSTITUTE, 'end key', 'dummyChannelId', 'dummyTxid']);
+				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['', EMPTY_KEY_SUBSTITUTE, 'end key', null, 'dummyChannelId', 'dummyTxid']);
 			});
 		});
 
@@ -575,7 +575,7 @@ describe('Stub', () => {
 
 				expect(result).to.deep.equal('some query result');
 				expect(handleGetQueryResultStub.calledOnce).to.be.ok;
-				expect(handleGetQueryResultStub.firstCall.args).to.deep.equal(['', 'a query', 'dummyChannelId', 'dummyTxid']);
+				expect(handleGetQueryResultStub.firstCall.args).to.deep.equal(['', 'a query', null, 'dummyChannelId', 'dummyTxid']);
 			});
 		});
 
@@ -940,7 +940,7 @@ describe('Stub', () => {
 
 				expect(result).to.deep.equal('some state');
 				expect(handleGetStateByRangeStub.calledOnce).to.be.ok;
-				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['some collection', EMPTY_KEY_SUBSTITUTE, 'some end key', 'dummyChannelId', 'dummyTxid']);
+				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['some collection', EMPTY_KEY_SUBSTITUTE, 'some end key', null, 'dummyChannelId', 'dummyTxid']);
 			});
 
 			it ('should return handler.handleGetStateByRange', async () => {
@@ -948,7 +948,7 @@ describe('Stub', () => {
 
 				expect(result).to.deep.equal('some state');
 				expect(handleGetStateByRangeStub.calledOnce).to.be.ok;
-				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['some collection', 'some start key', 'some end key', 'dummyChannelId', 'dummyTxid']);
+				expect(handleGetStateByRangeStub.firstCall.args).to.deep.equal(['some collection', 'some start key', 'some end key', null, 'dummyChannelId', 'dummyTxid']);
 			});
 		});
 
@@ -1030,7 +1030,7 @@ describe('Stub', () => {
 
 				expect(result).to.deep.equal('some query result');
 				expect(handleGetQueryResultStub.calledOnce).to.be.ok;
-				expect(handleGetQueryResultStub.firstCall.args).to.deep.equal(['some collection', 'some query', 'dummyChannelId', 'dummyTxid']);
+				expect(handleGetQueryResultStub.firstCall.args).to.deep.equal(['some collection', 'some query', null, 'dummyChannelId', 'dummyTxid']);
 			});
 		});
 	});
