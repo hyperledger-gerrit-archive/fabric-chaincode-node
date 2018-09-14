@@ -13,11 +13,12 @@ gulp.task('clean', function(){
 });
 
 let docSrc = [
-	'docs/README.md',
+	// 'docs/README.md',
+	'fabric-shim/README.md',
 	'fabric-shim/lib/chaincode.js',
 	'fabric-shim/lib/stub.js',
-	'fabric-shim/lib/iterators.js',
-	'fabric-contract-api/lib/**/*.js'
+	'fabric-shim/lib/iterators.js'
+	// 'fabric-contract-api/lib/**/*.js'
 	// 'fabric-contract-api/index.js',
 	// 'fabric-shim/index.js'
 ];
