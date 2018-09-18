@@ -584,7 +584,10 @@ async function handleMessage(msg, client, action) {
 				let errMsg = util.format('[%s-%s]Calling chaincode %s() has not called success or error.',
 					msg.channel_id, shortTxid(msg.txid), method);
 				logger.error(errMsg);
-				resp = shim.error(errMsg);
+				// resp = shim.error(errMsg);
+				resp =  new _responseProto.Response();
+				resp.status = Stub.RESPONSE_CODE.ERROR;
+				resp.message = msg;
 			}
 
 			logger.debug(util.format(
