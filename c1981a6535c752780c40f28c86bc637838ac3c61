@@ -1,0 +1,7 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+2: Dave Kelsey <d_kelsey@uk.ibm.com>
+Submitted-by: Dave Kelsey <d_kelsey@uk.ibm.com>
+Submitted-at: Wed, 19 Sep 2018 13:41:07 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/26367
+Project: fabric-chaincode-node
+Branch: refs/heads/master
