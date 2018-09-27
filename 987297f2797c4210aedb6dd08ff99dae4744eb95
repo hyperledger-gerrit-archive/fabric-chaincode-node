@@ -1,0 +1,7 @@
+Code-Review+2: Dave Kelsey <d_kelsey@uk.ibm.com>
+Verified+1: Dave Kelsey <d_kelsey@uk.ibm.com>
+Submitted-by: Bret Harrison <beharrison@nc.rr.com>
+Submitted-at: Thu, 27 Sep 2018 15:43:21 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/26637
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.1
