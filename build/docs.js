@@ -40,7 +40,8 @@ gulp.task('jsdocs', ['clean'], function (cb) {
 		jsdoc({
 			opts: {
 				tutorials: './docs/tutorials',
-				destination: path.join(docsRoot,currentBranch)
+				destination: path.join(docsRoot,currentBranch),
+				template: './docs/template'
 			},
 			templates: {
 				systemName: 'Hyperledger Fabric node.js Shim',
