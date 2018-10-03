@@ -1,8 +1,9 @@
-v1.2.1 Oct, 2018
+v1.2.2 Oct, 2018
 -----------------------------
 
 Release Notes
 -------------
+Changes for the release publishing process
 Set GRPC settings to ensures keepalive continues during idle periods
 
 Known Vulnerabilities
