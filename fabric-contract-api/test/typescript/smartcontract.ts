@@ -4,7 +4,6 @@
  SPDX-License-Identifier: Apache-2.0
 
 */
-
 import { Contract, Context } from 'fabric-contract-api';
 import { ChaincodeStub, ClientIdentity } from 'fabric-shim';
 

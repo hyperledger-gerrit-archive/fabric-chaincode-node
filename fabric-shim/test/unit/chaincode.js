@@ -43,89 +43,6 @@ describe('Chaincode', () => {
 		});
 	});
 
-	describe('Command line arguments', () => {
-		it ('should return undefined for zero argument', () => {
-			let Chaincode = rewire(chaincodePath);
-			let opts = Chaincode.__get__('opts');
-
-			expect(opts['peer.address']).to.be.an('undefined');
-		});
-
-		it ('should set value when peer.address argument set, and default others', () => {
-			process.argv.push('--peer.address');
-			process.argv.push('localhost:7051');
-			delete require.cache[require.resolve(chaincodePath)];
-			let Chaincode = rewire(chaincodePath);
-			let opts = Chaincode.__get__('opts');
-
-			expect(opts['peer.address']).to.deep.equal('localhost:7051');
-			expect(opts['grpc.max_send_message_length']).to.equal(-1);
-			expect(opts['grpc.max_receive_message_length']).to.equal(-1);
-			expect(opts['grpc.keepalive_time_ms']).to.equal(60000);
-			expect(opts['grpc.http2.min_time_between_pings_ms']).to.equal(60000);
-			expect(opts['grpc.keepalive_timeout_ms']).to.equal(20000);
-			expect(opts['grpc.keepalive_permit_without_calls']).to.equal(1);
-			expect(opts['grpc.http2.max_pings_without_data']).to.equal(0);
-
-			process.argv.pop();
-			process.argv.pop();
-		});
-
-		it ('should ignore non expected arguments arguments', () => {
-			process.argv.push('--peer.address');
-			process.argv.push('localhost:7051');
-			process.argv.push('--test.again');
-			process.argv.push('dummyValue9');
-
-			delete require.cache[require.resolve(chaincodePath)];
-			let Chaincode = rewire(chaincodePath);
-			let opts = Chaincode.__get__('opts');
-
-			expect(opts['peer.address']).to.deep.equal('localhost:7051');
-			expect(opts['test.again']).to.be.an('undefined');
-
-			for (let index = 0; index < 4; index++) {
-				process.argv.pop();
-			}
-		});
-
-		it ('should be possible to change the default CLI values', () => {
-			process.argv.push('--peer.address');
-			process.argv.push('localhost:7051');
-			process.argv.push('--grpc.max_send_message_length');
-			process.argv.push('101');
-			process.argv.push('--grpc.max_receive_message_length');
-			process.argv.push('177');
-			process.argv.push('--grpc.keepalive_time_ms');
-			process.argv.push('1234');
-			process.argv.push('--grpc.keepalive_timeout_ms');
-			process.argv.push('5678');
-			process.argv.push('--grpc.http2.min_time_between_pings_ms');
-			process.argv.push('7654');
-			process.argv.push('--grpc.http2.max_pings_without_data');
-			process.argv.push('99');
-			process.argv.push('--grpc.keepalive_permit_without_calls');
-			process.argv.push('2');
-
-			delete require.cache[require.resolve(chaincodePath)];
-			let Chaincode = rewire(chaincodePath);
-			let opts = Chaincode.__get__('opts');
-
-			expect(opts['peer.address']).to.deep.equal('localhost:7051');
-			expect(opts['grpc.max_send_message_length']).to.equal(101);
-			expect(opts['grpc.max_receive_message_length']).to.equal(177);
-			expect(opts['grpc.keepalive_time_ms']).to.equal(1234);
-			expect(opts['grpc.http2.min_time_between_pings_ms']).to.equal(7654);
-			expect(opts['grpc.keepalive_timeout_ms']).to.equal(5678);
-			expect(opts['grpc.keepalive_permit_without_calls']).to.equal(2);
-			expect(opts['grpc.http2.max_pings_without_data']).to.equal(99);
-
-			for (let index = 0; index < 16; index++) {
-				process.argv.pop();
-			}
-		});
-	});
-
 	describe('Start()', () => {
 		let Chaincode;
 
@@ -169,8 +86,7 @@ describe('Chaincode', () => {
 			let handlerClass = Chaincode.__get__('Handler');
 			let chat = sinon.stub(handlerClass.prototype, 'chat');
 
-			Chaincode.__set__('opts', {'peer.address': 'localhost:7051'});
-			process.env.CORE_CHAINCODE_ID_NAME = 'mycc';
+			Chaincode.__set__('opts', {'peer.address': 'localhost:7051', 'chaincode-id-name': 'mycc'});
 
 			Chaincode.start({Init: function() {}, Invoke: function() {}});
 
@@ -182,7 +98,6 @@ describe('Chaincode', () => {
 			expect(args[0].type).to.deep.equal(_serviceProto.ChaincodeMessage.Type.REGISTER);
 
 			chat.restore();
-			delete process.env.CORE_CHAINCODE_ID_NAME;
 		});
 
 		describe('TLS handling', () => {
@@ -190,10 +105,9 @@ describe('Chaincode', () => {
 
 			let testfile = path.join(__dirname, '../../../package.json');
 
-			Chaincode.__set__('opts', {'peer.address': 'localhost:7051'});
+			Chaincode.__set__('opts', {'peer.address': 'localhost:7051', 'chaincode-id-name': 'mycc'});
 
 			before(() => {
-				process.env.CORE_CHAINCODE_ID_NAME = 'mycc';
 				process.env.CORE_PEER_TLS_ENABLED = true;
 				process.env.CORE_PEER_TLS_ROOTCERT_FILE = testfile;
 			});
@@ -204,7 +118,6 @@ describe('Chaincode', () => {
 			});
 
 			after(() => {
-				delete process.env.CORE_CHAINCODE_ID_NAME;
 				delete process.env.CORE_PEER_TLS_ENABLED;
 				delete process.env.CORE_PEER_TLS_ROOTCERT_FILE;
 			});
@@ -243,26 +156,36 @@ describe('Chaincode', () => {
 			});
 
 			it ('should load the opts certificate attributes as JSON strings with the correct properties', () => {
+				let testOpts = null;
+
+				class MockHandler {
+					constructor(chaincode, url, opts) {
+						testOpts = opts;
+					}
+
+					chat() {
+						// do nothing
+					}
+				}
+
 				let handlerClass = Chaincode.__get__('Handler');
-				let chat = sinon.stub(handlerClass.prototype, 'chat');
+				Chaincode.__set__('Handler', MockHandler);
 
 				process.env.CORE_TLS_CLIENT_KEY_PATH = testfile;
 				process.env.CORE_TLS_CLIENT_CERT_PATH = testfile;
 
 				Chaincode.start({Init: function() {}, Invoke: function() {}});
 
-				let opts = Chaincode.__get__('opts');
-
 				let attributes = ['pem', 'cert', 'key'];
 
 				attributes.forEach((attr) => {
-					expect(typeof opts[attr]).to.deep.equal('string');
+					expect(typeof testOpts[attr]).to.deep.equal('string');
 
-					let json = JSON.parse(opts[attr]);
+					let json = JSON.parse(testOpts[attr]);
 					expect(json.name).to.deep.equal('fabric-shim-test');
 				});
 
-				chat.restore();
+				Chaincode.__set__('Handler', handlerClass);
 			});
 		});
 	});
@@ -278,13 +201,13 @@ describe('Chaincode', () => {
 		it ('should throw an error if peer.address not set', () => {
 			expect(() => {
 				parsePeerUrlFcn();
-			}).to.throw(/The "peer.address" program argument must be set to a legitimate value of/);
+			}).to.throw(/The "peer\.address" program argument must be set to a legitimate value of/);
 		});
 
 		it ('should throw an error if peer.address set to url', () => {
 			expect(() => {
 				parsePeerUrlFcn('http://dummyUrl');
-			}).to.throw(/The "peer.address" program argument can not be set to an "http\(s\)" url/);
+			}).to.throw(/The "peer\.address" program argument can not be set to an "http\(s\)" url/);
 		});
 
 		it ('should use grpc when URL already has that prefix', () => {
