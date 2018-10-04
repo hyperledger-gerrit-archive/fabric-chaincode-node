@@ -30,7 +30,6 @@ function register(contracts){
  * @ignore
  */
 function bootstrap(){
-
 	let jsonPath = path.resolve(__dirname,'..','..','..','..','package.json');
 	// let's find the package.json file
 	let json = require(jsonPath);
