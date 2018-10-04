@@ -257,6 +257,7 @@ class ChaincodeSupportClient {
 		if(opts && opts['request-timeout']) {
 			this._request_timeout = opts['request-timeout'];
 		}
+
 		this._client = new _serviceProto.ChaincodeSupport(this._endpoint.addr, this._endpoint.creds, this._options);
 	}
 
