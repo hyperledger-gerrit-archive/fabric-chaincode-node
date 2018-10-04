@@ -6,7 +6,6 @@
 /* eslint-disable no-useless-escape */
 'use strict';
 
-const CLIArgs = require('command-line-args');
 const grpc = require('grpc');
 const path = require('path');
 const util = require('util');
@@ -15,24 +14,16 @@ const jsrsasign = require('jsrsasign');
 const Logger = require('./logger');
 
 const logger = Logger.getLogger('lib/chaincode.js');
-const Handler = require('./handler.js');
-const Iterators = require('./iterators.js');
-const ChaincodeStub = require('./stub.js');
+const Handler = require('./handler');
+const Iterators = require('./iterators');
+const ChaincodeStub = require('./stub');
+const ChaincodeCommand = require('./cmds/startCommand.js');
 const fs = require('fs');
 
-const argsDef = [
-	{name: 'peer.address', type: String},
-	{name: 'grpc.max_send_message_length', type: Number, defaultValue: -1},
-	{name: 'grpc.max_receive_message_length', type: Number, defaultValue: -1},
-	{name: 'grpc.keepalive_time_ms', type: Number, defaultValue: 60000},
-	{name: 'grpc.http2.min_time_between_pings_ms', type: Number, defaultValue: 60000},
-	{name: 'grpc.keepalive_timeout_ms', type: Number, defaultValue: 20000},
-	{name: 'grpc.http2.max_pings_without_data', type: Number, defaultValue: 0},
-	{name: 'grpc.keepalive_permit_without_calls', type: Number, defaultValue: 1},
-	{name: 'ssl-target-name-override', type: String}
-];
+let startCommand = require('./cmds/startCommand.js');
 
-let opts = CLIArgs(argsDef, { partial: true });
+let yargs = require('yargs');
+let opts = yargs.argv;
 
 const _chaincodeProto = grpc.load({
 	root: path.join(__dirname, './protos'),
@@ -99,6 +90,10 @@ class Shim {
 	 * @param {ChaincodeInterface} chaincode User-provided object that must implement the <code>ChaincodeInterface</code>
 	 */
 	static start(chaincode) {
+		if (opts.$0 !== 'fabric-chaincode-node') {
+			opts = ChaincodeCommand.builder(yargs);
+		}
+
 		if (typeof chaincode !== 'object' || chaincode === null)
 			throw new Error('Missing required argument: chaincode');
 
@@ -108,9 +103,21 @@ class Shim {
 		if (typeof chaincode.Invoke !== 'function')
 			throw new Error('The "chaincode" argument must implement the "Invoke()" method');
 
+		logger.debug(opts);
+
+		let optsCpy  = Object.assign({}, opts);
+		let expectedOpts = startCommand.validOptions;
+
+		for (let key in optsCpy) {
+			if (!expectedOpts.hasOwnProperty(key)) {
+				delete optsCpy[key];
+			}
+		}
+		delete optsCpy['chaincode-id-name'];
+
 		let url = parsePeerUrl(opts['peer.address']);
 		if (isTLS()){
-			opts.pem = fs.readFileSync(process.env.CORE_PEER_TLS_ROOTCERT_FILE).toString();
+			optsCpy.pem = fs.readFileSync(process.env.CORE_PEER_TLS_ROOTCERT_FILE).toString();
 
 			// the peer enforces mutual TLS, so we must have the client key and cert to proceed
 			let keyPath = process.env.CORE_TLS_CLIENT_KEY_PATH;
@@ -120,15 +127,12 @@ class Shim {
 					'variables specifying the paths to these files are missing');
 			}
 
-			opts.key = fs.readFileSync(keyPath).toString();
-			opts.cert = fs.readFileSync(certPath).toString();
+			optsCpy.key = fs.readFileSync(keyPath).toString();
+			optsCpy.cert = fs.readFileSync(certPath).toString();
 		}
 
-		// remove any of the unknown options
-		delete opts._unknown;
-		logger.debug(opts);
-		let client = new Handler(chaincode, url, opts);
-		let chaincodeName = process.env.CORE_CHAINCODE_ID_NAME;
+		let chaincodeName = opts['chaincode-id-name'];
+		let client = new Handler(chaincode, url, optsCpy);
 		let chaincodeID = new _chaincodeProto.ChaincodeID();
 		chaincodeID.setName(chaincodeName);
 
