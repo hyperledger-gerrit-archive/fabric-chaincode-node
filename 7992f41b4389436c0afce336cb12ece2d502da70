@@ -1,0 +1,7 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+2: Bret Harrison <beharrison@nc.rr.com>
+Submitted-by: Bret Harrison <beharrison@nc.rr.com>
+Submitted-at: Fri, 05 Oct 2018 14:38:49 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/26795
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.2
