@@ -9,7 +9,7 @@
 
 export BASE_FOLDER=$WORKSPACE/gopath/src/github.com/hyperledger
 # Modify this when change the image tag
-export STABLE_TAG=1.3.0-stable
+export STABLE_TAG=1.4.0-stable
 export NEXUS_URL=nexus3.hyperledger.org:10001
 export ORG_NAME="hyperledger/fabric"
 # Set this in GOPATH
@@ -148,7 +148,7 @@ pull_Fabric_CA_Image() {
 # run sdk e2e tests
 sdk_E2e_Tests() {
         echo
-       
+
         cd $BASE_FOLDER
         git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/fabric-samples
         cd fabric-chaincode-node
@@ -194,9 +194,9 @@ sdk_E2e_Tests() {
            cp /tmp/fabric-shim/logs/*.log $WORKSPACE
         fi
 
-        echo "#######################" 
+        echo "#######################"
         echo "------> Tests Complete"
-        echo "#######################" 
+        echo "#######################"
 }
 # Publish unstable npm modules after successful merge on amd64
 publish_Unstable() {
