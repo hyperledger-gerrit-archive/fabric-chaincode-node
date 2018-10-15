@@ -35,7 +35,7 @@ const Context = require(path.join(pathToRoot, 'fabric-contract-api/lib/context')
 const ChaincodeFromContract = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/chaincodefromcontract'));
 const SystemContract = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/systemcontract'));
 const shim = require(path.join(pathToRoot, 'fabric-shim/lib/chaincode'));
-const FarbicStubInterface = require(path.join(pathToRoot,'fabric-shim/lib/stub'));
+const FabricStubInterface = require(path.join(pathToRoot,'fabric-shim/lib/stub'));
 let alphaStub;
 let betaStub;
 
@@ -162,14 +162,43 @@ describe('chaincodefromcontract',()=>{
 	describe('#init',()=>{
 
 		it('should call the Invoke method',async ()=>{
-			let stubFake = {};
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
+			stubInterface.getFunctionAndParameters.returns({
+				fcn:'alpha:alpha',
+				params: [   'arg1','arg2'   ]
+			}  );
+			let fakesuccess = sinon.fake((e)=>{
+				log(e);
+			});
+			sandbox.replace(shim,'success',fakesuccess);
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
 			sandbox.stub(cc,'Invoke');
-			await cc.Init(stubFake);
 
+			await cc.Init(stubInterface);
 			sinon.assert.calledOnce(cc.Invoke);
-			sinon.assert.calledWith(cc.Invoke,stubFake);
+			sinon.assert.calledWith(cc.Invoke, stubInterface);
+			sinon.assert.notCalled(fakesuccess);
+
+		});
+
+		it('should return a shim.success when no args are passed through the init function',async ()=>{
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
+			stubInterface.getFunctionAndParameters.returns({
+				fcn: '',
+				params: []
+			}  );
+			let fakesuccess = sinon.fake((e)=>{
+				log(e);
+			});
+			sandbox.replace(shim,'success',fakesuccess);
+
+			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
+			sandbox.stub(cc,'Invoke');
+
+			await cc.Init(stubInterface);
+			sinon.assert.calledOnce(fakesuccess);
+			sinon.assert.notCalled(cc.Invoke);
 
 		});
 
@@ -198,7 +227,7 @@ describe('chaincodefromcontract',()=>{
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
 
-			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'alpha:alpha',
 				params: [   'arg1','arg2'   ]
@@ -256,7 +285,7 @@ describe('chaincodefromcontract',()=>{
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
 			// cc.createCtx = sandbox.stub().returns({});
-			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'beta:beta',
 				params: [   'arg1','arg2'   ]
@@ -312,7 +341,7 @@ describe('chaincodefromcontract',()=>{
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
 			// cc.createCtx = sandbox.stub().returns({});
-			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'beta:beta',
 				params: [   'arg1','arg2'   ]
@@ -368,7 +397,7 @@ describe('chaincodefromcontract',()=>{
 			sandbox.replace(shim,'success',fakesuccess);
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
-			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'wibble:alpha',
 				params: [   'arg1','arg2'   ]
@@ -391,7 +420,7 @@ describe('chaincodefromcontract',()=>{
 			sandbox.replace(shim,'success',fakesuccess);
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
-			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'alpha:wibble',
 				params: [   'arg1','arg2'   ]
@@ -454,7 +483,7 @@ describe('chaincodefromcontract',()=>{
 
 			let cc = new ChaincodeFromContract([SCAlpha,SCBeta]);
 
-			let stubInterface = sinon.createStubInstance(FarbicStubInterface);
+			let stubInterface = sinon.createStubInstance(FabricStubInterface);
 			stubInterface.getFunctionAndParameters.returns({
 				fcn:'org.hyperledger.fabric:getMetaData',
 				params: [   'arg1','arg2'   ]
@@ -529,3 +558,4 @@ describe('chaincodefromcontract',()=>{
 	});
 
 });
+

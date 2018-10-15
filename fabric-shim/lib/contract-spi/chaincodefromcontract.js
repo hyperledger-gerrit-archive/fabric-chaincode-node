@@ -84,7 +84,13 @@ class ChaincodeFromContract {
      * @param {ChaincodeStub} stub Stub class giving the full api
      */
 	async Init(stub) {
-		return this.Invoke(stub);
+		const fAndP = stub.getFunctionAndParameters();
+		const message = 'Default initiator successful.';
+		if (fAndP.fcn === '') {
+			return shim.success(Buffer.from(message));
+		} else{
+			return this.Invoke(stub);
+		}
 	}
 
 	/**
