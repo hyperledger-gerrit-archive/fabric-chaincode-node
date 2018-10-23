@@ -25,33 +25,22 @@ const baseDir = path.join(GOPATH, 'src/github.com/hyperledger/fabric/protos');
 if (!fs.existsSync(baseDir)) {
     console.error(
         'The shim implementation depends on protobuf definitions from fabric GO package "%s", ' +
-		'but the directory "%s" does not seem to exist',
+        'but the directory "%s" does not seem to exist',
         'github.com/hyperledger/fabric/protos',
         baseDir);
 }
 
 const DEPS = [
-<<<<<<< HEAD
     path.join(baseDir, 'common/common.proto'),
+    path.join(baseDir, 'common/policies.proto'),
     path.join(baseDir, 'msp/identities.proto'),
+    path.join(baseDir, 'msp/msp_principal.proto'),
     path.join(baseDir, 'ledger/queryresult/kv_query_result.proto'),
     path.join(baseDir, 'peer/chaincode.proto'),
     path.join(baseDir, 'peer/chaincode_event.proto'),
     path.join(baseDir, 'peer/chaincode_shim.proto'),
     path.join(baseDir, 'peer/proposal.proto'),
     path.join(baseDir, 'peer/proposal_response.proto')
-=======
-	path.join(baseDir, 'common/common.proto'),
-	path.join(baseDir, 'common/policies.proto'),
-	path.join(baseDir, 'msp/identities.proto'),
-	path.join(baseDir, 'msp/msp_principal.proto'),
-	path.join(baseDir, 'ledger/queryresult/kv_query_result.proto'),
-	path.join(baseDir, 'peer/chaincode.proto'),
-	path.join(baseDir, 'peer/chaincode_event.proto'),
-	path.join(baseDir, 'peer/chaincode_shim.proto'),
-	path.join(baseDir, 'peer/proposal.proto'),
-	path.join(baseDir, 'peer/proposal_response.proto')
->>>>>>> [FAB-12537] CC convenience layer for state-based EP
 ];
 
 gulp.task('protos', function() {
