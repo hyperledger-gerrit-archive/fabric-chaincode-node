@@ -20,9 +20,22 @@ const _principalProto = grpc.load({
 const ROLE_TYPE_MEMBER = 'MEMBER';
 const ROLE_TYPE_PEER = 'PEER';
 
-// class KeyEndorsementPolicy implements the KeyEndorsementPolicy
+
+/**
+ * KeyEndorsementPolicy is used to help set endorsement policies and decode them
+ * into validation parameter byte arrays, the shim provides convenience functions
+ * that allow the chaincode developer to deal with endorsement policies in terms
+ * of the MSP identifiers of organizations.
+ * For more informations, please read our [documents]{@link https://hyperledger-fabric.readthedocs.io/en/latest/endorsement-policies.html#setting-key-level-endorsement-policies}
+ *
+ * @class
+ */
 class KeyEndorsementPolicy {
-    // policy: Buffer
+    /**
+	 * The construcotr accepts an optional argument `policy`.
+	 * The argument `policy` will be parsed if provided.
+	 * @param {Buffer} policy the endorsement policy retrieved for a key
+	 */
     constructor(policy) {
         this.orgs = {};
         if (policy) {
@@ -31,12 +44,21 @@ class KeyEndorsementPolicy {
         }
     }
 
-    // returns the endorsement policy as bytes
+    /**
+	 * returns the endorsement policy as bytes
+	 * @returns {Buffer} the endorsement policy
+	 */
     getPolicy() {
         const spe = this._getPolicyFromMspId();
         return spe.toBuffer();
     }
 
+    /**
+	 * adds the specified orgs to the list of orgs that are required
+   * to endorse
+	 * @param {string} role the role of the new org(s). i.e., MEMBER or PEER
+	 * @param  {...string} neworgs the new org(s) to be added to the endorsement policy
+	 */
     addOrgs(role, ...neworgs) {
         let mspRole;
         switch (role) {
@@ -50,13 +72,16 @@ class KeyEndorsementPolicy {
                 throw new Error(`role type ${role} does not exist`);
         }
 
-        // add new orgs
-        // test for one new org, multiple new orgs
         neworgs.forEach(neworg => {
             this.orgs[neworg] = mspRole;
         });
     }
 
+    /**
+	 * delete the specified channel orgs from the existing key-level endorsement
+   * policy for this KVS key.
+	 * @param  {...string} delorgs the org(s) to be deleted
+	 */
     delOrgs(...delorgs) {
         delorgs.forEach(delorg => {
             delete this.orgs[delorg];
@@ -64,15 +89,20 @@ class KeyEndorsementPolicy {
     }
 
     /**
-   * listOrgs returns an array of channel orgs that are required to endorse changes
-   * @return {string[]} the list of channel orgs that are required to endorse changes
-   */
+	 * listOrgs returns an array of channel orgs that are required to endorse changes
+	 * @return {string[]} the list of channel orgs that are required to endorse changes
+	 */
     listOrgs() {
         return Object.keys(this.orgs);
     }
 
+    /**
+	 * Internal used only, set the orgs map from a signature policy envelope
+	 * @param {_policiesProto.SignaturePolicyEnvelope} signaturePolicyEnvelope the signaturePolicyEnvelope
+	 *  decoded from the endorsement policy.
+	 */
     _setMspIdsFromSPE(signaturePolicyEnvelope) {
-    // iterate over the identities in this envelope
+        // iterate over the identities in this envelope
         signaturePolicyEnvelope.identities.forEach(identity => {
             // this imlementation only supports the ROLE type
             /* istanbul ignore else */
@@ -84,10 +114,10 @@ class KeyEndorsementPolicy {
     }
 
     /**
-   * Internal used only. construct the policy from all orgs' mspIds.
-   * the policy requires exactly 1 signature from all of the principals.
-   * @returns {_policiesProto.SignaturePolicyEnvelope} return the SignaturePolicyEnvelope instance
-   */
+	 * Internal used only. construct the policy from all orgs' mspIds.
+	 * the policy requires exactly 1 signature from all of the principals.
+	 * @returns {_policiesProto.SignaturePolicyEnvelope} return the SignaturePolicyEnvelope instance
+	 */
     _getPolicyFromMspId() {
         const mspIds = this.listOrgs();
         const principals = [];

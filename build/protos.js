@@ -25,7 +25,7 @@ const baseDir = path.join(GOPATH, 'src/github.com/hyperledger/fabric/protos');
 if (!fs.existsSync(baseDir)) {
     console.error(
         'The shim implementation depends on protobuf definitions from fabric GO package "%s", ' +
-		'but the directory "%s" does not seem to exist',
+        'but the directory "%s" does not seem to exist',
         'github.com/hyperledger/fabric/protos',
         baseDir);
 }
