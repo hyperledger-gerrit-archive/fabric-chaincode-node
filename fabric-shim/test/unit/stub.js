@@ -532,9 +532,41 @@ describe('Stub', () => {
             });
         });
 
-        describe('getStateByRange', () => {
-            it ('should return handler.handleGetStateByRange', async () => {
-                const handleGetStateByRangeStub = sinon.stub().resolves({iterator: 'some state'});
+		describe('setStateValidationParameter', () => {
+			it('should return handler.handlePutStateMetadata', async () => {
+				const handlePutStateMetadataStub = sinon.stub().resolves('nothing');
+				let stub = new Stub({
+					handlePutStateMetadata: handlePutStateMetadataStub
+				}, 'dummyChannelId', 'dummyTxid', {
+					args: []
+				});
+				const ep = Buffer.from('someEndorsementPolicy');
+
+				const nothing = await stub.setStateValidationParameter('aKey', ep);
+				expect(nothing).to.deep.equal('nothing');
+				sinon.assert.calledOnce(handlePutStateMetadataStub);
+				sinon.assert.calledWith(handlePutStateMetadataStub, '', 'aKey', 'VALIDATION_PARAMETER', ep, 'dummyChannelId', 'dummyTxid');
+			});
+		});
+
+		describe('getStateValidationParameter', () => {
+			it('should return handler.handleGetStateMetadata', async () => {
+				const handleGetStateMetadataStub = sinon.stub().resolves({ VALIDATION_PARAMETER: 'some metadata'});
+				let stub = new Stub({
+					handleGetStateMetadata: handleGetStateMetadataStub
+				}, 'dummyChannelId', 'dummyTxid', {
+					args: []
+				});
+				const ep = await stub.getStateValidationParameter('aKey');
+				expect(ep).to.deep.equal('some metadata');
+				sinon.assert.calledOnce(handleGetStateMetadataStub);
+				sinon.assert.calledWith(handleGetStateMetadataStub, '', 'aKey', 'dummyChannelId', 'dummyTxid');
+			});
+		});
+
+		describe('getStateByRange', () => {
+			it ('should return handler.handleGetStateByRange', async () => {
+				const handleGetStateByRangeStub = sinon.stub().resolves({ iterator: 'some state' });
 
                 const stub = new Stub({
                     handleGetStateByRange: handleGetStateByRangeStub
@@ -1092,9 +1124,41 @@ describe('Stub', () => {
             });
         });
 
-        describe('getPrivateDataByRange', () => {
-            let handleGetStateByRangeStub;
-            let stub;
+		describe('setPrivateDataValidationParameter', () => {
+			it('should return handler.handlePutStateMetadata', async () => {
+				const handlePutStateMetadataStub = sinon.stub().resolves('nothing');
+				let stub = new Stub({
+					handlePutStateMetadata: handlePutStateMetadataStub
+				}, 'dummyChannelId', 'dummyTxid', {
+					args: []
+				});
+				const ep = Buffer.from('someEndorsementPolicy');
+
+				const nothing = await stub.setPrivateDataValidationParameter('a collection', 'aKey', ep);
+				expect(nothing).to.deep.equal('nothing');
+				sinon.assert.calledOnce(handlePutStateMetadataStub);
+				sinon.assert.calledWith(handlePutStateMetadataStub, 'a collection', 'aKey', 'VALIDATION_PARAMETER', ep, 'dummyChannelId', 'dummyTxid');
+			});
+		});
+
+		describe('getPrivateDataValidationParameter', () => {
+			it('should return handler.handleGetStateMetadata', async () => {
+				const handleGetStateMetadataStub = sinon.stub().resolves({ VALIDATION_PARAMETER: 'some metadata'});
+				let stub = new Stub({
+					handleGetStateMetadata: handleGetStateMetadataStub
+				}, 'dummyChannelId', 'dummyTxid', {
+					args: []
+				});
+				const ep = await stub.getPrivateDataValidationParameter('a collection', 'aKey');
+				expect(ep).to.deep.equal('some metadata');
+				sinon.assert.calledOnce(handleGetStateMetadataStub);
+				sinon.assert.calledWith(handleGetStateMetadataStub, 'a collection', 'aKey', 'dummyChannelId', 'dummyTxid');
+			});
+		});
+
+		describe('getPrivateDataByRange', () => {
+			let handleGetStateByRangeStub;
+			let stub;
 
             beforeEach(() => {
                 handleGetStateByRangeStub = sinon.stub().resolves('some state');

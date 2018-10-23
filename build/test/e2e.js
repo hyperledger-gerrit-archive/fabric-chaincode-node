@@ -398,5 +398,32 @@ gulp.task('test-e2e-invoke-v0-test20', ['test-e2e-invoke-v0-test19'], () => {
         ]));
 });
 
+// set key-level validation params
+gulp.task('test-e2e-invoke-v0-test21', ['test-e2e-invoke-v0-test20'], () => {
+	return gulp.src('*.js', { read: false })
+		.pipe(wait(3000))
+		.pipe(shell([
+			util.format('docker exec cli peer chaincode invoke %s -C %s -n %s -c %s --waitForEvent',
+				getTLSArgs(),
+				CHANNEL_NAME,
+				CC_NAME,
+				'\'{"Args":["test21"]}\'',
+				';exit $((!($?!=0)))')
+		]));
+});
 
-gulp.task('test-e2e-shim', ['test-e2e-invoke-v0-test20']);
+// get key-level validation params
+gulp.task('test-e2e-invoke-v0-test22', ['test-e2e-invoke-v0-test21'], () => {
+	return gulp.src('*.js', { read: false })
+		.pipe(wait(3000))
+		.pipe(shell([
+			util.format('docker exec cli peer chaincode invoke %s -C %s -n %s -c %s --waitForEvent',
+				getTLSArgs(),
+				CHANNEL_NAME,
+				CC_NAME,
+				'\'{"Args":["test22"]}\'',
+				';exit $((!($?!=0)))')
+		]));
+});
+
+gulp.task('test-e2e-shim', ['test-e2e-invoke-v0-test22']);

@@ -967,9 +967,9 @@ describe('Handler', () => {
                 expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('DeleteState');
             });
 
-            it ('should reject when _askPeerAndListen resolves', async () => {
-                const handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
-                const _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
+			it ('should reject when _askPeerAndListen rejects', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
 
                 const result = handler.handleDeleteState(collection, key, 'theChannelID', 'theTxID');
 
@@ -980,10 +980,117 @@ describe('Handler', () => {
             });
         });
 
-        describe('handleGetStateByRange', () => {
-            const startKey = 'theStartKey';
-            const endKey = 'theEndKey';
-            const collection = '';
+		describe('handlePutStateMetadata', () => {
+			let key = 'theKey';
+			let collection = '';
+			let expectedMsg;
+			let metadataKey = 'VALIDATION_PARAMETER';
+			let ep = Buffer.from('theEP');
+
+			before(() => {
+				let serviceProto = Handler.__get__('_serviceProto');
+
+				const stateMetadata = new serviceProto.StateMetadata();
+				stateMetadata.setMetakey(metadataKey);
+				stateMetadata.setValue(ep);
+
+				let payload = new serviceProto.PutStateMetadata();
+				payload.setKey(key);
+				payload.setCollection(collection);
+				payload.setMetadata(stateMetadata);
+
+				expectedMsg = {
+					type: serviceProto.ChaincodeMessage.Type.PUT_STATE_METADATA,
+					payload: payload.toBuffer(),
+					channel_id: 'theChannelID',
+					txid: 'theTxID'
+				};
+			});
+
+			afterEach(() => {
+				Handler = rewire('../../../fabric-shim/lib/handler.js');
+				sandbox.restore();
+			});
+
+			it('should resolve when _askPeerAndListen resolves', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
+
+				let result = await handler.handlePutStateMetadata(collection, key, metadataKey, ep, 'theChannelID', 'theTxID');
+
+				expect(result).to.deep.equal('some response');
+				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
+				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
+				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('PutStateMetadata');
+			});
+
+			it('should reject when _askPeerAndListen rejects', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
+
+				let result = handler.handlePutStateMetadata(collection, key, metadataKey, ep, 'theChannelID', 'theTxID');
+
+				await expect(result).to.eventually.be.rejected;
+				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
+				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
+				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('PutStateMetadata');
+			});
+		});
+
+		describe('handleGetStateMetadata', () => {
+			let key = 'theKey';
+			let collection = '';
+			let expectedMsg;
+
+			before(() => {
+				let serviceProto = Handler.__get__('_serviceProto');
+
+				let payload = new serviceProto.GetStateMetadata();
+				payload.setKey(key);
+				payload.setCollection(collection);
+
+				expectedMsg = {
+					type: serviceProto.ChaincodeMessage.Type.GET_STATE_METADATA,
+					payload: payload.toBuffer(),
+					channel_id: 'theChannelID',
+					txid: 'theTxID'
+				};
+			});
+
+			afterEach(() => {
+				Handler = rewire('../../../fabric-shim/lib/handler.js');
+				sandbox.restore();
+			});
+
+			it('should resolve when _askPeerAndListen resolves', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').resolves('some response');
+
+				let result = await handler.handleGetStateMetadata(collection, key, 'theChannelID', 'theTxID');
+
+				expect(result).to.deep.equal('some response');
+				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
+				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
+				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('GetStateMetadata');
+			});
+
+			it('should reject when _askPeerAndListen rejects', async () => {
+				let handler = new Handler(mockChaincodeImpl, mockPeerAddress.unsecure);
+				let _askPeerAndListenStub = sandbox.stub(handler, '_askPeerAndListen').rejects();
+
+				let result = handler.handleGetStateMetadata(collection, key, 'theChannelID', 'theTxID');
+
+				await expect(result).to.eventually.be.rejected;
+				expect(_askPeerAndListenStub.firstCall.args.length).to.deep.equal(2);
+				expect(_askPeerAndListenStub.firstCall.args[0]).to.deep.equal(expectedMsg);
+				expect(_askPeerAndListenStub.firstCall.args[1]).to.deep.equal('GetStateMetadata');
+			});
+		});
+
+		describe('handleGetStateByRange', () => {
+			let startKey = 'theStartKey';
+			let endKey = 'theEndKey';
+			let collection = '';
 
             let expectedMsg;
             before(() => {
@@ -1670,10 +1777,40 @@ describe('Handler', () => {
         });
     });
 
-    describe('parseResponse', () => {
-        const qrDecodedPayload = 'qr decoded payload';
-        const ccDecodedPayload = 'cc decoded payload';
-        const mdDecodedPayload = 'metadata decoded payload';
+	describe('handleGetStateMetadata', () => {
+		let handleGetStateMetadata;
+		let payload;
+		let metaKey;
+		let ep;
+
+		before(() => {
+			handleGetStateMetadata = Handler.__get__('handleGetStateMetadata');
+			const serviceProto = Handler.__get__('_serviceProto');
+			ep = Buffer.from('someEP');
+			metaKey = 'theMetaKey';
+
+			const stateMetadata = new serviceProto.StateMetadata();
+			stateMetadata.setMetakey(metaKey);
+			stateMetadata.setValue(ep);
+
+			payload = new serviceProto.StateMetadataResult();
+			const entries = [stateMetadata];
+			payload.setEntries(entries);
+
+			payload = payload.toBuffer();
+		});
+
+		it('should success', () => {
+			const res = handleGetStateMetadata(payload);
+			expect(res).to.haveOwnProperty(metaKey);
+			expect(res[metaKey].toBuffer()).to.eql(ep);
+		});
+	});
+
+	describe('parseResponse', () => {
+		let qrDecodedPayload = 'qr decoded payload';
+		let ccDecodedPayload = 'cc decoded payload';
+		let mdDecodedPayload = 'metadata decoded payload';
 
         let MSG_TYPE;
 
@@ -1833,8 +1970,18 @@ describe('Handler', () => {
 
             parseResponse(handler, res, 'GetHistoryForKey');
 
-            expect(mockHistoryQueryIterator.calledWithNew).to.be.ok;
-            expect(mockHistoryQueryIterator.firstCall.args).to.deep.equal([handler, res.channel_id, res.txid, qrDecodedPayload]);
-        });
-    });
+			expect(mockHistoryQueryIterator.calledWithNew).to.be.ok;
+			expect(mockHistoryQueryIterator.firstCall.args).to.deep.equal([handler, res.channel_id, res.txid, qrDecodedPayload]);
+		});
+
+		it('shold decode state metadata for GetStateMetadata', () => {
+			const mockHandleGetStateMetadata = sinon.stub().returns('decoded response');
+			Handler.__set__('handleGetStateMetadata', mockHandleGetStateMetadata);
+			let result = parseResponse(handler, res, 'GetStateMetadata');
+
+			expect(result).to.eql('decoded response');
+			sinon.assert.calledOnce(mockHandleGetStateMetadata);
+			sinon.assert.calledWith(mockHandleGetStateMetadata, res.payload);
+		});
+	});
 });
