@@ -1,3 +1,8 @@
+## v1.3.2
+Fri 26 Oct 2018 22:59:55 BST
+
+* Re-publish due to incorrect publish of 1.3.1
+
 ## v1.3.1
 Fri 26 Oct 2018 08:12:55 BST
 
