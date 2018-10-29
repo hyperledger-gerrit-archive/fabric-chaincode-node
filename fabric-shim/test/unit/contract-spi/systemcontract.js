@@ -43,7 +43,7 @@ describe('SystemContract', () => {
 
     describe('#constructor', () => {
 
-        it ('should create correctly', () => {
+        it('should create correctly', () => {
             const meta = new SystemContract();
             expect(meta.getNamespace()).to.equal('org.hyperledger.fabric');
         });
@@ -52,15 +52,15 @@ describe('SystemContract', () => {
 
     describe('#getMetaData', () => {
 
-        it ('should get the buffer', async () => {
+        it('should get the buffer', async () => {
             const meta = new SystemContract();
 
             const chaincodeMock = {
-                getContracts : sandbox.stub().returns({})
+                getContracts: sandbox.stub().returns({})
             };
             meta._setChaincode(chaincodeMock);
 
-            const data = meta.getMetaData();
+            const data = meta.GetMetadata();
             expect(data.toString()).to.equal('{}');
             sinon.assert.calledOnce(chaincodeMock.getContracts);
 

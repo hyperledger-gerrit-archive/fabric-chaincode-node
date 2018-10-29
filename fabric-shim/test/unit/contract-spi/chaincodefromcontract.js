@@ -11,8 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* global describe it beforeEach afterEach   */
-/* eslint-disable no-console */
+/* global describe it beforeEach afterEach */
 'use strict';
 
 // test specific libraries
@@ -23,7 +22,7 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
-
+const mockery = require('mockery');
 
 // standard utility fns
 const path = require('path');
@@ -37,6 +36,7 @@ const ChaincodeFromContract = require(path.join(pathToRoot, 'fabric-shim/lib/con
 const SystemContract = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/systemcontract'));
 const shim = require(path.join(pathToRoot, 'fabric-shim/lib/chaincode'));
 const FabricStubInterface = require(path.join(pathToRoot, 'fabric-shim/lib/stub'));
+const StartCommand = require(path.join(pathToRoot, 'fabric-shim/lib/cmds/startCommand.js'));
 let alphaStub;
 let betaStub;
 
@@ -47,39 +47,42 @@ let privateStub;
 let ctxStub;
 
 function log(...e) {
+    // eslint-disable-next-line no-console
     console.log(...e);
 }
 
 describe('chaincodefromcontract', () => {
 
     /**
-    * A fake  contract class;
-    */
+     * A fake  contract class;
+     */
     class SCAlpha extends Contract {
+        /** */
         constructor() {
             super('alpha');
         }
         /**
-        * @param {object} api api
-        * @param {String} arg1 arg1
-        * @param {String} arg2 arg2
-        */
-        async alpha(api, arg1, arg2) {
+         * @param {object} api api
+         * @param {String} arg1 arg1
+         * @param {String} arg2 arg2
+         */
+        async alpha (api, arg1, arg2) {
             return alphaStub(api, arg1, arg2);
         }
     }
 
     /**
-    * A fake  contract class;
-    */
+     * A fake  contract class;
+     */
     class SCBeta extends Contract {
+        /** */
         constructor() {
             super('beta');
             this.property = 'value';
         }
         /**
-        * @param {object} api api
-        */
+         * @param {object} api api
+         */
         beta(api) {
             betaStub(api);
         }
@@ -107,6 +110,7 @@ describe('chaincodefromcontract', () => {
     }
 
     let sandbox;
+    let getArgsStub;
 
     beforeEach('Sandbox creation', () => {
         sandbox = sinon.createSandbox();
@@ -114,23 +118,35 @@ describe('chaincodefromcontract', () => {
         afterFnStubA = sandbox.stub().named('afterFnStubA');
         alphaStub = sandbox.stub().named('alphaStub');
         betaStub = sandbox.stub().named('betaStub');
+        getArgsStub = sandbox.stub(StartCommand, 'getArgs').returns({
+            'module-path': '/some/path'
+        });
+
+        mockery.enable();
+        mockery.registerMock('./systemcontract', SystemContract);
+
+        const pathStub = sandbox.stub(path, 'resolve');
+        pathStub.withArgs(sinon.match.any, '/some/path').returns('/some/path');
+        pathStub.withArgs('/some/path', 'package.json').returns('packagejson');
     });
 
     afterEach('Sandbox restoration', () => {
         sandbox.restore();
+        mockery.disable();
     });
 
     describe('#constructor', () => {
 
-        it ('should handle no classes being past in', () => {
+        it('should handle no classes being past in', () => {
             (() => {
                 new ChaincodeFromContract();
             }).should.throw(/Missing argument/);
         });
 
-        it ('should handle classes that are not of the correc type', () => {
-            const tempClass =   class {
-                constructor() {}
+        it('should handle classes that are not of the correct type', () => {
+            const tempClass = class {
+                /**  */
+                constructor() { }
             };
 
             (() => {
@@ -140,7 +156,14 @@ describe('chaincodefromcontract', () => {
             }).should.throw(/invalid contract/);
         });
 
-        it ('should correctly create valid chaincode instance', () => {
+        it('should correctly create valid chaincode instance', () => {
+            const mock = {
+                version: '1.0.1',
+                name: 'some package'
+            };
+
+            mockery.registerMock('packagejson', mock);
+
             SCBeta.prototype.fred = 'fred';
             const cc = new ChaincodeFromContract([SCAlpha, SCBeta]);
 
@@ -150,76 +173,50 @@ describe('chaincodefromcontract', () => {
             expect(cc.contracts.beta).to.include.keys('functionNames');
             expect(cc.contracts.beta.functionNames).to.include('beta');
             expect(cc.contracts.alpha.functionNames).to.include('alpha');
+
+            sinon.assert.calledOnce(getArgsStub);
+            expect(cc.version).to.deep.equal('1.0.1');
+            expect(cc.title).to.deep.equal('some package');
         });
 
+        it('should correctly create valid chaincode instance when package.json does not have version or name', () => {
+            const mock = {};
+
+            mockery.registerMock('packagejson', mock);
+
+            SCBeta.prototype.fred = 'fred';
+            const cc = new ChaincodeFromContract([SCAlpha, SCBeta]);
+
+            // get the contracts that have been defined
+            expect(cc.contracts).to.have.keys('alpha', 'beta', 'org.hyperledger.fabric');
+            expect(cc.contracts.alpha).to.include.keys('functionNames');
+            expect(cc.contracts.beta).to.include.keys('functionNames');
+            expect(cc.contracts.beta.functionNames).to.include('beta');
+            expect(cc.contracts.alpha.functionNames).to.include('alpha');
+
+            sinon.assert.calledOnce(getArgsStub);
+            expect(cc.version).to.deep.equal('');
+            expect(cc.title).to.deep.equal('');
+        });
     });
 
     describe('#init', () => {
 
-        it ('should call the invokeFunctionality method', async () => {
-            const stubInterface = sinon.createStubInstance(FabricStubInterface);
-            stubInterface.getFunctionAndParameters.returns({
-                fcn:'alpha:alpha',
-                params: ['arg1', 'arg2']
-            });
-            const fakesuccess = sinon.fake((e) => {
-                log(e);
-            });
-            sandbox.replace(shim, 'success', fakesuccess);
+        it('should call the Invoke method', async () => {
+            const stubFake = {};
 
             const cc = new ChaincodeFromContract([SCAlpha, SCBeta]);
-            sandbox.stub(cc, 'invokeFunctionality');
+            sandbox.stub(cc, 'Invoke');
+            await cc.Init(stubFake);
 
-            await cc.Init(stubInterface);
-            sinon.assert.calledOnce(cc.invokeFunctionality);
-            sinon.assert.calledWith(cc.invokeFunctionality, stubInterface);
-            sinon.assert.notCalled(fakesuccess);
-
-        });
-
-        it ('should return a shim.success when no args are passed through the init function', async () => {
-            const stubInterface = sinon.createStubInstance(FabricStubInterface);
-            stubInterface.getFunctionAndParameters.returns({
-                fcn: '',
-                params: []
-            });
-            const fakesuccess = sinon.fake((e) => {
-                log(e);
-            });
-            sandbox.replace(shim, 'success', fakesuccess);
-
-            const cc = new ChaincodeFromContract([SCAlpha, SCBeta]);
-            sandbox.stub(cc, 'invokeFunctionality');
-
-            await cc.Init(stubInterface);
-            sinon.assert.calledOnce(fakesuccess);
-            sinon.assert.notCalled(cc.invokeFunctionality);
+            sinon.assert.calledOnce(cc.Invoke);
+            sinon.assert.calledWith(cc.Invoke, stubFake);
 
         });
 
     });
 
     describe('#invoke', () => {
-
-        it ('should call the invokeFunctionality method', async () => {
-            const stubInterface = sinon.createStubInstance(FabricStubInterface);
-            stubInterface.getFunctionAndParameters.returns({
-                fcn:'alpha:alpha',
-                params: ['arg1', 'arg2']
-            });
-
-            const cc = new ChaincodeFromContract([SCAlpha, SCBeta]);
-            sandbox.stub(cc, 'invokeFunctionality');
-            await cc.Invoke(stubInterface);
-
-            sinon.assert.calledOnce(cc.invokeFunctionality);
-            sinon.assert.calledWith(cc.invokeFunctionality, stubInterface);
-
-        });
-
-    });
-
-    describe('#invokeFunctionality', () => {
 
         let fakeSuccess;
         let fakeError;
@@ -229,20 +226,20 @@ describe('chaincodefromcontract', () => {
         let defaultCreateContext;
 
         const certWithoutAttrs = '-----BEGIN CERTIFICATE-----' +
-		'MIICXTCCAgSgAwIBAgIUeLy6uQnq8wwyElU/jCKRYz3tJiQwCgYIKoZIzj0EAwIw' +
-		'eTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
-		'biBGcmFuY2lzY28xGTAXBgNVBAoTEEludGVybmV0IFdpZGdldHMxDDAKBgNVBAsT' +
-		'A1dXVzEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMTcwOTA4MDAxNTAwWhcNMTgw' +
-		'OTA4MDAxNTAwWjBdMQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xp' +
-		'bmExFDASBgNVBAoTC0h5cGVybGVkZ2VyMQ8wDQYDVQQLEwZGYWJyaWMxDjAMBgNV' +
-		'BAMTBWFkbWluMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFq/90YMuH4tWugHa' +
-		'oyZtt4Mbwgv6CkBSDfYulVO1CVInw1i/k16DocQ/KSDTeTfgJxrX1Ree1tjpaodG' +
-		'1wWyM6OBhTCBgjAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4E' +
-		'FgQUhKs/VJ9IWJd+wer6sgsgtZmxZNwwHwYDVR0jBBgwFoAUIUd4i/sLTwYWvpVr' +
-		'TApzcT8zv/kwIgYDVR0RBBswGYIXQW5pbHMtTWFjQm9vay1Qcm8ubG9jYWwwCgYI' +
-		'KoZIzj0EAwIDRwAwRAIgCoXaCdU8ZiRKkai0QiXJM/GL5fysLnmG2oZ6XOIdwtsC' +
-		'IEmCsI8Mhrvx1doTbEOm7kmIrhQwUVDBNXCWX1t3kJVN' +
-		'-----END CERTIFICATE-----';
+            'MIICXTCCAgSgAwIBAgIUeLy6uQnq8wwyElU/jCKRYz3tJiQwCgYIKoZIzj0EAwIw' +
+            'eTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh' +
+            'biBGcmFuY2lzY28xGTAXBgNVBAoTEEludGVybmV0IFdpZGdldHMxDDAKBgNVBAsT' +
+            'A1dXVzEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMTcwOTA4MDAxNTAwWhcNMTgw' +
+            'OTA4MDAxNTAwWjBdMQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xp' +
+            'bmExFDASBgNVBAoTC0h5cGVybGVkZ2VyMQ8wDQYDVQQLEwZGYWJyaWMxDjAMBgNV' +
+            'BAMTBWFkbWluMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFq/90YMuH4tWugHa' +
+            'oyZtt4Mbwgv6CkBSDfYulVO1CVInw1i/k16DocQ/KSDTeTfgJxrX1Ree1tjpaodG' +
+            '1wWyM6OBhTCBgjAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4E' +
+            'FgQUhKs/VJ9IWJd+wer6sgsgtZmxZNwwHwYDVR0jBBgwFoAUIUd4i/sLTwYWvpVr' +
+            'TApzcT8zv/kwIgYDVR0RBBswGYIXQW5pbHMtTWFjQm9vay1Qcm8ubG9jYWwwCgYI' +
+            'KoZIzj0EAwIDRwAwRAIgCoXaCdU8ZiRKkai0QiXJM/GL5fysLnmG2oZ6XOIdwtsC' +
+            'IEmCsI8Mhrvx1doTbEOm7kmIrhQwUVDBNXCWX1t3kJVN' +
+            '-----END CERTIFICATE-----';
 
         const idBytes = {
             toBuffer: () => {
@@ -274,14 +271,14 @@ describe('chaincodefromcontract', () => {
                 sandbox.replace(shim, 'error', fakeError);
             });
 
-            it ('should invoke the alpha function', async () => {
+            it('should invoke the alpha function', async () => {
                 alphaStub.resolves('Hello');
                 beforeFnStubA.resolves();
                 afterFnStubA.resolves();
 
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'alpha:alpha',
+                    fcn: 'alpha:alpha',
                     params: ['arg1', 'arg2']
                 });
 
@@ -293,7 +290,7 @@ describe('chaincodefromcontract', () => {
                     mockSigningId
                 );
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(alphaStub);
                 sinon.assert.calledWith(alphaStub, sinon.match.any, 'arg1', 'arg2');
                 sinon.assert.calledOnce(defaultBeforeSpy);
@@ -304,14 +301,14 @@ describe('chaincodefromcontract', () => {
                 expect(fakeSuccess.getCall(0).args[0].toString()).to.deep.equal('Hello');
             });
 
-            it ('should invoke the alpha function handling non-string response', async () => {
+            it('should invoke the alpha function handling non-string response', async () => {
                 alphaStub.resolves(123);
                 beforeFnStubA.resolves();
                 afterFnStubA.resolves();
 
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'alpha:alpha',
+                    fcn: 'alpha:alpha',
                     params: ['arg1', 'arg2']
                 });
 
@@ -323,7 +320,7 @@ describe('chaincodefromcontract', () => {
                     mockSigningId
                 );
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(alphaStub);
                 sinon.assert.calledWith(alphaStub, sinon.match.any, 'arg1', 'arg2');
                 sinon.assert.calledOnce(defaultBeforeSpy);
@@ -334,14 +331,14 @@ describe('chaincodefromcontract', () => {
                 expect(fakeSuccess.getCall(0).args[0].toString()).to.deep.equal('123');
             });
 
-            it ('should invoke alpha and handle when function response is a buffer', async () => {
+            it('should invoke alpha and handle when function response is a buffer', async () => {
                 alphaStub.resolves(Buffer.from('hello'));
                 beforeFnStubA.resolves();
                 afterFnStubA.resolves();
 
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'alpha:alpha',
+                    fcn: 'alpha:alpha',
                     params: ['arg1', 'arg2']
                 });
 
@@ -353,7 +350,7 @@ describe('chaincodefromcontract', () => {
                     mockSigningId
                 );
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(alphaStub);
                 sinon.assert.calledWith(alphaStub, sinon.match.any, 'arg1', 'arg2');
                 sinon.assert.calledOnce(defaultBeforeSpy);
@@ -364,14 +361,14 @@ describe('chaincodefromcontract', () => {
                 expect(fakeSuccess.getCall(0).args[0].toString()).to.deep.equal('[104,101,108,108,111]');
             });
 
-            it ('should invoke alpha and handle when function response is an array', async () => {
+            it('should invoke alpha and handle when function response is an array', async () => {
                 alphaStub.resolves([1, 2, 3, 4]);
                 beforeFnStubA.resolves();
                 afterFnStubA.resolves();
 
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'alpha:alpha',
+                    fcn: 'alpha:alpha',
                     params: ['arg1', 'arg2']
                 });
 
@@ -384,7 +381,7 @@ describe('chaincodefromcontract', () => {
                 );
 
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(alphaStub);
                 sinon.assert.calledWith(alphaStub, sinon.match.any, 'arg1', 'arg2');
                 sinon.assert.calledOnce(defaultBeforeSpy);
@@ -395,14 +392,14 @@ describe('chaincodefromcontract', () => {
                 expect(fakeSuccess.getCall(0).args[0].toString()).to.deep.equal('[1,2,3,4]');
             });
 
-            it ('should invoke the correct before/after fns function', async () => {
+            it('should invoke the correct before/after fns function', async () => {
                 beforeFnStubA.resolves();
                 afterFnStubA.resolves();
                 ctxStub = sandbox.createStubInstance(Context);
 
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'beta:beta',
+                    fcn: 'beta:beta',
                     params: ['arg1', 'arg2']
                 });
 
@@ -415,25 +412,28 @@ describe('chaincodefromcontract', () => {
                 );
 
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(betaStub);
                 sinon.assert.calledOnce(afterFnStubA);
                 sinon.assert.calledOnce(beforeFnStubA);
                 sinon.assert.callOrder(beforeFnStubA, afterFnStubA);
             });
 
-            describe('getContracts', () => {
-                it ('should invoke getContracts', async () => {
+            describe('getMetadata', () => {
+                it('should invoke GetMetadata', async () => {
+                    cc.title = 'some chaincode';
+                    cc.version = '1.0.1';
+
                     alphaStub.resolves('Hello');
                     beforeFnStubA.resolves();
                     afterFnStubA.resolves();
 
-                    const getMetaDataSpy = sandbox.spy(SystemContract.prototype, 'getMetaData');
+                    const getMetadataSpy = sandbox.spy(SystemContract.prototype, 'GetMetadata');
                     const getContractsSpy = sandbox.spy(ChaincodeFromContract.prototype, 'getContracts');
 
                     const stubInterface = sinon.createStubInstance(FabricStubInterface);
                     stubInterface.getFunctionAndParameters.returns({
-                        fcn:'org.hyperledger.fabric:getMetaData',
+                        fcn: 'org.hyperledger.fabric:GetMetadata',
                         params: ['arg1', 'arg2']
                     });
 
@@ -445,11 +445,53 @@ describe('chaincodefromcontract', () => {
                         mockSigningId
                     );
 
-                    const expectedResponse = JSON.stringify({'alpha':{'functions':['alpha']}, 'beta':{'functions':['beta', 'afterTransaction', 'beforeTransaction', 'unknownTransaction', 'createContext']}, 'org.hyperledger.fabric':{'functions':['getMetaData']}});
+                    const expectedResponse = JSON.stringify({
+                        info: {
+                            title: 'some chaincode',
+                            version: '1.0.1'
+                        },
+                        contracts: [{
+                            info: {
+                                title: 'alpha',
+                                version: '1.0.1'
+                            },
+                            transactions: [{
+                                transactionId: 'alpha'
+                            }],
+                            namespace: 'alpha'
+                        }, {
+                            info: {
+                                title: 'beta',
+                                version: '1.0.1'
+                            },
+                            transactions: [{
+                                transactionId: 'beta'
+                            }, {
+                                transactionId: 'afterTransaction'
+                            }, {
+                                transactionId: 'beforeTransaction'
+                            }, {
+                                transactionId: 'unknownTransaction'
+                            }, {
+                                transactionId: 'createContext'
+                            }],
+                            namespace: 'beta'
+                        }, {
+                            info: {
+                                title: 'org.hyperledger.fabric',
+                                version: '1.0.1'
+                            },
+                            transactions: [{
+                                transactionId: 'GetMetadata'
+                            }],
+                            namespace: 'org.hyperledger.fabric'
+                        }],
+                        components: {}
+                    });
 
-                    await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                    await cc.Invoke(stubInterface);
                     sinon.assert.calledOnce(getContractsSpy);
-                    sinon.assert.calledOnce(getMetaDataSpy);
+                    sinon.assert.calledOnce(getMetadataSpy);
                     expect(Buffer.isBuffer(fakeSuccess.getCall(0).args[0])).to.be.ok;
                     expect(fakeSuccess.getCall(0).args[0].toString()).to.deep.equal(expectedResponse);
                 });
@@ -470,14 +512,14 @@ describe('chaincodefromcontract', () => {
                 sandbox.replace(shim, 'error', fakeError);
             });
 
-            it ('should correctly handle case of failing before hook', async () => {
+            it('should correctly handle case of failing before hook', async () => {
                 beforeFnStubA.rejects(new Error('failure failure'));
                 afterFnStubA.resolves();
                 ctxStub = sandbox.createStubInstance(Context);
 
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'beta:beta',
+                    fcn: 'beta:beta',
                     params: ['arg1', 'arg2']
                 });
 
@@ -490,7 +532,7 @@ describe('chaincodefromcontract', () => {
                 );
 
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(shim.error);
                 expect(fakeError.args[0][0]).to.be.instanceOf(Error);
                 expect(fakeError.args[0][0].toString()).to.match(/failure failure/);
@@ -500,23 +542,23 @@ describe('chaincodefromcontract', () => {
                 sinon.assert.calledOnce(beforeFnStubA);
             });
 
-            it ('should throw correct error with missing namespace', async () => {
+            it('should throw correct error with missing namespace', async () => {
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'wibble:alpha',
+                    fcn: 'wibble:alpha',
                     params: ['arg1', 'arg2']
                 });
 
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(shim.error);
                 expect(fakeError.args[0][0]).to.be.instanceOf(Error);
                 expect(fakeError.args[0][0].toString()).to.match(/Error: Namespace is not known :wibble:/);
             });
 
-            it ('should throw correct error with wrong function name', async () => {
+            it('should throw correct error with wrong function name', async () => {
                 const stubInterface = sinon.createStubInstance(FabricStubInterface);
                 stubInterface.getFunctionAndParameters.returns({
-                    fcn:'alpha:wibble',
+                    fcn: 'alpha:wibble',
                     params: ['arg1', 'arg2']
                 });
 
@@ -527,7 +569,7 @@ describe('chaincodefromcontract', () => {
                 stubInterface.getCreator.returns(
                     mockSigningId
                 );
-                await cc.invokeFunctionality(stubInterface, stubInterface.getFunctionAndParameters());
+                await cc.Invoke(stubInterface);
                 sinon.assert.calledOnce(shim.error);
                 expect(fakeError.args[0][0]).to.be.instanceOf(Error);
                 expect(fakeError.args[0][0].toString()).to.match(/Error: You've asked to invoke a function that does not exist/);
@@ -542,29 +584,29 @@ describe('chaincodefromcontract', () => {
             cc = new ChaincodeFromContract([SCBeta]);
         });
 
-        it ('should handle the usual case of ns:fn', () => {
+        it('should handle the usual case of ns:fn', () => {
             const result = cc._splitFunctionName('namespace:function');
-            result.should.deep.equal({namespace:'namespace', function:'function'});
+            result.should.deep.equal({namespace: 'namespace', function: 'function'});
         });
 
-        it ('should handle the case of no namespace explicit', () => {
+        it('should handle the case of no namespace explicit', () => {
             const result = cc._splitFunctionName(':function');
-            result.should.deep.equal({namespace:'', function:'function'});
+            result.should.deep.equal({namespace: '', function: 'function'});
         });
 
-        it ('should handle the case of no namespace implict', () => {
+        it('should handle the case of no namespace implict', () => {
             const result = cc._splitFunctionName('function');
-            result.should.deep.equal({namespace:'', function:'function'});
+            result.should.deep.equal({namespace: '', function: 'function'});
         });
 
-        it ('should handle the case of no input', () => {
+        it('should handle the case of no input', () => {
             const result = cc._splitFunctionName('');
-            result.should.deep.equal({namespace:'', function:''});
+            result.should.deep.equal({namespace: '', function: ''});
         });
 
-        it ('should handle the case of multiple :', () => {
+        it('should handle the case of multiple :', () => {
             const result = cc._splitFunctionName('namespace:function:with:colons:');
-            result.should.deep.equal({namespace:'namespace', function:'function:with:colons:'});
+            result.should.deep.equal({namespace: 'namespace', function: 'function:with:colons:'});
         });
     });
 

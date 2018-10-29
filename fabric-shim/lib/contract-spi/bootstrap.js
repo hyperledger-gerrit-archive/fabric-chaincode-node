@@ -39,6 +39,7 @@ function bootstrap() {
     const jsonPath = path.resolve(modPath, 'package.json');
     // let's find the package.json file
     const json = require(jsonPath);
+
     logger.debug('starting up and reading package.json at %s', jsonPath);
     logger.debug(json);
     if (json.contracts) {
@@ -51,6 +52,7 @@ function bootstrap() {
                 const r = require(p);
                 return r;
             });
+
             register(classesToRegister);
         } else {
             throw new Error('Contracts element specified in package.json, but the contents are not usable');
@@ -65,7 +67,7 @@ function bootstrap() {
         } else {
             register([r]);
         }
-    } else  {
+    } else {
         throw new Error('Can not detect any of the indications of how this is a contract instance');
     }
 }
