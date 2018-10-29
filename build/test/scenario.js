@@ -101,10 +101,17 @@ gulp.task('query_functions', async (done) => {
     const options = {};
     const script = 'docker';
     const args = util.format('exec cli peer chaincode query %s -C %s -n %s -c %s',
+<<<<<<< HEAD
         getTLSArgs(),
         CHANNEL_NAME,
         'mysmartcontract',
         '{"Args":["org.hyperledger.fabric:getMetaData"]}').split(' ');
+=======
+		getTLSArgs(),
+		CHANNEL_NAME,
+		'mysmartcontract',
+		'{"Args":["org.hyperledger.fabric:GetMetadata"]}').split(' ');
+>>>>>>> a358887... [FAB-12561] basic metadata to match schema
 
     const {error, stdout, stderr} = await execFile(script, args, options);
     if (error) {
@@ -116,7 +123,11 @@ gulp.task('query_functions', async (done) => {
 
         const metadata = JSON.stringify(JSON.parse(stdout));
 
+<<<<<<< HEAD
         const expectedMetadata = '{"org.mynamespace.updates":{"functions":["unknownTransaction","beforeTransaction","createContext","setup","setNewAssetValue","doubleAssetValue"]},"org.mynamespace.removes":{"functions":["quarterAssetValue","getAssetValue"]},"org.hyperledger.fabric":{"functions":["getMetaData"]}}';
+=======
+        const expectedMetadata = '{"info":{"title":"chaincode","version":"1.0.0"},"contracts":[{"info":{"title":"org.mynamespace.updates","version":"1.0.0"},"transactions":[{"transactionId":"beforeTransaction"},{"transactionId":"createContext"},{"transactionId":"unknownTransaction"}],"namespace":"org.mynamespace.updates"},{"info":{"title":"org.mynamespace.removes","version":"1.0.0"},"transactions":[{"transactionId":"beta"},{"transactionId":"getAssetValue"},{"transactionId":"quarterAssetValue"}],"namespace":"beta"},{"info":{"title":"org.hyperledger.fabric","version":"1.0.0"},"transactions":[{"transactionId":"GetMetadata"}],"namespace":"org.hyperledger.fabric"}],"components":{}}';
+>>>>>>> a358887... [FAB-12561] basic metadata to match schema
 
         if (metadata !== expectedMetadata) {
             throw new Error(`Expected query response to equal ${expectedMetadata} \ninstead recieved: \n${metadata}`);

@@ -9,6 +9,10 @@ const shim = require('../chaincode');
 
 const Logger = require('../logger');
 const logger = Logger.getLogger('contracts-spi/chaincodefromcontract.js');
+const StartCommand = require('../cmds/startCommand.js');
+
+const yargs = require('yargs');
+const path = require('path');
 
 const ClientIdentity = require('../chaincode').ClientIdentity;
 
@@ -47,7 +51,7 @@ class ChaincodeFromContract {
 
         for (const contractClass of contractClasses) {
 
-            const contract = new(contractClass);
+            const contract = new (contractClass);
             if (!(contract instanceof Contract)) {
                 throw new Error(`invalid contract instance ${contract}`);
             }
@@ -76,7 +80,14 @@ class ChaincodeFromContract {
 
             this.contracts[`${namespace}`] = {contractClass, functionNames, contract};
         }
+        const opts = StartCommand.getArgs(yargs);
+        const modPath = path.resolve(process.cwd(), opts['module-path']);
+        const jsonPath = path.resolve(modPath, 'package.json');
 
+        const json = require(jsonPath);
+
+        this.version = json.hasOwnProperty('version') ? json.version : '';
+        this.title = json.hasOwnProperty('name') ? json.name : '';
     }
 
     /**
@@ -113,7 +124,7 @@ class ChaincodeFromContract {
      */
     async invokeFunctionality(stub, fAndP) {
         try {
-            const {namespace:ns, function:fn} = this._splitFunctionName(fAndP.fcn);
+            const {namespace: ns, function: fn} = this._splitFunctionName(fAndP.fcn);
 
             if (!this.contracts[ns]) {
                 throw new Error(`Namespace is not known :${ns}:`);
@@ -169,7 +180,7 @@ class ChaincodeFromContract {
         // https://regex101.com/ is very useful for understanding
 
         const regex = /([^:]*)(?::|^)(.*)/g;
-        const result = {namespace:'', function:''};
+        const result = {namespace: '', function: ''};
 
         const m = regex.exec(fcn);
         result.namespace = m[1];
@@ -182,10 +193,36 @@ class ChaincodeFromContract {
 	 * get information on the contracts
 	 */
     getContracts() {
-        const data = {};
-        // this.contracts[`${namespace}`] = { contractClass, functionNames, contract };
+        const data = {
+            info: {
+                title: this.title,
+                version: this.version
+            },
+            contracts: [],
+            components: {}
+        };
+
         for (const c in this.contracts) {
-            data[c] = {'functions':this.contracts[c].functionNames};
+            const contract = this.contracts[c];
+            const contractData = {
+                info: {
+                    title: contract.contract.getNamespace(),
+                    version: this.version
+                },
+                transactions: []
+            };
+
+            contractData.namespace = contract.contract.getNamespace();
+
+            contract.functionNames.forEach((func) => {
+                const transaction = {
+                    transactionId: func
+                };
+
+                contractData.transactions.push(transaction);
+            });
+
+            data.contracts.push(contractData);
         }
 
         return data;
