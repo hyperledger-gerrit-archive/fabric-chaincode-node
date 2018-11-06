@@ -18,15 +18,18 @@
 const chai = require('chai');
 chai.should();
 const expect = chai.expect;
+const rewire = require('rewire');
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
+const fs = require('fs-extra');
 
 const path = require('path');
+const StartCommand = require('../../../lib/cmds/startCommand.js');
 
 // class under test
 const pathToRoot = '../../../..';
-const SystemContract = require(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/systemcontract'));
+const SystemContract = rewire(path.join(pathToRoot, 'fabric-shim/lib/contract-spi/systemcontract'));
 
 
 describe('SystemContract', () => {
@@ -35,6 +38,7 @@ describe('SystemContract', () => {
 
     beforeEach('Sandbox creation', () => {
         sandbox = sinon.createSandbox();
+
     });
 
     afterEach('Sandbox restoration', () => {
@@ -51,6 +55,30 @@ describe('SystemContract', () => {
     });
 
     describe('#GetMetadata', () => {
+        let getArgsStub;
+        let readFileStub;
+        let pathExistsStub;
+        const jsonObject = {
+            name: 'some string'
+        };
+        const myYargs = {
+            'argv': {
+                '$0': 'fabric-chaincode-node',
+                'peer.address': 'localhost:7051',
+                'chaincode-id-name': 'mycc'
+            }
+        };
+
+        beforeEach('', () => {
+            getArgsStub = sandbox.stub(StartCommand, 'getArgs').returns({
+                'module-path': '/some/path'
+            });
+            SystemContract.__set__('yargs', myYargs);
+        });
+
+        afterEach('', () => {
+            sandbox.restore();
+        });
 
         it ('should get the buffer', async () => {
             const meta = new SystemContract();
@@ -60,10 +88,77 @@ describe('SystemContract', () => {
             };
             meta._setChaincode(chaincodeMock);
 
-            const data = meta.GetMetadata();
+            const data = await meta.GetMetadata();
             expect(data.toString()).to.equal('{}');
+            sinon.assert.calledOnce(getArgsStub);
+            sinon.assert.calledWith(getArgsStub, myYargs);
             sinon.assert.calledOnce(chaincodeMock.getContracts);
 
+        });
+
+        it ('should validate the developers metadata and return it', async () => {
+            const meta = new SystemContract();
+
+            class validator {
+                constructor() {}
+
+                validate() {
+                    return true;
+                }
+            }
+            const ajvOriginal = SystemContract.__get__('Ajv');
+            SystemContract.__set__('Ajv', validator);
+
+            const chaincodeMock = {
+                getContracts : sandbox.stub().returns('some string')
+            };
+            meta._setChaincode(chaincodeMock);
+            pathExistsStub = sandbox.stub(fs, 'pathExists').returns(true);
+            readFileStub = sandbox.stub(fs, 'readFile');
+            readFileStub.onFirstCall().returns(Buffer.from(JSON.stringify(jsonObject)));
+            readFileStub.onSecondCall().returns(Buffer.from('some string'));
+            const data = await meta.GetMetadata();
+
+            expect(data.toString()).to.equal(JSON.stringify(jsonObject));
+            sinon.assert.calledOnce(getArgsStub);
+            sinon.assert.calledOnce(pathExistsStub);
+            sinon.assert.calledTwice(readFileStub);
+            sinon.assert.calledWith(getArgsStub, myYargs);
+            sinon.assert.notCalled(chaincodeMock.getContracts);
+
+            SystemContract.__set__('Ajv', ajvOriginal);
+        });
+
+        it ('should throw an error when validating the developers incorrect metadata', async () => {
+            const meta = new SystemContract();
+            SystemContract.__set__('yargs', myYargs);
+            const ajvOriginal = SystemContract.__get__('Ajv');
+            class validator {
+                constructor() {}
+
+                validate() {
+                    return false;
+                }
+            }
+            SystemContract.__set__('Ajv', validator);
+
+            const chaincodeMock = {
+                getContracts : sandbox.stub().returns('test')
+            };
+            meta._setChaincode(chaincodeMock);
+            pathExistsStub = sandbox.stub(fs, 'pathExists').returns(true);
+            readFileStub = sandbox.stub(fs, 'readFile');
+            readFileStub.onFirstCall().returns(Buffer.from(JSON.stringify(jsonObject)));
+            readFileStub.onSecondCall().returns(Buffer.from('some other string'));
+
+            await expect(meta.GetMetadata()).to.eventually.be.rejectedWith(Error, 'Contract metadata does not match the schema');
+            sinon.assert.calledOnce(getArgsStub);
+            sinon.assert.calledOnce(pathExistsStub);
+            sinon.assert.calledTwice(readFileStub);
+            sinon.assert.calledWith(getArgsStub, myYargs);
+            sinon.assert.notCalled(chaincodeMock.getContracts);
+
+            SystemContract.__set__('Ajv', ajvOriginal);
         });
 
     });
