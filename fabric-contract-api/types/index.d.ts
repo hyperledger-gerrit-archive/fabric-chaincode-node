@@ -24,4 +24,6 @@ declare module 'fabric-contract-api' {
         getNamespace(): string;
 
     }
+
+    export function Transaction(commit?: boolean): (target: any, propertyKey: string | symbol) => void;
 }
