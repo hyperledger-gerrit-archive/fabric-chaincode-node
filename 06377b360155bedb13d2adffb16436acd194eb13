@@ -1,0 +1,9 @@
+Verified+1: Bret Harrison <beharrison@nc.rr.com>
+Code-Review+2: Bret Harrison <beharrison@nc.rr.com>
+Code-Review+1: Matthew White <whitemat@uk.ibm.com>
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Submitted-by: Bret Harrison <beharrison@nc.rr.com>
+Submitted-at: Wed, 07 Nov 2018 16:13:27 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/27407
+Project: fabric-chaincode-node
+Branch: refs/heads/master
