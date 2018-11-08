@@ -40,8 +40,8 @@ Parse_Arguments() {
                       --sdk_E2e_Tests)
                             sdk_E2e_Tests
                             ;;
-                      --publish_Unstable)
-                            publish_Unstable
+                      --publish_NpmModules)
+                            publish_NpmModules
                             ;;
                       --publish_Api_Docs)
                             publish_Api_Docs
