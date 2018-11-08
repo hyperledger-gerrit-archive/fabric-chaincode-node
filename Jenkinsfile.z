@@ -4,12 +4,13 @@
 //
 timeout(40) {
 node('hyp-z') {
+   timestamps {
     try {
      def ROOTDIR = pwd() // workspace dir (/w/workspace/<job_name>
      env.PROJECT_DIR = "gopath/src/github.com/hyperledger"
      env.PROJECT = "fabric-chaincode-node"
      env.GOPATH = "$WORKSPACE/gopath"
-     env.NODE_VER = "8.9.4"
+     env.NODE_VER = "8.11.3"
      env.VERSION = sh(returnStdout: true, script: 'curl -O https://raw.githubusercontent.com/hyperledger/fabric/master/Makefile && cat Makefile | grep "BASE_VERSION =" | cut -d "=" -f2').trim()
      env.VERSION = "$VERSION" // BASE_VERSION from fabric Makefile
      env.ARCH = "s390x"
@@ -26,13 +27,20 @@ node('hyp-z') {
                  [ -e gopath/src/github.com/hyperledger/fabric-chaincode-node ] || mkdir -p $PROJECT_DIR
 
                  cd $PROJECT_DIR && git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/$PROJECT
+                 # clone fabric repository
+                 git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/fabric
+                 # clone fabric-samples repository
                  git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/fabric-samples
+                 # Checkout to patch Refspec
                  cd $PROJECT && git checkout "$GERRIT_BRANCH" && git fetch origin "$GERRIT_REFSPEC" && git checkout FETCH_HEAD
+                 git log -n2 --pretty=oneline --abbrev-commit
+
               '''
               }
           }
           catch (err) {
                  failure_stage = "Fetch patchset"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
@@ -45,12 +53,13 @@ node('hyp-z') {
                }
            catch (err) {
                  failure_stage = "Clean Environment - Get Env Info"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
 
 // Pull Fabric, Fabric-ca Images
-      stage("Pull Docker images") {
+      stage("Pull Docker Images") {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
                  sh './CI_Script.sh --pull_Docker_Images'
@@ -58,6 +67,7 @@ node('hyp-z') {
                }
            catch (err) {
                  failure_stage = "Pull fabric, fabric-ca docker images"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
@@ -71,6 +81,7 @@ node('hyp-z') {
                }
            catch (err) {
                  failure_stage = "sdk_E2e_Tests"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
      }
@@ -83,5 +94,7 @@ node('hyp-z') {
               }
            }
       } // finally block
+     } // timestamps block
 } // node block
 } // timeout block
+
