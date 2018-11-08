@@ -161,7 +161,10 @@ gulp.task('docker-ready', ['generate-config'], () => {
         ]));
 });
 
-gulp.task('channel-init', ['docker-ready'], shell.task([
+gulp.task('channel-init', ['docker-ready'], () => {
+    return gulp.src('*.js', {read: false})
     // create channel, join peer0 to the channel
-    'docker exec cli /etc/hyperledger/config/channel-init.sh'
-]));
+        .pipe(shell([
+            util.format('docker exec cli /etc/hyperledger/config/channel-init.sh')
+        ]));
+});
