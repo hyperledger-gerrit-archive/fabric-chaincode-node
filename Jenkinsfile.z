@@ -28,6 +28,7 @@ node('hyp-z') {
                  cd $PROJECT_DIR && git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/$PROJECT
                  git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/fabric-samples
                  cd $PROJECT && git checkout "$GERRIT_BRANCH" && git fetch origin "$GERRIT_REFSPEC" && git checkout FETCH_HEAD
+                 git log -n2
               '''
               }
           }
@@ -50,7 +51,7 @@ node('hyp-z') {
       }
 
 // Pull Fabric, Fabric-ca Images
-      stage("Pull Docker images") {
+      stage("Pull Docker Images") {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
                  sh './CI_Script.sh --pull_Docker_Images'

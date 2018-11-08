@@ -49,7 +49,7 @@ node ('hyp-x') { // trigger build on x86_64 node
       }
 
 // Pull Fabric, Fabric-ca Images
-      stage("Pull Docker images") {
+      stage("Pull Docker Images") {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
                  sh './CI_Script.sh --pull_Docker_Images'
@@ -74,9 +74,9 @@ node ('hyp-x') { // trigger build on x86_64 node
            }
       }
 
-// Publish unstable npm modules from merged job
+// Publish npm modules from merged job
 if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
-    unstableNpm()
+    publishNpm()
 }  else {
      echo "------> Don't publish npm modules from verify job"
    }
@@ -99,17 +99,17 @@ if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
 } // node block
 } // timeout block
 
-def unstableNpm() {
-// Publish unstable npm modules after successful merge
-      stage("Publish Unstable npm Modules") {
+def publishNpm() {
+// Publish npm modules after successful merge
+      stage("Publish npm Modules") {
       def ROOTDIR = pwd()
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
-                 sh './CI_Script.sh --publish_Unstable'
+                 sh './CI_Script.sh --publish_NpmModules'
                  }
                }
            catch (err) {
-                 failure_stage = "publish_Unstable"
+                 failure_stage = "publish_NpmModules"
                  throw err
            }
       }
