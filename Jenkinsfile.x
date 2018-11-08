@@ -4,12 +4,13 @@
 //
 timeout(40) {
 node ('hyp-x') { // trigger build on x86_64 node
+  timestamps {
     try {
      def ROOTDIR = pwd() // workspace dir (/w/workspace/<job_name>)
      env.PROJECT_DIR = "gopath/src/github.com/hyperledger"
      env.PROJECT = "fabric-chaincode-node"
      env.GOPATH = "$WORKSPACE/gopath"
-     env.NODE_VER = "8.9.4"
+     env.NODE_VER = "8.11.3"
      env.VERSION = sh(returnStdout: true, script: 'curl -O https://raw.githubusercontent.com/hyperledger/fabric/master/Makefile && cat Makefile | grep "BASE_VERSION =" | cut -d "=" -f2').trim()
      env.VERSION = "$VERSION" // BASE_VERSION from fabric Makefile
      env.ARCH = "amd64"
@@ -25,13 +26,20 @@ node ('hyp-x') { // trigger build on x86_64 node
               sh '''
                  [ -e gopath/src/github.com/hyperledger/ ] || mkdir -p $PROJECT_DIR
                  cd $PROJECT_DIR && git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/$PROJECT
+                 # clone fabric repository
+                 git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/fabric
+                 # clone fabric-samples repository
                  git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/fabric-samples
+                 # Checkout to patch Refspec
                  cd $PROJECT && git checkout "$GERRIT_BRANCH" && git fetch origin "$GERRIT_REFSPEC" && git checkout FETCH_HEAD
+                 git log -n2 --pretty=oneline --abbrev-commit
+
               '''
               }
           }
           catch (err) {
                  failure_stage = "Fetch patchset"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
@@ -44,12 +52,13 @@ node ('hyp-x') { // trigger build on x86_64 node
                }
            catch (err) {
                  failure_stage = "Clean Environment - Get Env Info"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
 
 // Pull Fabric, Fabric-ca Images
-      stage("Pull Docker images") {
+      stage("Pull Docker Images") {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
                  sh './CI_Script.sh --pull_Docker_Images'
@@ -57,6 +66,7 @@ node ('hyp-x') { // trigger build on x86_64 node
                }
            catch (err) {
                  failure_stage = "Pull fabric, fabric-ca docker images"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
@@ -70,13 +80,14 @@ node ('hyp-x') { // trigger build on x86_64 node
                }
            catch (err) {
                  failure_stage = "sdk_E2e_Tests"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
 
-// Publish unstable npm modules from merged job
+// Publish npm modules from merged job
 if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
-    unstableNpm()
+    publishNpm()
 }  else {
      echo "------> Don't publish npm modules from verify job"
    }
@@ -96,20 +107,22 @@ if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
               }
            }
       } // finally block
-} // node block
+    } // timestamps block
+} // node block    
 } // timeout block
 
-def unstableNpm() {
-// Publish unstable npm modules after successful merge
-      stage("Publish Unstable npm Modules") {
+def publishNpm() {
+// Publish npm modules after successful merge
+      stage("Publish npm Modules") {
       def ROOTDIR = pwd()
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
-                 sh './CI_Script.sh --publish_Unstable'
+                 sh './CI_Script.sh --publish_NpmModules'
                  }
                }
            catch (err) {
-                 failure_stage = "publish_Unstable"
+                 failure_stage = "publish_NpmModules"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }
@@ -126,6 +139,7 @@ def apiDocs() {
                }
            catch (err) {
                  failure_stage = "publish_ApiDocs"
+                 currentBuild.result = 'FAILURE'
                  throw err
            }
       }

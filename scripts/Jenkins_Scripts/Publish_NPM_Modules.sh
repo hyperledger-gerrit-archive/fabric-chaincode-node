@@ -5,10 +5,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-#################################################
-#Publish npm module as unstable after merge commit
-#npm publish --tag unstable
-#################################################
+######################################
+# Publish npm module after merge commit
+# npm publish --tag $CURRENT_TAG
+######################################
 
 npmPublish() {
   if [[ "$CURRENT_TAG" = *"skip"* ]]; then
@@ -22,6 +22,7 @@ npmPublish() {
       print ver}')
 
       echo "===> UNSTABLE VERSION --> $UNSTABLE_VER"
+# Increment unstable version here
       UNSTABLE_INCREMENT=$(npm dist-tags ls "$1" | awk "/$CURRENT_TAG"":"/'{
       ver=$NF
       rel=$NF
@@ -52,10 +53,10 @@ npmPublish() {
 versions() {
 
   CURRENT_RELEASE=$(cat package.json | grep version | awk -F\" '{ print $4 }')
-  echo "===> Current Version --> $CURRENT_RELEASE"
+  echo -e "\033[32m ===> Current Version --> $CURRENT_RELEASE" "\033[0m"
 
   RELEASE=$(cat package.json | grep version | awk -F\" '{ print $4 }' | cut -d "-" -f 2)
-  echo "===> Current Release --> $RELEASE"
+  echo -e "\033[32m ===> Current Release --> $RELEASE" "\033[0m"
 }
 
 cd $WORKSPACE/gopath/src/github.com/hyperledger/fabric-chaincode-node
@@ -63,12 +64,15 @@ npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
 
 cd fabric-shim
 versions
+echo -e "\033[32m ===> fabric-shim" "\033[0m"
 npmPublish fabric-shim
 
 cd ../fabric-shim-crypto
 versions
+echo -e "\033[32m ===> fabric-shim-crypto" "\033[0m"
 npmPublish fabric-shim-crypto
 
 cd ../fabric-contract-api
 versions
+echo -e "\033[32m ===> fabric-contract-api" "\033[0m"
 npmPublish fabric-contract-api

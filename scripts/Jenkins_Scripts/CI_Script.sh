@@ -33,8 +33,8 @@ Parse_Arguments() {
                       --sdk_E2e_Tests)
                             sdk_E2e_Tests
                             ;;
-                      --publish_Unstable)
-                            publish_Unstable
+                      --publish_NpmModules)
+                            publish_NpmModules
                             ;;
                       --publish_ApiDocs)
                             publish_ApiDocs
@@ -128,13 +128,11 @@ pull_Docker_Images() {
                  echo
                  docker images | grep hyperledger/fabric
 }
-# run sdk e2e tests
-sdk_E2e_Tests() {
-        echo
-       
-        echo -e "\033[32m Execute NODE SDK Integration Tests" "\033[0m"
-        cd ${WORKSPACE}/gopath/src/github.com/hyperledger/fabric-chaincode-node
 
+# Install NPM
+install_Npm() {
+       
+        # Install nvm to install multi node versions
         wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
         # shellcheck source=/dev/null
         export NVM_DIR="$HOME/.nvm"
@@ -146,11 +144,21 @@ sdk_E2e_Tests() {
         nvm install $NODE_VER || true
         nvm use --delete-prefix v$NODE_VER --silent
 
-       echo -e "\033[32m npm version ------> $(npm -v)" "\033[0m"
-       echo -e "\033[32m node version ------> $(node -v)" "\033[0m"
+        echo -e "\033[32m npm version ------> $(npm -v)" "\033[0m"
+        echo -e "\033[32m node version ------> $(node -v)" "\033[0m"
 
         npm install || err_Check "ERROR!!! npm install failed"
         npm config set prefix ~/npm && npm install -g gulp
+}
+
+# run sdk e2e tests
+sdk_E2e_Tests() {
+       
+        echo -e "\033[32m Execute NODE SDK Integration Tests" "\033[0m"
+        cd ${WORKSPACE}/gopath/src/github.com/hyperledger/fabric-chaincode-node
+
+        # Install NPM before start the tests
+        install_Npm
 
         echo "#################################################"
         echo -e "\033[32m ------> Run Headless Tests" "\033[0m"
