@@ -1,0 +1,7 @@
+Code-Review+2: Bret Harrison <beharrison@nc.rr.com>
+Verified+1: Bret Harrison <beharrison@nc.rr.com>
+Submitted-by: Bret Harrison <beharrison@nc.rr.com>
+Submitted-at: Fri, 09 Nov 2018 16:29:02 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/27487
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.3
