@@ -1,0 +1,7 @@
+Code-Review+2: Matthew White <whitemat@uk.ibm.com>
+Verified+1: Matthew White <whitemat@uk.ibm.com>
+Submitted-by: Matthew White <whitemat@uk.ibm.com>
+Submitted-at: Fri, 16 Nov 2018 11:27:48 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/27600
+Project: fabric-chaincode-node
+Branch: refs/heads/master
