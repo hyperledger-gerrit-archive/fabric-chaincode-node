@@ -56,7 +56,6 @@ function validateCompositeKeyAttribute(attr) {
 	if (!attr || typeof attr !== 'string' || attr.length === 0) {
 		throw new Error('object type or attribute not a non-zero length string');
 	}
-	utf8.decode(attr);
 }
 
 function computeProposalBinding(decodedSP) {
