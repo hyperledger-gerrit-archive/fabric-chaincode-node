@@ -58,7 +58,7 @@ class CrudChaincode extends Contract {
             await stub.putState(`key${i}`, Buffer.from(`value${i}`));
             await stub.putState(`jsonkey${i}`, Buffer.from(JSON.stringify({value: `value${i}`})));
         }
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getKey({stub}) {
@@ -66,7 +66,7 @@ class CrudChaincode extends Contract {
         const key = params[0];
         const result = await stub.getState(key);
         this.logBuffer.result = result.toString();
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getCompositeKey({stub}) {
@@ -74,21 +74,21 @@ class CrudChaincode extends Contract {
         const composite = stub.createCompositeKey('name~color', params);
         const result = await stub.getState(composite);
         this.logBuffer.result = result.toString();
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getPartialCompositeKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
         const result = await stub.getStateByPartialCompositeKey('name~color', params);
         this.logBuffer.result = (await getAllResults(result)).toString().split(',');
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getKeysByRange({stub}) {
         const {params} = stub.getFunctionAndParameters();
         const result = await stub.getStateByRange(params[0], params[1]);
         this.logBuffer.result = (await getAllResults(result)).toString().split(',');
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getStateByRangeWithPagination({stub}) {
@@ -102,7 +102,7 @@ class CrudChaincode extends Contract {
         });
         const {iterator} = await stub.getStateByRangeWithPagination(...params);
         this.logBuffer.result = (await getAllResults(iterator)).toString().split(',');
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getStateByPartialCompositeKey({stub}) {
@@ -110,7 +110,7 @@ class CrudChaincode extends Contract {
         const iterator = await stub.getStateByPartialCompositeKey(params[0], params.slice(1));
         const result = await getAllResults(iterator);
         this.logBuffer.result = result;
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async getStateByPartialCompositeKeyWithPagination({stub}) {
@@ -118,32 +118,32 @@ class CrudChaincode extends Contract {
         const {iterator} = await stub.getStateByPartialCompositeKeyWithPagination(params[0], [], parseInt(params[1]), '');
         const result = await getAllResults(iterator);
         this.logBuffer.result = result;
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async putKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
         await stub.putState(...params);
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async putCompositeKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
         const compositeKey = stub.createCompositeKey('name~color', [params[0], params[1]]);
         await stub.putState(compositeKey, params[2]);
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
     async deleteKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
         await stub.deleteState(params[0]);
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 
     async deleteCompositeKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
         const compositeKey = stub.createCompositeKey('name~color', params);
         await stub.deleteState(compositeKey);
-        return Buffer.from(JSON.stringify(this.logBuffer));
+        return JSON.stringify(this.logBuffer);
     }
 }
 
