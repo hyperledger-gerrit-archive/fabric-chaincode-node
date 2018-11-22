@@ -1,0 +1,93 @@
+{
+    "info": {
+        "title": "ts_chaincode",
+        "version": "1.0.0"
+    },
+    "contracts": [
+        {
+            "info": {
+                "title": "",
+                "version": "1.0.0"
+            },
+            "transactions": [
+                {
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "description": "",
+                            "schema": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "name": "name",
+                            "description": "",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "name": "createAsset"
+                },
+                {
+                    "returns": {
+                        "name": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "name": "getAsset",
+                    "tag": [
+                        "submitTx"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "description": "",
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "name": ""
+        },
+        {
+            "info": {
+                "title": "org.hyperledger.fabric",
+                "version": "1.0.0"
+            },
+            "transactions": [
+                {
+                    "name": "GetMetadata"
+                }
+            ],
+            "name": "org.hyperledger.fabric"
+        }
+    ],
+    "components": {
+        "schemas": {
+            "Asset": {
+                "name": "Asset",
+                "properties": [
+                    {
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

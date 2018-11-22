@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "ajv-cli": "^3.0.0",
+    "ajv": "^6.5.5",
     "chai": "^4.1.1",
     "chai-as-promised": "^7.1.1",
     "chai-things": "^0.2.0",

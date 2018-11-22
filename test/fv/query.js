@@ -12,7 +12,7 @@ describe('Chaincode query', () => {
     before(async function() {
         this.timeout(LONG_STEP);
         // await utils.packPackages(suite);
-        return utils.installAndInstantiate(suite);
+        return utils.installAndInstantiate(suite, 'org.mynamespace.query:instantiate');
     });
 
     after(async () => {
@@ -26,7 +26,7 @@ describe('Chaincode query', () => {
                 value: 'value0'
             }
         });
-        const payload = await utils.query(suite, 'org.mynamespace.query:query', [query]);
+        const payload = JSON.parse(await utils.query(suite, 'org.mynamespace.query:query', [query]));
         expect(payload.result).to.deep.equal([JSON.stringify({value: 'value0'})]);
     });
 
@@ -39,7 +39,7 @@ describe('Chaincode query', () => {
                 }
             }
         });
-        const payload = await utils.query(suite, 'org.mynamespace.query:query', [query]);
+        const payload = JSON.parse(await utils.query(suite, 'org.mynamespace.query:query', [query]));
         expect(payload.result).to.deep.equal([
             JSON.stringify({value: 'value0'}),
             JSON.stringify({value: 'value1'}),
