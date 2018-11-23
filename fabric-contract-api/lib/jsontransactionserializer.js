@@ -43,14 +43,13 @@ module.exports = class JSONSerializer {
      * @return {Object} the resulting type
      *
      */
-    fromBuffer(data) {
+    fromBuffer(data, schema = {}) {
 
         if (!data) {
             throw new Error('Buffer needs to be supplied');
         }
 
         let value;
-
         const json = JSON.parse(data.toString());
         if (json.type) {
             if (json.type === 'Buffer') {
@@ -62,7 +61,7 @@ module.exports = class JSONSerializer {
             value = json;
         }
 
-        return value;
+        return {value};
     }
 
 };
