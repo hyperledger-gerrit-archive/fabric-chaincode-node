@@ -8,6 +8,19 @@ const getParams = require('get-params');
 const utils = require('./utils');
 require('reflect-metadata');
 
+function isPrimitive(type) {
+    switch (type) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+            return true;
+
+        default:
+            return false;
+    }
+
+}
+
 module.exports.Transaction = function Transaction(commit = true) {
     return (target, propertyKey) => {
         const transactions = Reflect.getMetadata('fabric:transactions', target) || [];
@@ -27,13 +40,21 @@ module.exports.Transaction = function Transaction(commit = true) {
             return !filter;
         }).map((paramType, paramIdx) => {
             const paramName = paramNames[paramIdx];
-            return {
+            const obj = {
                 name: paramName,
                 description,
                 schema: {
-                    type: typeof paramType === 'function' ? paramType.name.toLowerCase() : paramType.toString().toLowerCase()
+
                 }
             };
+            const type = typeof paramType === 'function' ? paramType.name.toLowerCase() : paramType.toString().toLowerCase();
+            if (isPrimitive(type)) {
+                obj.schema.type = type;
+            } else {
+                obj.schema.$ref = `#/components/schemas/${type}`;
+            }
+
+            return obj;
         });
 
         const tag = [];

@@ -21,7 +21,7 @@ module.exports.Object = function Object () {
         const properties = Reflect.getMetadata('fabric:object-properties', target.prototype) || [];
 
         objects[target.name] = {
-            name: target.name,
+            '$id': target.name,
             properties: properties
         };
 
