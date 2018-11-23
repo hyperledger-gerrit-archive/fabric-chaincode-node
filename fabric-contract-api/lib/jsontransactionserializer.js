@@ -43,7 +43,7 @@ module.exports = class JSONSerializer {
      * @return {Object} the resulting type
      *
      */
-    fromBuffer(data) {
+    fromBuffer(data, schema = {}) {
 
         if (!data) {
             throw new Error('Buffer needs to be supplied');
@@ -51,17 +51,20 @@ module.exports = class JSONSerializer {
 
         let value;
 
-        const json = JSON.parse(data.toString());
-        if (json.type) {
-            if (json.type === 'Buffer') {
-                value = Buffer.from(json.data);
-            } else {
-                throw new Error(`Type of ${json.type} is not understood, can't recreate data`);
-            }
+        if (schema.type && schema.type === 'string') {
+            return data.toString();
         } else {
-            value = json;
+            const json = JSON.parse(data.toString());
+            if (json.type) {
+                if (json.type === 'Buffer') {
+                    value = Buffer.from(json.data);
+                } else {
+                    throw new Error(`Type of ${json.type} is not understood, can't recreate data`);
+                }
+            } else {
+                value = json;
+            }
         }
-
         return value;
     }
 

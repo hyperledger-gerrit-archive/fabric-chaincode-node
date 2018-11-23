@@ -60,7 +60,7 @@ function log(...e) {
     console.log(...e);
 }
 
-describe('chaincodefromcontract', () => {
+describe.only('chaincodefromcontract', () => {
 
     /**
     * A fake  contract class;
