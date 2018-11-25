@@ -1,0 +1,9 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+ARG NODE_VER=8.12.0
+FROM node:${NODE_VER}-alpine
+RUN mkdir -p /chaincode/input \
+	&& mkdir -p /chaincode/output \
+	&& mkdir -p /usr/local/src;

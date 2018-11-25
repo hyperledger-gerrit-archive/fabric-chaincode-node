@@ -191,21 +191,20 @@ e2e_Tests() {
         echo "#################################################"
 
         gulp test-headless || err_Check "ERROR!!! test-headless failed"
-        DEVMODE=false gulp channel-init || err_Check "ERROR!!! channel-init failed"
 
         echo "#################################################################"
         echo -e "\033[32m ------> Run Integration and Scenario Tests" "\033[0m"
         echo "#################################################################"
 
-        ls -l /tmp/fabric-shim/chaincode/hyperledger/fabric || true
-        ls -l /tmp/fabric-shim/chaincode/hyperledger || true
-
+        gulp docker-image-build
         docker images | grep hyperledger && docker ps -a
+
+        DEVMODE=false gulp channel-init || err_Check "ERROR!!! channel-init failed"
         gulp test-e2e || err_Check "ERROR!!! test-e2e failed"
 
         echo "#############################################"
         echo -e "\033[32m ------> Tests Complete" "\033[0m"
-        echo "#############################################" 
+        echo "#############################################"
 }
 # Publish npm modules after successful merge on amd64
 publish_NpmModules() {
