@@ -220,6 +220,10 @@ class ChaincodeStub {
         return this.args;
     }
 
+    getBufferArgs() {
+        return this.bufferArgs;
+    }
+
     /**
 	 * @typedef FunctionAndParameters
 	 * @property {string} fcn The function name, which by chaincode programming convention
