@@ -60,7 +60,7 @@ console.log('####################################################\n');
 gulp.task('clean-up', function() {
     // some tests create temporary files or directories
     // they are all created in the same temp folder
-    fs.removeSync(constants.tempdir);
+    // fs.removeSync(constants.tempdir);
     return fs.ensureFileSync(debugPath);
 });
 
