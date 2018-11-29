@@ -145,10 +145,9 @@ class ChaincodeFromContract {
         const Contract = require('fabric-contract-api').Contract;
         const implementations = {};
         for (const contractClass of contractClasses) {
-
             const contract = new(contractClass);
-            if (!(contract instanceof Contract)) {
-                throw new Error(`invalid contract instance ${contract}`);
+            if (!(Contract._isContract(contract))) {
+                throw new Error(`invalid contract instance ${JSON.stringify(contract)}`);
             }
 
             const name = contract.getName();
@@ -193,7 +192,7 @@ class ChaincodeFromContract {
     _processContractInfo(contract) {
 
         const info = Reflect.getMetadata('fabric:info', global) || {};
-        console.log(contract.constructor.name);
+
         if (info[contract.constructor.name]) {
             return info[contract.constructor.name];
         } else {
