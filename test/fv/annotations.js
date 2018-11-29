@@ -20,7 +20,10 @@ describe('Typescript chaincode', () => {
             this.timeout(SHORT_INC);
             await utils.invoke(suite, 'TestContract:createAsset', ['GLD', 'GOLD_BAR']);
             const payload = JSON.parse(await utils.query(suite, 'TestContract:getAsset', ['GLD']));
+<<<<<<< HEAD
 
+=======
+>>>>>>> [FAB-12072] inversion of control
             expect(payload).to.eql({id: 'GLD', name: 'GOLD_BAR'});
         });
 
