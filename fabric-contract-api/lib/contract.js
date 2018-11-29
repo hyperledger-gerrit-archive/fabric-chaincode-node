@@ -32,6 +32,10 @@ class Contract {
         }
     }
 
+    static isContract(obj) {
+        return obj instanceof Contract || Boolean(obj._isContract);
+    }
+
     /**
      * isContract provides functionality to check if a passed object is a contract type. Enables
      * checking if its a contract for when contract-api is "required" by different modules
