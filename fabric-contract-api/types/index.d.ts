@@ -15,6 +15,8 @@ declare module 'fabric-contract-api' {
     export class Contract {
         constructor(name?: string);
 
+        static isContract(obj: object): boolean;
+
         beforeTransaction(ctx : Context): Promise<void>;
         afterTransaction(ctx : Context,result: any): Promise<void>;
 
