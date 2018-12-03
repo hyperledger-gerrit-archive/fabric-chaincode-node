@@ -131,6 +131,7 @@ gulp.task('fv-copy', ['fv-copy-depts'], () => {
 });
 
 gulp.task('fv-copy-depts', () => {
+    console.log(path.join(__dirname, `../../fabric-contract-api-${version}.tgz`));
     let dirContents = fs.readdirSync('test/fv');
     dirContents = dirContents.filter(c => c.match(/.*.js/) && c !== 'utils.js');
     const chaincodeNames = dirContents.map(n => n.replace('.js', ''));
@@ -152,6 +153,7 @@ gulp.task('fv-copy-depts', () => {
 });
 
 gulp.task('fv-clean', () => {
+    console.log(path.join(__dirname, '../../**/*.tgz'));
     return del(path.join(__dirname, '../../**/*.tgz'));
 });
 
