@@ -11,25 +11,40 @@ node ('hyp-x') { // trigger build on x86_64 node
      env.PROJECT = "fabric-chaincode-node"
      env.GOPATH = "$WORKSPACE/gopath"
      env.ARCH = "amd64"
-     env.PATH = "$GOPATH/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:$PATH"
+     def nodeHome = tool 'nodejs-8.11.3'
+     env.PATH = "$GOPATH/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:${nodeHome}/bin:$PATH"
+     def jobname = sh(returnStdout: true, script: 'echo ${JOB_NAME} | grep -q "verify" && echo patchset || echo merge').trim()
      def failure_stage = "none"
      def nodeHome = tool 'nodejs-8.11.3'
      env.PATH = "${env.PATH}:${nodeHome}/bin"
 // delete working directory
      deleteDir()
-      stage("Fetch Patchset") { // fetch gerrit refspec on latest commit
+      stage("Fetch Patchset") {
+      cleanWs()
           try {
-              dir("${ROOTDIR}"){
+              if (jobname == "patchset")  {
+                   println "$GERRIT_REFSPEC"
+                   println "$GERRIT_BRANCH"
+                   checkout([
+                       $class: 'GitSCM',
+                       branches: [[name: '$GERRIT_REFSPEC']],
+                       extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'gopath/src/github.com/hyperledger/$PROJECT'], [$class: 'CheckoutOption', timeout: 10]],
+                       userRemoteConfigs: [[credentialsId: 'hyperledger-jobbuilder', name: 'origin', refspec: '$GERRIT_REFSPEC:$GERRIT_REFSPEC', url: '$GIT_BASE']]])
+              } else {
+                   // Clone fabric-chaincode-node on merge
+                   println "Clone $PROJECT repository"
+                   checkout([
+                       $class: 'GitSCM',
+                       branches: [[name: 'refs/heads/$GERRIT_BRANCH']],
+                       extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'gopath/src/github.com/hyperledger/$PROJECT']],
+                       userRemoteConfigs: [[credentialsId: 'hyperledger-jobbuilder', name: 'origin', refspec: '+refs/heads/$GERRIT_BRANCH:refs/remotes/origin/$GERRIT_BRANCH', url: '$GIT_BASE']]])
+              }
+              dir("${ROOTDIR}/$PROJECT_DIR/$PROJECT") {
               sh '''
-                 [ -e gopath/src/github.com/hyperledger/ ] || mkdir -p $PROJECT_DIR
-                 cd $PROJECT_DIR && git clone --single-branch -b $GERRIT_BRANCH git://cloud.hyperledger.org/mirror/$PROJECT
-                 # clone fabric repository
-                 git clone --single-branch -b $GERRIT_BRANCH --depth 1 git://cloud.hyperledger.org/mirror/fabric
-                 # clone fabric-samples repository
-                 git clone --single-branch -b $GERRIT_BRANCH --depth 1 git://cloud.hyperledger.org/mirror/fabric-samples
-                 # Checkout to patch Refspec
-                 cd $PROJECT && git checkout "$GERRIT_BRANCH" && git fetch origin "$GERRIT_REFSPEC" && git checkout FETCH_HEAD
+                 # Print last two commit details
+                 echo
                  git log -n2 --pretty=oneline --abbrev-commit
+                 echo
               '''
               }
           }
