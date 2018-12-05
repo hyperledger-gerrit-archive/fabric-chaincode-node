@@ -18,8 +18,8 @@ describe.only('Typescript chaincode', () => {
     describe('Scenario', () => {
         it('should write an asset', async function () {
             this.timeout(SHORT_INC);
-            await utils.invoke(suite, 'createAsset', ['GLD', 'GOLD_BAR']);
-            const payload = JSON.parse(await utils.query(suite, 'getAsset', ['GLD']));
+            await utils.invoke(suite, 'TestContract:createAsset', ['GLD', 'GOLD_BAR']);
+            const payload = JSON.parse(await utils.query(suite, 'TestContract:getAsset', ['GLD']));
 
             expect(payload).to.eql({id: 'GLD', name: 'GOLD_BAR'});
         });
