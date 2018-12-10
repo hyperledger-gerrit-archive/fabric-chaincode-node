@@ -316,9 +316,13 @@ class ChaincodeFromContract {
 
                 // after tx fn, assuming that the smart contract hasn't gone wrong
                 await contractInstance.afterTransaction(ctx, result);
+                let returnSchema = {};
+                if (functionExists.returns && functionExists.returns[0]) {
+                    returnSchema = functionExists.returns[0];
+                }
 
                 // return the data value, if any to the shim. Including converting the result to the wire format
-                return shim.success(dataMarshall.toWireBuffer(result));
+                return shim.success(dataMarshall.toWireBuffer(result, returnSchema));
             } else {
                 // if we've never heard of this function, then call the unknown tx function
                 await contractInstance.unknownTransaction(ctx);

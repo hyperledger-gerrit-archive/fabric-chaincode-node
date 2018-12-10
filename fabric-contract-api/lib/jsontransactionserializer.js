@@ -21,13 +21,19 @@ module.exports = class JSONSerializer {
      * @param {Object} result to be converted
      * @return {Buffer} container the encoded data
     */
-    toBuffer(result) {
+    toBuffer(result, schema = {}) {
 
         // relay on the default algorithms, including for Buffers. Just retunring the buffer
         // is not helpful on inflation; is this a buffer in and of itself, or a buffer to inflated to JSON?
         if (result) {
-            const payload = JSON.stringify(result);
-            return Buffer.from(payload);
+            // check that schema to see exactly how we should de-marshall this
+            if (schema.type && (schema.type === 'string' || schema.type === 'number')) {
+            // ok so this is a basic primitive type, and for strings and numbers the wireprotocol is different
+                return Buffer.from(result.toString());
+            } else {
+                const payload = JSON.stringify(result);
+                return Buffer.from(payload);
+            }
         } else {
             return;
         }
