@@ -1,0 +1,8 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+1: Simon Stone <sstone1@uk.ibm.com>
+Code-Review+2: Matthew White <whitemat@uk.ibm.com>
+Submitted-by: Matthew White <whitemat@uk.ibm.com>
+Submitted-at: Mon, 10 Dec 2018 18:17:43 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/28048
+Project: fabric-chaincode-node
+Branch: refs/heads/master
