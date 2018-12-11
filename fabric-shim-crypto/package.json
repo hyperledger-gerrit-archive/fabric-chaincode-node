@@ -1,7 +1,12 @@
 {
   "name": "fabric-shim-crypto",
+<<<<<<< HEAD
   "version": "1.4.0-snapshot",
   "tag": "unstable-1.4",
+=======
+  "version": "2.0.0-snapshot",
+  "tag": "unstable",
+>>>>>>> [FAB-13229] master prepare next release
   "description": "A node.js implementation of encryption library for Hyperledger Fabric chaincode shim",
   "main": "index.js",
   "repository": {
