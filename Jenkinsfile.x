@@ -9,7 +9,7 @@ node ('hyp-x') { // trigger build on x86_64 node
      def ROOTDIR = pwd() // workspace dir (/w/workspace/<job_name>)
      env.PROJECT_DIR = "gopath/src/github.com/hyperledger"
      env.PROJECT = "fabric-chaincode-node"
-     env.VERSION = sh(returnStdout: true, script: 'curl -O https://raw.githubusercontent.com/hyperledger/fabric/master/Makefile && cat Makefile | grep "BASE_VERSION =" | cut -d "=" -f2').trim()
+     env.VERSION = sh(returnStdout: true, script: 'curl -O https://raw.githubusercontent.com/hyperledger/fabric/release-1.4/Makefile && cat Makefile | grep "BASE_VERSION =" | cut -d "=" -f2').trim()
      env.VERSION = "$VERSION" // BASE_VERSION from fabric Makefile
      env.ARCH = "amd64"
      env.IMAGE_TAG = "${ARCH}-${VERSION}-stable" // fabric latest stable version from nexus
