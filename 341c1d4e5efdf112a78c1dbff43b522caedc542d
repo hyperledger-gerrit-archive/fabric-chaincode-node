@@ -1,0 +1,8 @@
+Code-Review+1: Matthew White <whitemat@uk.ibm.com>
+Code-Review+2: David Enyeart <enyeart@us.ibm.com>
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Submitted-by: David Enyeart <enyeart@us.ibm.com>
+Submitted-at: Wed, 12 Dec 2018 17:35:48 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/28118
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.4
