@@ -250,7 +250,7 @@ class ClientIdentity {
         this.attrs = {};
         if (cert && cert.extensions && cert.extensions[FABRIC_CERT_ATTR_OID]) {
             const attr_string = cert.extensions[FABRIC_CERT_ATTR_OID];
-            const attr_object = JSON.parse(attr_string);
+            const attr_object = JSON.parse(attr_string.slice(attr_string.indexOf('{')));
             const attrs = attr_object.attrs;
             this.attrs = attrs;
         }
