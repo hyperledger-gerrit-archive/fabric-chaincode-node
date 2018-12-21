@@ -1,0 +1,8 @@
+Code-Review+1: Andrew Coleman <andrew_coleman@uk.ibm.com>
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+2: David Enyeart <enyeart@us.ibm.com>
+Submitted-by: David Enyeart <enyeart@us.ibm.com>
+Submitted-at: Fri, 21 Dec 2018 12:11:08 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/28344
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.3
