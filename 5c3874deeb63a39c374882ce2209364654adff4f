@@ -1,0 +1,7 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+2: Zhao Chaoyi <zhaochy_2015@hotmail.com>
+Submitted-by: Zhao Chaoyi <zhaochy_2015@hotmail.com>
+Submitted-at: Fri, 21 Dec 2018 09:14:03 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/28343
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.4
