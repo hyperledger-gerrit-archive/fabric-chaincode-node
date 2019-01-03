@@ -11,26 +11,34 @@
 ######################################
 
 npmPublish() {
+  MODULE_NAME=$1
   if [[ "$CURRENT_TAG" = *"skip"* ]]; then
       echo "----> Don't publish npm modules on skip tag"
   elif [[ "$CURRENT_TAG" = *"unstable"* ]]; then
       echo
-      UNSTABLE_VER=$(npm dist-tags ls "$1" | awk "/$CURRENT_TAG"":"/'{
+      UNSTABLE_VER=$(npm dist-tags ls "$MODULE_NAME" | awk "/$CURRENT_TAG"":"/'{
       ver=$NF
       sub(/.*\./,"",rel)
       sub(/\.[[:digit:]]+$/,"",ver)
       print ver}')
-
-      echo "======> UNSTABLE VERSION:" $UNSTABLE_VER
-# Increment unstable version here
-      UNSTABLE_INCREMENT=$(npm dist-tags ls "$1" | awk "/$CURRENT_TAG"":"/'{
+      if [[ "$UNSTABLE_VER" = "" ]]; then
+        echo "======> Could not determine UNSTABLE VERSION; assuming new module or tag"
+      else
+        echo "======> UNSTABLE VERSION:" $UNSTABLE_VER
+      fi
+      # Increment unstable version here
+      UNSTABLE_INCREMENT=$(npm dist-tags ls "$MODULE_NAME" | awk "/$CURRENT_TAG"":"/'{
       ver=$NF
       rel=$NF
       sub(/.*\./,"",rel)
       sub(/\.[[:digit:]]+$/,"",ver)
       print ver"."rel+1}')
-
-      echo "======> Incremented UNSTABLE VERSION:" $UNSTABLE_INCREMENT
+      if [[ "$UNSTABLE_INCREMENT" = "" ]]; then
+        echo "======> Could not determine incremented UNSTABLE VERSION; assuming new module or tag and defaulting to 1"
+        UNSTABLE_INCREMENT=1
+      else
+        echo "======> Incremented UNSTABLE VERSION:" $UNSTABLE_INCREMENT
+      fi
 
       # Get last digit of the unstable version of $CURRENT_TAG
       UNSTABLE_INCREMENT=$(echo $UNSTABLE_INCREMENT| rev | cut -d '.' -f 1 | rev)
