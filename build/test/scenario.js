@@ -26,8 +26,6 @@ const CHANNEL_NAME = 'mychannel';
 const tls = process.env.TLS ? process.env.TLS : 'false';
 const delay = require('delay');
 
-gulp.task('test-scenario', ['invokeAllFns']);
-
 /**
  * Invoke all the smart contract functions
  */
@@ -59,6 +57,8 @@ gulp.task('invokeAllFns', (done) => {
     runSequence(...tasks, done);
 
 });
+
+gulp.task('test-scenario', gulp.series('invokeAllFns'));
 
 gulp.task('delay', () => {
     log('waiting for 3seconds...');
@@ -136,7 +136,7 @@ gulp.task('query_functions', async (done) => {
     }
 });
 
-gulp.task('st-copy-shim', ['protos'], () => {
+gulp.task('st-copy-shim', gulp.series('protos', () => {
     // first ensure the chaincode folder has the latest shim code
     const srcPath = path.join(__dirname, '../../fabric-shim/**');
     const destPath = path.join(test.BasicNetworkTestDir, 'scenario/src/fabric-shim');
@@ -153,9 +153,9 @@ gulp.task('st-copy-shim', ['protos'], () => {
         }))
         .pipe(f.restore)
         .pipe(gulp.dest(destPath));
-});
+}));
 
-gulp.task('st-copy-api', ['st-copy-shim'], () => {
+gulp.task('st-copy-api', gulp.series('st-copy-shim', () => {
     // first ensure the chaincode folder has the latest shim code
     const srcPath = path.join(__dirname, '../../fabric-contract-api/**');
     const destPath = path.join(test.BasicNetworkTestDir, 'scenario/src/fabric-contract-api');
@@ -172,9 +172,9 @@ gulp.task('st-copy-api', ['st-copy-shim'], () => {
         }))
         .pipe(f.restore)
         .pipe(gulp.dest(destPath));
-});
+}));
 
-gulp.task('st-copy-shim-crypto', ['st-copy-api'], () => {
+gulp.task('st-copy-shim-crypto', gulp.series('st-copy-api', () => {
     // first ensure the chaincode folder has the latest shim code
     const srcPath = path.join(__dirname, '../../fabric-shim-crypto/**');
     const destPath = path.join(test.BasicNetworkTestDir, 'scenario/src/fabric-shim-crypto');
@@ -191,9 +191,14 @@ gulp.task('st-copy-shim-crypto', ['st-copy-api'], () => {
         }))
         .pipe(f.restore)
         .pipe(gulp.dest(destPath));
+}));
+
+gulp.task('localpublish', () => {
+    return gulp.src('*.js', {read: false})
+        .pipe(shell([util.format('%s/local-npm.sh %s', __dirname, os.tmpdir())]));
 });
 
-gulp.task('st-copy-chaincode', ['localpublish'], () => {
+gulp.task('st-copy-chaincode', gulp.series('localpublish', () => {
 
     // copy the test.js to chaincode folder
     const srcPath = path.join(__dirname, '../../test/scenario/*');
@@ -201,15 +206,7 @@ gulp.task('st-copy-chaincode', ['localpublish'], () => {
     const destPath = path.join(test.BasicNetworkTestDir, 'scenario/src/mysmartcontract.v0');
     return gulp.src([srcPath, '/tmp/.npmrc', moduleArchivePath])
         .pipe(gulp.dest(destPath));
-});
-
-
-gulp.task('localpublish', () => {
-    return gulp.src('*.js', {read: false})
-        .pipe(shell([util.format('%s/local-npm.sh %s', __dirname, os.tmpdir())]));
-});
-
-
+}));
 
 // make sure `gulp channel-init` is run first
 gulp.task('st-install_chaincode', () => {
