@@ -10,9 +10,7 @@ const runSequence = require('run-sequence');
 // Require all tasks in gulp/tasks, including subfolders
 requireDir('./build', {recurse: true});
 
-gulp.task('default', ['lint'], function () {
-    // This will only run if the lint task is successful...
-});
+gulp.task('default', gulp.series('lint'));
 
 // Setup the e2e tests and sequence tests to run in sequence;
 // when the control of the tests is in the scripts in this repo we could remove this.

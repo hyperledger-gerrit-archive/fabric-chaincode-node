@@ -23,7 +23,10 @@ const runSequence = require('run-sequence');
 const childProcess = require('child_process');
 const exec = childProcess.exec;
 
-gulp.task('test-invctrl', ['invokeAllFnsInvCtrl']);
+// gulp.task('test-invctrl', (done) => {
+//     const tasks = ['invokeAllFnsInvCtrl'];
+//     runSequence(...tasks, done);
+// });
 
 gulp.task('invokeAllFnsInvCtrl', (done) => {
 
@@ -63,6 +66,8 @@ gulp.task('invokeAllFnsInvCtrl', (done) => {
     runSequence(...tasks, done);
 
 });
+
+gulp.task('test-invctrl', gulp.series('invokeAllFnsInvCtrl'));
 
 gulp.task('npm-install-chaincode', () => {
     return gulp.src('*.js', {read: false})

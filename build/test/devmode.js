@@ -16,12 +16,9 @@ const childProcess = require('child_process');
 const exec = childProcess.exec;
 const execFile = util.promisify(childProcess.execFile);
 
-gulp.task('test-devmode', ['invokeAllFnsInDev']);
-
 gulp.task('invokeAllFnsInDev', (done) => {
 
     const tasks = [
-
         // ensure that the fabric shim in it's entirity is copied over and verdaccioed
         'st-copy-shim-crypto',
 
@@ -46,13 +43,14 @@ gulp.task('invokeAllFnsInDev', (done) => {
 
         // kill the dev mode cc
         'kill-cli'
-
     ];
 
     console.log('=== Starting Dev Mode Tests');
     runSequence(...tasks, done);
 
 });
+
+gulp.task('test-devmode', gulp.series('invokeAllFnsInDev'));
 
 gulp.task('check-docker', async (done) => {
     const options = {};
