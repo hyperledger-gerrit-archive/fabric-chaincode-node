@@ -1,0 +1,8 @@
+Code-Review+2: David Enyeart <enyeart@us.ibm.com>
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+1: Ramesh Babu <rameshbabu.thoomu@gmail.com>
+Submitted-by: David Enyeart <enyeart@us.ibm.com>
+Submitted-at: Wed, 09 Jan 2019 19:32:36 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/28553
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.4
