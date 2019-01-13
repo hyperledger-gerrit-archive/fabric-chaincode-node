@@ -48,6 +48,9 @@ Parse_Arguments() {
                       --publish_ApiDocs)
                             publish_ApiDocs
                             ;;
+                      --publish_Nodeenv_Image)
+                            publish_Nodeenv_Image
+                            ;;
               esac
               shift
       done
@@ -128,7 +131,7 @@ env_Info() {
 
 # pull fabric, ca images from nexus
 pull_Docker_Images() {
-            for IMAGES in peer orderer tools ca; do
+            for IMAGES in peer orderer tools ca baseos; do
                  docker pull $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG} > /dev/null 2>&1
                           if [ $? -ne 0 ]; then
                                 echo -e "\033[31m FAILED to pull docker images" "\033[0m"
@@ -138,6 +141,7 @@ pull_Docker_Images() {
                  echo
                  docker tag $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG} $ORG_NAME-$IMAGES
                  docker tag $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG} $ORG_NAME-$IMAGES:${ARCH}-${VERSION}
+                 docker tag $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG} $ORG_NAME-$IMAGES:${VERSION}
                  docker rmi -f $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG}
             done
                  echo
@@ -215,12 +219,26 @@ e2e_Tests() {
         # echo -e "\033[32m ------> Run InvCtrl tests" "\033[0m"
         # echo "###############################################"
 
-        # DEVMODE=true gulp channel-init || err_Check "ERROR!!! channel-init failed"
-        # gulp test-invctrl-cli || err_Check "ERROR!!! test-invctrl-cli failed"
-
         echo "#############################################"
         echo -e "\033[32m ------> Tests Complete" "\033[0m"
         echo "#############################################"
+}
+
+# Publish nodeenv docker image after successful merge
+publish_Nodeenv_Image() {
+        echo
+        echo -e "\033[32m -----------> Publish nodeenv docker image" "\033[0m"
+        # 10003 points to docker.snapshot
+        DOCKER_REPOSITORY=nexus3.hyperledger.org:10003
+        # SETTINGS_FILE stores the nexus credentials
+        USER=$(xpath -e "//servers/server[id='$DOCKER_REPOSITORY']/username/text()" "$SETTINGS_FILE")
+        PASS=$(xpath -e "//servers/server[id='$DOCKER_REPOSITORY']/password/text()" "$SETTINGS_FILE")
+        docker login $DOCKER_REPOSITORY -u "$USER" -p "$PASS"
+        # tag nodeenv latest tag to nexus3 repo
+        docker tag hyperledger/fabric-nodeenv $DOCKER_REPOSITORY/hyperledger/fabric-nodeenv:$ARCH-latest
+        # Push nodeenv image to nexus3 docker.snapshot
+        docker push $DOCKER_REPOSITORY/hyperledger/fabric-nodeenv:$ARCH-latest
+        docker images
 }
 
 # Publish npm modules after successful merge on amd64
