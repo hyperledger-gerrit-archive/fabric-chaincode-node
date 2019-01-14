@@ -23,11 +23,15 @@ const tag = version + '-' + git.short();
 gulp.task('docker-image-build', () => {
     return gulp.src('*.js', {read: false})
         .pipe(shell([
+            util.format('cp -a %s %s',
+                path.join(__dirname, '..', 'fabric-shim') + '/.', path.join(build_dir, 'fabric-shim') + '/'),
             util.format('docker build --build-arg NODE_VER=%s -t hyperledger/fabric-nodeenv:%s -f %s %s',
                 node_version, tag, path.join(build_dir, 'Dockerfile'), build_dir),
             util.format('docker tag hyperledger/fabric-nodeenv:%s hyperledger/fabric-nodeenv:%s',
                 tag, version),
-            util.format('docker tag hyperledger/fabric-nodeenv:%s hyperledger/fabric-nodeenv:latest', tag)
+            util.format('docker tag hyperledger/fabric-nodeenv:%s hyperledger/fabric-nodeenv:latest', tag),
+            util.format('rm -rf %s',
+                path.join(build_dir, 'fabric-shim')),
         ]));
 });
 

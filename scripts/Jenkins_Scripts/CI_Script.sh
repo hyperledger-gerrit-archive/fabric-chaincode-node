@@ -196,7 +196,7 @@ e2e_Tests() {
         echo -e "\033[32m ------> Run Integration and Scenario Tests" "\033[0m"
         echo "#################################################################"
 
-        gulp docker-image-build
+        gulp docker
         docker images | grep hyperledger && docker ps -a
 
         DEVMODE=false gulp channel-init || err_Check "ERROR!!! channel-init failed"
