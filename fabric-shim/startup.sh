@@ -11,6 +11,7 @@ for var in "$@"; do
 done
 cd $CORE_MODULE_PATH
 
+# IF THE CHAINCODE WE WANT TO GET RUNNING USES THE CONTRACT API CALL CLI START HERE OTHERWISE TRY DOING NPM START IN THERE
 if grep -q "fabric-contract-api" package.json; then
     cd $DIR
     node cli.js start "$@"

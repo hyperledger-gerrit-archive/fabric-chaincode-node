@@ -67,6 +67,9 @@ gulp.task('default', gulp.series('lint'));
 // when the control of the tests is in the scripts in this repo we could remove this.
 gulp.task('test-e2e', gulp.series(['test-e2e-shim', 'test-fv-shim', 'test-scenario']));
 
+// create docker images
+gulp.task('docker', gulp.series(['protos', 'docker-image-build']));
+
 // FAB-13462 - disabled this test temporarily pending rewrite for Fabric v2.0 changes.
 // gulp.task('test-devmode-cli', (done) => {
 //     const tasks = ['test-devmode'];
