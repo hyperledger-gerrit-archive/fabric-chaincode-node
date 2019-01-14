@@ -193,7 +193,7 @@ e2e_Tests() {
         echo -e "\033[32m ------> Run Integration and Scenario Tests" "\033[0m"
         echo "#################################################################"
 
-        gulp docker-image-build
+        gulp docker
         docker images | grep hyperledger && docker ps -a
 
         DEVMODE=false gulp channel-init || err_Check "ERROR!!! channel-init failed"
@@ -206,14 +206,6 @@ e2e_Tests() {
 
         DEVMODE=true gulp channel-init || err_Check "ERROR!!! channel-init failed"
         gulp test-devmode || err_Check "ERROR!!! test-devmode-cli failed"
-
-        # FAB-13462 - disabled this test temporarily pending rewrite for Fabric v2.0 changes.
-        # echo "###############################################"
-        # echo -e "\033[32m ------> Run InvCtrl tests" "\033[0m"
-        # echo "###############################################"
-
-        # DEVMODE=true gulp channel-init || err_Check "ERROR!!! channel-init failed"
-        # gulp test-invctrl-cli || err_Check "ERROR!!! test-invctrl-cli failed"
 
         echo "#############################################"
         echo -e "\033[32m ------> Tests Complete" "\033[0m"
