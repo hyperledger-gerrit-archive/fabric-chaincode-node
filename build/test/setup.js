@@ -252,3 +252,8 @@ gulp.task('channel-init', gulp.series('docker-ready', shell.task([
     // create channel, join peer0 to the channel
     'docker exec cli /etc/hyperledger/config/channel-init.sh'
 ])));
+
+// gulp.task('metadata-generate-command', shell.task([
+//     // create channel, join peer0 to the channel
+//     'fabric-chaincode-node metadata generate --file-name "fileName"'
+// ]));

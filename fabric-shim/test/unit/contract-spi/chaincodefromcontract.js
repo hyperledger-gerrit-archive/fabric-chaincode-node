@@ -989,17 +989,17 @@ describe('chaincodefromcontract', () => {
             metadata.components.should.deep.equal(metadataToSend.components);
         });
 
-        it ('should fill in info field when not set with package.json data', () => {
+        it('should fill in info field when not set with package.json data', () => {
             const metadataToSend = {
                 contracts: exampleMetadata.contracts,
-                components: exampleMetadata.components
+                components: exampleMetadata.components,
             };
 
             const metadata = ChaincodeFromContract.prototype._augmentMetadataFromCode(metadataToSend);
             metadata.contracts.should.deep.equal(metadataToSend.contracts);
             metadata.info.should.deep.equal({
-                version: '1.0.1',
-                title: 'some package'
+                version: '',
+                title: ''
             });
             metadata.components.should.deep.equal(metadataToSend.components);
         });

@@ -427,3 +427,12 @@ gulp.task('test-e2e-invoke-v0-test22', gulp.series('test-e2e-invoke-v0-test21', 
 }));
 
 gulp.task('test-e2e-shim', gulp.series('test-e2e-invoke-v0-test22'));
+
+gulp.task('metadata-generate-command', () => {
+    return gulp.src('fileMetadata.js', {read: false})
+        .pipe(wait(3000))
+        .pipe(shell.task([
+            'fabric-chaincode-node metadata generate --module-path "../../test/fv/annotations/src/test_contract/expected-metadata.json" --file-name "metadataFile"'
+        ]));
+});
+
