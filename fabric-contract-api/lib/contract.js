@@ -8,6 +8,9 @@
 
 const Context = require('./context');
 
+const Logger = require('./logger');
+const logger = Logger.getLogger('./lib/contract.js');
+
 /**
  * The main Contact class that all code working within a Chaincode Container must be extending.
  *
@@ -24,6 +27,8 @@ class Contract {
      * @param {String} name name for the logic within this contract
      */
     constructor(name) {
+        logger.info('Creating new Contract', name);
+
         this.__isContract = true;
         if (typeof name === 'undefined' || name === null) {
             this.name = this.constructor.name;
@@ -76,7 +81,10 @@ class Contract {
 	 * @param {Context} ctx the transactional context
 	 */
     async unknownTransaction(ctx) {
-        const {fcn} = ctx.stub.getFunctionAndParameters();
+        const {fcn, params} = ctx.stub.getFunctionAndParameters();
+
+        logger.error(`${this.name} contract-api.Contract unknown transaction`, fcn, params);
+
         throw new Error(`You've asked to invoke a function that does not exist: ${fcn}`);
     }
 
