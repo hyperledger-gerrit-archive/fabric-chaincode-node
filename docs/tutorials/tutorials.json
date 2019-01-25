@@ -7,5 +7,15 @@
     },
     "using-iterators": {
         "title": "Working with apis that return iterators"
-    }
+	},
+	"annotated-contract-metadata":{
+		"title":"Walkthrough of annotated metadata.json"
+	},
+	"deep-dive-contract-interface":{
+		"title":"Deep dive on Contract Interface"
+	},
+	"using-typescript-decorators":{
+		"title":"Using TypeScript Decorators"
+	}
+
 }
