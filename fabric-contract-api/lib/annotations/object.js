@@ -29,6 +29,8 @@ module.exports.Object = function Object () {
 
         logger.debug('Existing fabric:object-properties for target', properties);
 
+        logger.debug('Existing fabric:object-properties for target', properties);
+
         objects[target.name] = {
             '$id': target.name,
             type: 'object',
@@ -37,7 +39,6 @@ module.exports.Object = function Object () {
         };
 
         Reflect.defineMetadata('fabric:objects', objects, global);
-
         logger.debug('Updated fabric:objects', objects);
     };
 };
@@ -60,7 +61,6 @@ module.exports.Property = function Property (name, type) {
         properties[name] = utils.generateSchema(type, false);
 
         Reflect.defineMetadata('fabric:object-properties', properties, target);
-
         logger.debug('Updated fabric:object-properties for target', properties);
     };
 };
