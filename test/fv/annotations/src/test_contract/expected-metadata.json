@@ -85,6 +85,7 @@
             "contractInstance": {
                 "name": "org.hyperledger.fabric"
             },
+            "default": false,
             "info": {
                 "title": "",
                 "version": ""
