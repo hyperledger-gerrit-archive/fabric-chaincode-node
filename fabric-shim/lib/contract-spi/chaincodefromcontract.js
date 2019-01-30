@@ -144,6 +144,8 @@ class ChaincodeFromContract {
      *
      */
     _resolveContractImplementations(contractClasses) {
+        this.defaultContractName = Reflect.getMetadata('fabric:default', global);
+
         logger.debug('Supplied contract classes', contractClasses);
         const Contract = require('fabric-contract-api').Contract;
         const implementations = {};
