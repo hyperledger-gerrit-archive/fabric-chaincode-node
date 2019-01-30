@@ -83,6 +83,7 @@
         },
         "org.hyperledger.fabric": {
             "contractInstance": {
+                "default": false,
                 "name": "org.hyperledger.fabric"
             },
             "info": {
