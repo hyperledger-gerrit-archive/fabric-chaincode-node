@@ -10,6 +10,9 @@ class Asset {
     @Property()
     public name: string;
 
+    @Property()
+    public value: number;
+
     constructor(id: string, name: string) {
         this.id = id;
         this.name = name;
@@ -39,7 +42,7 @@ export default class TestContract extends Contract {
     }
 
     @Transaction()
-    public async createAsset(ctx: Context, id: string, name: string) {
+    public async createAsset(ctx: Context, id: string, name: string, value: number) {
         const asset = new Asset(id, name);
 
         await ctx.stub.putState(ctx.stub.createCompositeKey(Asset.stateIdentifier, [asset.id]), Buffer.from(asset.serialize()))
