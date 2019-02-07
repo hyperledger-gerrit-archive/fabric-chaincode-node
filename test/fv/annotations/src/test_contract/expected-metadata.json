@@ -5,26 +5,17 @@
             "Asset": {
                 "$id": "Asset",
                 "additionalProperties": false,
-                "properties": [
-                    {
-                        "name": "id",
-                        "schema": {
+                "properties": {
+                    "id": {
                             "type": "string"
-                        }
                     },
-                    {
-                        "name": "name",
-                        "schema": {
+                    "name": {
                             "type": "string"
-                        }
                     },
-                    {
-                        "name": "value",
-                        "schema": {
+                    "value": {
                             "type": "number"
-                        }
                     }
-                ],
+                },
                 "type": "object"
             }
         }
