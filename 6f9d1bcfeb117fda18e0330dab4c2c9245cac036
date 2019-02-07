@@ -1,0 +1,9 @@
+Code-Review+1: Sam Rasha <samanrasha@hotmail.co.uk>
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+1: Andrew Hurt <andrew.hurt1@ibm.com>
+Code-Review+2: Matthew White <whitemat@uk.ibm.com>
+Submitted-by: Matthew White <whitemat@uk.ibm.com>
+Submitted-at: Thu, 07 Feb 2019 08:54:50 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/29157
+Project: fabric-chaincode-node
+Branch: refs/heads/release-1.4
