@@ -324,6 +324,12 @@ class ChaincodeFromContract {
             const ctx = contractInstance.createContext();
             ctx.setChaincodeStub(stub);
             ctx.setClientIdentity(new ClientIdentity(stub));
+            ctx.logging = {
+                setLevel : Logger.setLevel,
+                getLogger : (name) => {
+                    return Logger.getLogger(name ? `${cn}:${name}` : cn);
+                }
+            };
 
             // get the specific information for this tx function
             const functionExists = contractData.transactions.find((transaction) => {
@@ -369,6 +375,7 @@ class ChaincodeFromContract {
         } catch (error) {
             // log the error and then fail the transaction
             logger.error(`${loggerPrefix} ${error.toString()}`);
+            console.log(error.stack);
             return shim.error(error);
         }
     }
