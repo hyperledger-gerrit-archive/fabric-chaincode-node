@@ -8,6 +8,8 @@ RUN apk add --no-cache \
 	make \
 	python \
 	g++;
-RUN mkdir -p /chaincode/input \
-	&& mkdir -p /chaincode/output \
-	&& mkdir -p /usr/local/src;
+RUN mkdir -p /chaincode/input && \
+	mkdir -p /chaincode/output && \
+	mkdir -p /usr/local/src;
+RUN chown -R node:node /chaincode /usr/local/src
+USER node
