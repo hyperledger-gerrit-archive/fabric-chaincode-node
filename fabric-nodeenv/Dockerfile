@@ -11,3 +11,6 @@ RUN apk add --no-cache \
 RUN mkdir -p /chaincode/input \
 	&& mkdir -p /chaincode/output \
 	&& mkdir -p /usr/local/src;
+RUN addgroup chaincode && adduser -D -h /home/chaincode -G chaincode chaincode
+RUN chown -R chaincode:chaincode /chaincode/output
+USER chaincode
