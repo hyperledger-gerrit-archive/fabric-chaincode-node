@@ -1,3 +1,8 @@
+/*
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+*/
 'use strict';
 
 const util = require('util');
@@ -61,36 +66,49 @@ function printArgs(func, args) {
     } else {
         args = [];
     }
-
     for (const key in args) {
         args[key] = `${args[key]}`;
     }
     return JSON.stringify({Args: args});
 }
 
-async function invoke(ccName, func, args) {
-    const cmd = `docker exec cli peer chaincode invoke ${getTLSArgs()} -o orderer.example.com:7050 -C mychannel -n ${ccName} -c '${printArgs(func, args)}' --waitForEvent 2>&1`;
+async function invoke(ccName, func, args, transient) {
+    let cmd;
+
+    if (transient) {
+        cmd = `docker exec cli peer chaincode invoke ${getTLSArgs()} -o orderer.example.com:7050 -C mychannel -n ${ccName} -c '${printArgs(func, args)}' --transient '${transient}' --waitForEvent 2>&1`;
+    } else {
+        cmd = `docker exec cli peer chaincode invoke ${getTLSArgs()} -o orderer.example.com:7050 -C mychannel -n ${ccName} -c '${printArgs(func, args)}' --waitForEvent 2>&1`;
+    }
+
     const {stderr} = await exec(cmd);
     if (stderr) {
         throw new Error(stderr);
     }
 }
 
-async function query(ccName, func, args) {
+async function query(ccName, func, args, transient) {
     const options = {};
     const script = 'docker';
-    const execArgs = util.format('exec cli peer chaincode query %s -C %s -n %s -c %s',
+    let format;
+    if (transient) {
+        format = 'exec cli peer chaincode query %s -C %s -n %s -c %s --transient %s';
+    } else {
+        format = 'exec cli peer chaincode query %s -C %s -n %s -c %s';
+    }
+
+    const execArgs = util.format(format,
         getTLSArgs(),
         'mychannel',
         ccName,
-        printArgs(func, args)).split(' ');
-
+        printArgs(func, args),
+        transient).split(' ');
     const {error, stdout, stderr} = await execFile(script, execArgs, options);
     if (error) {
         throw new Error(error, stderr);
     }
 
-    return stdout.trim().replace(/^"(.*)"$/, '$1').replace(/\\"/g, '"'); // remove surrounding quotes and unescape
+    return  stdout.trim().replace(/^"(.*)"$/, '$1').replace(/\\"/g, '"'); // remove surrounding quotes and unescape
 }
 
 async function installAndInstantiate(ccName, instantiateFunc, instantiateArgs) {
@@ -100,6 +118,7 @@ async function installAndInstantiate(ccName, instantiateFunc, instantiateArgs) {
 
 function getTLSArgs() {
     let args = '';
+
     const tls = process.env.TLS ? process.env.TLS : 'false';
     if (tls === 'true') {
         args = util.format('--tls %s --cafile %s', tls,
@@ -116,5 +135,4 @@ const TIMEOUTS = {
     MED_INC : 10 * 1000,
     SHORT_INC: 5 * 1000
 };
-
 module.exports = {installAndInstantiate, invoke, query, packPackages, deletePackages, TIMEOUTS};
