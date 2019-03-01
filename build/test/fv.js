@@ -24,4 +24,4 @@ gulp.task('test-fv-shim', gulp.series((done) => {
         }
     });
 
-}));
+}, 'clean-up'));
