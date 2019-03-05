@@ -15,6 +15,10 @@ const childProcess = require('child_process');
 const exec = childProcess.exec;
 const execFile = util.promisify(childProcess.execFile);
 
+const peerAddress = require('../../test/constants').peerAddress;
+
+require('./scenario');
+
 gulp.task('check-docker', async (done) => {
     const options = {};
     const script = 'docker';
@@ -35,12 +39,13 @@ gulp.task('check-docker', async (done) => {
 });
 
 gulp.task('dm-startup-chaincode', async (done) => {
-    const script = util.format('docker exec cli bash -c "apk add nodejs nodejs-npm python make g++; cd %s; npm install; npm rebuild; node_modules/.bin/fabric-chaincode-node start --peer.address peer0.org1.example.com:7052 --chaincode-id-name %s --module-path %s"',
+    const script = util.format('docker exec org1_cli bash -c "apk add nodejs nodejs-npm python make g++; cd %s; npm install; npm rebuild; node_modules/.bin/fabric-chaincode-node start --peer.address %s --chaincode-id-name %s --module-path %s"',
     // the /etc/hyperledger/config has been mapped to the
     // basic-network folder in the test setup for the CLI docker
-        '/etc/hyperledger/config/scenario/src/mysmartcontract.v0',
+        '/opt/gopath/src/github.com/chaincode/scenario',
+        peerAddress,
         'mysmartcontract:v0',
-        '/etc/hyperledger/config/scenario/src/mysmartcontract.v0');
+        '/opt/gopath/src/github.com/chaincode/scenario');
 
     try {
         await new Promise((resolve, reject) => {
@@ -80,13 +85,46 @@ gulp.task('dm-startup-chaincode', async (done) => {
     }
 });
 
-gulp.task('kill-cli', () => {
+gulp.task('stop-cli-running-chaincode', () => {
     return gulp.src('*.js', {read: false})
         .pipe(shell([
-            'docker kill cli'
+            'docker exec org1_cli /etc/hyperledger/fixtures/kill-chaincode-node.sh'
         ], {
             verbose: true, // so we can see the docker command output
             ignoreErrors: true // kill and rm may fail because the containers may have been cleaned up
         }));
 });
 
+/**
+ * Invoke all the smart contract functions - steals some commands from scenario as uses same contract
+ */
+
+gulp.task('invokeAllFnsDevMode', gulp.series(
+    [
+        // Start chaincode
+        'dm-startup-chaincode',
+
+        // install
+        'st-install_chaincode',
+
+        // instantiate
+        'st-instantiate_chaincode',
+        'delay',
+
+        // Check it didnt make docker images
+        'check-docker',
+
+        // invoke all functions
+        'invoke_functions',
+
+        // query the functions
+        'query_functions',
+
+        // stop chaincode
+        'stop-cli-running-chaincode',
+
+        'clean-up-chaincode'
+    ]
+));
+
+gulp.task('test-scenario-devmode', gulp.series('invokeAllFnsDevMode'));
