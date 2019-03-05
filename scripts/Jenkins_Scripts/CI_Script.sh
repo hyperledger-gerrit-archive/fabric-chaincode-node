@@ -128,7 +128,7 @@ env_Info() {
 
 # pull fabric, ca images from nexus
 pull_Docker_Images() {
-            for IMAGES in peer orderer tools ca baseos; do
+            for IMAGES in peer orderer tools ccenv ca baseos; do
                  docker pull $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG} > /dev/null 2>&1
                           if [ $? -ne 0 ]; then
                                 echo -e "\033[31m FAILED to pull docker images" "\033[0m"
