@@ -4,7 +4,7 @@ const chai = require('chai');
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 const utils = require('./utils');
-const {SHORT_INC, MED_INC, LONG_STEP} = utils.TIMEOUTS;
+const {LONG_INC, MED_INC, LONG_STEP} = utils.TIMEOUTS;
 
 describe('Chaincode CRUD', () => {
     const suite = 'crud';
@@ -21,37 +21,37 @@ describe('Chaincode CRUD', () => {
     describe('GET', () => {
 
         it('should get single key value', async function () {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getKey', ['string']);
             expect(payload).to.equal('string');
         });
 
         it('should get a single key containing json data', async function() {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getKey', ['jsonkey1']);
             expect(JSON.parse(payload)).to.deep.equal({value: 'value1'});
         });
 
         it('should get a single composite key value', async function () {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getCompositeKey', ['ann', 'black']);
             expect(payload).to.equal('annblack');
         });
 
         it('should return a list of results from a partial composite key', async function() {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getPartialCompositeKey', ['ann']);
             expect(JSON.parse(payload)).to.deep.equal(['annblack', 'annred', 'annyellow']);
         });
 
         it('should return all keys between key1 and key3', async function() {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getKeysByRange', ['key1', 'key4']);
             expect(JSON.parse(payload)).to.deep.equal(['value1', 'value2', 'value3']);
         });
 
         it('should return a paginated list', async function() {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload1 = await utils.query(suite, 'org.mynamespace.crud:getStateByRangeWithPagination', ['key1', 'key4', 2, 'key2']);
             expect(JSON.parse(payload1)).to.deep.equal(['value2', 'value3']);
             const payload2 = await utils.query(suite, 'org.mynamespace.crud:getStateByRangeWithPagination', ['key1', 'key4', 3, '']);
@@ -59,13 +59,13 @@ describe('Chaincode CRUD', () => {
         });
 
         it('should return a state from a partial composite key', async function() {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getStateByPartialCompositeKey', ['name~color', 'ann']);
             expect(JSON.parse(payload)).to.deep.equal(['annblack', 'annred', 'annyellow']);
         });
 
         it('should return a paginated list from partial composte key', async function() {
-            this.timeout(SHORT_INC);
+            this.timeout(LONG_INC);
             const payload = await utils.query(suite, 'org.mynamespace.crud:getStateByPartialCompositeKeyWithPagination', ['name~color', 1]);
             expect(JSON.parse(payload)).to.deep.equal(['annblack']);
         });
