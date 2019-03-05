@@ -5,7 +5,7 @@ const chai = require('chai');
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 const utils = require('./utils');
-const {SHORT_INC, LONG_STEP} = utils.TIMEOUTS;
+const {SHORT_STEP, LONG_STEP} = utils.TIMEOUTS;
 
 describe('Typescript chaincode', () => {
     const suite = 'annotations';
@@ -17,7 +17,7 @@ describe('Typescript chaincode', () => {
 
     describe('Scenario', () => {
         it('should write an asset', async function () {
-            this.timeout(SHORT_INC);
+            this.timeout(SHORT_STEP);
             await utils.invoke(suite, 'TestContract:createAsset', ['GLD', 'GOLD_BAR', '100']);
             const payload = JSON.parse(await utils.query(suite, 'TestContract:getAsset', ['GLD']));
             expect(payload).to.eql({id: 'GLD', name: 'GOLD_BAR', value: 100});
