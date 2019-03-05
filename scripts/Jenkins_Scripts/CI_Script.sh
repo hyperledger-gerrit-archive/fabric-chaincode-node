@@ -128,7 +128,7 @@ env_Info() {
 
 # pull fabric, ca images from nexus
 pull_Docker_Images() {
-            for IMAGES in peer orderer tools ca baseos; do
+            for IMAGES in peer orderer tools ccenv ca baseos; do
                  docker pull $NEXUS_URL/$ORG_NAME-$IMAGES:${IMAGE_TAG} > /dev/null 2>&1
                           if [ $? -ne 0 ]; then
                                 echo -e "\033[31m FAILED to pull docker images" "\033[0m"
@@ -183,11 +183,11 @@ e2e_Tests() {
         # Install NPM before start the tests
         install_Npm
 
-        echo "#################################################"
-        echo -e "\033[32m ------> Run Headless Tests" "\033[0m"
-        echo "#################################################"
+        # echo "#################################################"
+        # echo -e "\033[32m ------> Run Headless Tests" "\033[0m"
+        # echo "#################################################"
 
-        gulp test-headless || err_Check "ERROR!!! test-headless failed"
+        # gulp test-headless || err_Check "ERROR!!! test-headless failed"
 
         echo "#################################################################"
         echo -e "\033[32m ------> Run Integration and Scenario Tests" "\033[0m"
@@ -196,24 +196,22 @@ e2e_Tests() {
         gulp docker-image-build
         docker images | grep hyperledger && docker ps -a
 
-        DEVMODE=false gulp channel-init || err_Check "ERROR!!! channel-init failed"
-        gulp test-e2e || err_Check "ERROR!!! test-e2e failed"
+        # DEVMODE=false gulp channel-init || err_Check "ERROR!!! channel-init failed"
+        # gulp test-e2e || err_Check "ERROR!!! test-e2e failed"
 
-        # FAB-13462 - disabled this test temporarily pending rewrite for Fabric v2.0 changes.
-        # echo "###############################################"
-        # echo -e "\033[32m ------> Run DevMode tests" "\033[0m"
-        # echo "###############################################"
+        echo "###############################################"
+        echo -e "\033[32m ------> Run DevMode tests" "\033[0m"
+        echo "###############################################"
 
         DEVMODE=true gulp channel-init || err_Check "ERROR!!! channel-init failed"
         gulp test-devmode || err_Check "ERROR!!! test-devmode-cli failed"
 
-        # FAB-13462 - disabled this test temporarily pending rewrite for Fabric v2.0 changes.
-        # echo "###############################################"
-        # echo -e "\033[32m ------> Run InvCtrl tests" "\033[0m"
-        # echo "###############################################"
+        echo "###############################################"
+        echo -e "\033[32m ------> Run InvCtrl tests" "\033[0m"
+        echo "###############################################"
 
-        # DEVMODE=true gulp channel-init || err_Check "ERROR!!! channel-init failed"
-        # gulp test-invctrl-cli || err_Check "ERROR!!! test-invctrl-cli failed"
+        DEVMODE=true gulp channel-init || err_Check "ERROR!!! channel-init failed"
+        gulp test-invctrl || err_Check "ERROR!!! test-invctrl failed"
 
         echo "#############################################"
         echo -e "\033[32m ------> Tests Complete" "\033[0m"
