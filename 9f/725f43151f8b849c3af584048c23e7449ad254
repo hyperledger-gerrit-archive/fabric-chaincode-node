@@ -1,0 +1,9 @@
+Verified+1: Hyperledger Jobbuilder <jobbuilder@jenkins.hyperledger.org>
+Code-Review+1: Matthew White <whitemat@uk.ibm.com>
+Code-Review+1: Bret Harrison <beharrison@nc.rr.com>
+Code-Review+2: Gari Singh <gari.r.singh@gmail.com>
+Submitted-by: Gari Singh <gari.r.singh@gmail.com>
+Submitted-at: Wed, 20 Mar 2019 14:59:26 +0000
+Reviewed-on: https://gerrit.hyperledger.org/r/30251
+Project: fabric-chaincode-node
+Branch: refs/heads/master
