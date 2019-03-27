@@ -7,27 +7,44 @@
 
 const winston = require('winston');
 const loggers = {};
+const MESSAGE = Symbol.for('message');
+const util = require('util');
+
+
+// looks odd, but this is the most efficient way of padding strings in js
+const padding = '                                               ';
+
+const formatter = name => winston.format.combine(
+    winston.format.colorize(),
+    winston.format.timestamp(),
+    winston.format.simple(),
+    winston.format.padLevels(),
+    winston.format.printf((info) => {
+        const {timestamp, level} = info;
+        const str = (`[${name}]` + padding).substring(0, padding.length);
+        return `${timestamp} ${level} ${str} ${info[MESSAGE]}`;
+    }
+    )
+);
+
+let transport;
+
+const getTransport = () => {
+    if (!transport) {
+        transport =    new winston.transports.Console({
+            handleExceptions: false,
+        });
+    }
+    return transport;
+};
+
 
 function createLogger(loglevel, name) {
-    // a singleton and default logger
     const logger = new winston.createLogger({
         level:loglevel,
-        format: winston.format.combine(
-            winston.format.splat(),
-            winston.format.colorize(),
-            winston.format.timestamp(),
-            winston.format.align(),
-            winston.format.simple(),
-            winston.format.printf((info) => {
-                const {timestamp, level, message} = info;
-                return `${timestamp} ${level} [${name}] ${message}`;
-            }
-            )
-        ),
+        format: formatter(name),
         transports: [
-            new winston.transports.Console({
-                handleExceptions: true,
-            })
+            getTransport()
         ],
         exitOnError: false
     });
@@ -84,3 +101,25 @@ module.exports.setLevel = (level) => {
     });
 };
 
+function firstTime() {
+    if (!loggers._) {
+        const loglevel = levelMapping(process.env.CORE_CHAINCODE_LOGGING_SHIM);
+        loggers._ = new winston.createLogger({
+            level:loglevel,
+            format: formatter('_'),
+            transports: [
+                new winston.transports.Console({
+                    handleExceptions: true,
+                })
+            ],
+            exitOnError: false
+        });
+
+
+        process.on('unhandledRejection', (reason, p) => {
+            loggers._.error('Unhandled Rejection reason ' + reason + ' promise ' +  util.inspect(p));
+        });
+
+    }
+}
+firstTime();

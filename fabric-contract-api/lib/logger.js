@@ -7,37 +7,51 @@
 
 const winston = require('winston');
 const loggers = {};
+const MESSAGE = Symbol.for('message');
+const util = require('util');
+
+
+// looks odd, but this is the most efficient way of padding strings in js
+const padding = '                                               ';
+
+const formatter = name => winston.format.combine(
+    winston.format.colorize(),
+    winston.format.timestamp(),
+    winston.format.simple(),
+    winston.format.padLevels(),
+    winston.format.printf((info) => {
+        const {timestamp, level} = info;
+        const str = (`[${name}]` + padding).substring(0, padding.length);
+        return `${timestamp} ${level} ${str} ${info[MESSAGE]}`;
+    }
+    )
+);
+
+let transport;
+
+const getTransport = () => {
+    if (!transport) {
+        transport =    new winston.transports.Console({
+            handleExceptions: false,
+        });
+    }
+    return transport;
+};
+
 
 function createLogger(loglevel, name) {
-    // a singleton and default logger
     const logger = new winston.createLogger({
         level:loglevel,
-        format: winston.format.combine(
-            winston.format.splat(),
-            winston.format.colorize(),
-            winston.format.timestamp(),
-            winston.format.align(),
-            winston.format.simple(),
-            winston.format.printf((info) => {
-                const {timestamp, level, message} = info;
-                return `${timestamp} ${level} [${name}] ${message}`;
-            }
-            )
-        ),
+        format: formatter(name),
         transports: [
-            new winston.transports.Console({
-                handleExceptions: true,
-            })
+            getTransport()
         ],
         exitOnError: false
     });
     return logger;
 }
 
-module.exports.getLogger = function (name = '') {
-    // set the logging level based on the environment variable
-    // configured by the peer
-    const level = process.env.CORE_CHAINCODE_LOGGING_SHIM;
+const levelMapping = (level) => {
     let loglevel = 'info';
     if (typeof level === 'string') {
         switch (level.toUpperCase()) {
@@ -52,10 +66,20 @@ module.exports.getLogger = function (name = '') {
                 break;
             case 'DEBUG':
                 loglevel = 'debug';
+                break;
+            case 'INFO':
+                loglevel = 'info';
         }
     }
+    return loglevel;
+};
 
+module.exports.getLogger = function (name = '') {
+    // set the logging level based on the environment variable
+    // configured by the peer
+    const loglevel = levelMapping(process.env.CORE_CHAINCODE_LOGGING_SHIM);
     let logger;
+
     if (loggers[name]) {
         logger = loggers[name];
         logger.level = loglevel;
@@ -66,3 +90,36 @@ module.exports.getLogger = function (name = '') {
 
     return logger;
 };
+
+module.exports.setLevel = (level) => {
+    // set the level of all the loggers currently active
+    const loglevel = levelMapping(level);
+    process.env.CORE_CHAINCODE_LOGGING_SHIM = loglevel;
+
+    Object.keys(loggers).forEach((name) => {
+        loggers[name].level = loglevel;
+    });
+};
+
+function firstTime() {
+    if (!loggers._) {
+        const loglevel = levelMapping(process.env.CORE_CHAINCODE_LOGGING_SHIM);
+        loggers._ = new winston.createLogger({
+            level:loglevel,
+            format: formatter('_'),
+            transports: [
+                new winston.transports.Console({
+                    handleExceptions: true,
+                })
+            ],
+            exitOnError: false
+        });
+
+
+        process.on('unhandledRejection', (reason, p) => {
+            loggers._.error('Unhandled Rejection reason ' + reason + ' promise ' +  util.inspect(p));
+        });
+
+    }
+}
+firstTime();
