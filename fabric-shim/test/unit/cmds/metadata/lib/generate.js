@@ -58,7 +58,7 @@ describe('generate', () => {
     let sandbox;
     let getInfoFromContractStub;
     let getMetadataStub;
-    let infoStub;
+
     let writeFileStub;
 
 
@@ -72,7 +72,7 @@ describe('generate', () => {
     });
 
     describe ('#handler', () => {
-        let args = {'module-path': process.cwd(), file : path.resolve(process.cwd(), 'file')};
+        const args = {'module-path': process.cwd(), file : path.resolve(process.cwd(), 'file')};
 
         beforeEach('Sandbox creation', () => {
             const FakeLogger = {
@@ -81,7 +81,7 @@ describe('generate', () => {
 
             getMetadataStub = sandbox.stub(Bootstrap, 'getMetadata');
             getInfoFromContractStub = sandbox.stub(Bootstrap, 'getInfoFromContract');
-            infoStub = sandbox.stub(FakeLogger, 'info');
+
 
             Generate.__set__('logger', FakeLogger);
         });
