@@ -24,6 +24,29 @@ describe('Logger', () => {
         Promise.reject('__PERMITTED__');
     });
 
+    describe('setLevel', () => {
+        it('should set the level to be as mapped', () => {
+            const myLogger = {
+                hello: 'world'
+            };
+            const myLogger2 = {
+                hello: 'world'
+            };
+
+            Logger.__set__('loggers', {
+                'myLogger': myLogger,
+                'myLogger2':myLogger2
+            });
+
+            Logger.setLevel('DEBUG');
+            expect(myLogger.level).to.equal('debug');
+            expect(myLogger2.level).to.equal('debug');
+        });
+        after(() => {
+            Logger.setLevel('INFO');
+        });
+    });
+
     describe('getLogger', () => {
 
         let logLevel;
@@ -94,6 +117,14 @@ describe('Logger', () => {
             expect(log).to.exist;
             expect(log.level).to.deep.equal('debug');
         });
+
+        it ('should set the log level to debug when env var set to INFO', () => {
+            process.env.CORE_CHAINCODE_LOGGING_LEVEL = 'INFO';
+            const log = Logger.getLogger();
+
+            expect(log).to.be.ok;
+            expect(log.level).to.deep.equal('info');
+        });
     });
 
 
@@ -130,6 +161,46 @@ describe('Logger', () => {
 
             const log = Logger.getLogger('fred');
             log.debug('hello', 'fred');
+
+        });
+    });
+
+    describe('Default logging for rejected promises', () => {
+        beforeEach(() => {
+            Logger.__set__('loggers', {});
+        });
+        it('should process unhandled rejections', () => {
+            const myLogger = {
+                hello: 'world'
+            };
+
+            Logger.__set__('loggers', {
+                '_': myLogger
+            });
+            const firstTime = Logger.__get__('firstTime');
+            firstTime();
+
+        });
+        it('Unhandled promise rejections', (done) => {
+
+
+            const myLogger = {
+                error: (...args) => {
+                    expect(args).to.be.an('array');
+                    expect(args).to.have.lengthOf(1);
+                    expect(args[0]).to.include('Unhandled Rejection reason Error: __PERMITTED__ promise Promise');
+                    done();
+                }
+            };
+
+            Logger.__set__('loggers', {
+                '_': myLogger
+            });
+            new Promise(() => {
+                throw new Error('__PERMITTED__');
+            });
+
+
 
         });
     });

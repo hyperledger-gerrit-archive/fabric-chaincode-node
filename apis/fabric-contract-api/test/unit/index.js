@@ -14,3 +14,16 @@
 'use strict';
 
 require('../../index.js');
+const sinon = require('sinon');
+
+before(() => {
+    process.on('unhandledRejection', (e) => {
+        if (!/__PERMITTED__/.test(e.message)) {
+            sinon.assert.fail(`You forgot to return a Promise! Check your tests! ${e.message}`);
+        } else {
+            // permitted unhandled rection
+            /* eslint-disable no-console*/
+            console.log('Ignoring unhandled rejection as it is marked as __PERMITTED__ ');
+        }
+    });
+});
