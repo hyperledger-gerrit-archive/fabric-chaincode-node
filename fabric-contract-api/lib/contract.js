@@ -34,7 +34,7 @@ class Contract {
             this.name = name.trim();
         }
 
-        logger.info('Creating new Contract', name);
+        logger.debug('Creating new Contract', name);
     }
 
     /**
