@@ -8,21 +8,36 @@
 const winston = require('winston');
 const loggers = {};
 
-function createLogger(level, name) {
-    // a singleton and default logger
-    const {
-        config
-    } = winston;
-    const logger = new winston.Logger({
-        level,
+
+// looks odd, but this is the most efficient way of padding strings in js
+const padding = '                                               ';
+
+const formatter = name => winston.format.combine(
+    winston.format.splat(),
+    winston.format.colorize(),
+    winston.format.timestamp(),
+    winston.format.simple(),
+    winston.format.padLevels(),
+    winston.format.printf((info) => {
+        const {timestamp, level} = info;
+        const str = (`[${name}]` + padding).substring(0, padding.length);
+        return `${timestamp} ${level} ${str} ${info.message}`;
+    }
+    )
+);
+
+function createLogger(loglevel, name) {
+    const logger = new winston.createLogger({
+        level:loglevel,
+        format: formatter(name),
         transports: [
             new winston.transports.Console({
                 timestamp: () => new Date().toISOString(),
                 handleExceptions: true,
                 formatter: (options) => {
                     return `${options.timestamp()} ${
-                        config.colorize(options.level, options.level.toUpperCase())} ${
-                        name ? config.colorize(options.level, `[${name}]`) : ''
+                        winston.config.colorize(options.level, options.level.toUpperCase())} ${
+                        name ? winston.config.colorize(options.level, `[${name}]`) : ''
                     } ${options.message ? options.message : ''} ${
                         options.meta && Object.keys(options.meta).length ? `\n\t${JSON.stringify(options.meta)}` : ''}`;
                 }
