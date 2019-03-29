@@ -15,7 +15,7 @@ describe('Typescript chaincode', () => {
     });
 
 
-    describe('Scenario', () => {
+    describe.only('Scenario', () => {
         it('should write an asset', async function () {
             this.timeout(SHORT_INC);
             await utils.invoke(suite, 'TestContract:createAsset', ['GLD', 'GOLD_BAR', '100', 'EXTRA_ID', '50']);
