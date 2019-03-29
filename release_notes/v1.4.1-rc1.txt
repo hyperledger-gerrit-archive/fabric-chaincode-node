@@ -1,0 +1,51 @@
+v1.4.1 March 29, 2019
+-----------------------------
+
+Release Notes
+-------------
+Fabric 1.4.1 builds upon the new programming model introduced in Fabric 1.4. 0.
+Specific addtions include
+
+- Updates to the context object to provide contract developers with an easy to use logging system. Rather than console.log
+- Updates to the @Param and @Return annotation to generate beta metadata
+- The `fabric-chaincod-node metadata generate` command can be run to obtain a local copy of the metadata for augmentation
+
+
+Summary of the programming model
+-------------------------------
+
+This is designed to improve developer productivity and ease of use.
+A new NPM package `fabric-contract-api` is added that lets the developer focus on the functions they want to invoke
+within the chaincode. They can also modularize their applications into 'Contracts' by extending a Contract class.
+
+See https://hyperledger-fabric.readthedocs.io/en/developapps/developing_applications.html
+
+To help client applications, and tooling and to make working with the transaction functions easier, a defined
+schema of Contract Metadata has been introduced. Depending on language a large part of this can be automatically created.
+Typescript Annotations are provided that are very useful in creating this data.
+
+See https://fabric-shim.github.io/contract-schema.json
+
+
+On the client application side, a new NPM package `fabric-network` is added which contains the classes and methods for writing
+blockchain enabled applications in node.js using javascript or typescript.
+
+See https://fabric-sdk-node.github.io/module-fabric-network.html
+
+
+
+Known Vulnerabilities
+---------------------
+none
+
+Resolved Vulnerabilities
+------------------------
+none
+
+Known Issues & Workarounds
+--------------------------
+none
+
+Change Log
+----------
+https://github.com/hyperledger/fabric-chaincode-node/blob/release-1.4/CHANGELOG.md#v140
