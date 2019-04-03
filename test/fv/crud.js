@@ -181,20 +181,15 @@ describe('Chaincode CRUD', () => {
 
     });
 
-    /*
-    * This test is to be implemented when the new basic network has been created,
-    * as key level endorsement is not enabled with this current basic_network
-    */
+    describe('Set', () => {
 
-    // describe('Set', () => {
+        it('should set and get the state validation parameter', async function () {
+            this.timeout(SHORT_STEP);
+            await utils.invoke(suite, 'org.mynamespace.crud:setStateValidationParameter', ['key1']);
+            const payload = JSON.parse(await utils.query(suite, 'org.mynamespace.crud:getStateValidationParameter', ['key1', 'key2']));
+            expect(payload.orgs).to.deep.eql(['Org1MSP']);
+            expect(payload.epBuffer2).to.be.undefined;
+        });
 
-    //     it('should set and get the state validation parameter', async function () {
-    //         this.timeout(SHORT_STEP);
-    //         await utils.invoke(suite, 'org.mynamespace.crud:setStateValidationParameter', ['key1']);
-    //         const payload = JSON.parse(await utils.query(suite, 'org.mynamespace.crud:getStateValidationParameter', ['key1', 'key2']));
-    //         expect(payload.ep.listOrgs()).to.deep.eql(['Org1MSP']);
-    //         expect(payload.epBuffer2).to.be.undefined;
-    //     });
-
-    // });
+    });
 });

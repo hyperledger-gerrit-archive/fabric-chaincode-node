@@ -6,6 +6,7 @@
 'use strict';
 
 const {Contract} = require('fabric-contract-api');
+const KeyEndorsementPolicy = require('fabric-shim/lib/utils/statebased.js');
 
 async function getAllResults(iterator, getKeys) {
     const allResults = [];
@@ -153,21 +154,17 @@ class CrudChaincode extends Contract {
         return await getAllResults(iterator);
     }
 
-    /*
-    * This chaincode is to be implemented when the new basic network has been created,
-    * as key level endorsement is not enabled with this current basic_network
-    */
+    async getStateValidationParameter({stub}) {
+        const {params} = stub.getFunctionAndParameters();
+        // should exists validation parameter ['Org1MSP'] for key1
+        const epBuffer = await stub.getStateValidationParameter(params[0]);
+        const ep = new KeyEndorsementPolicy(epBuffer);
+        const orgs = ep.listOrgs();
 
-    // async getStateValidationParameter({stub}) {
-    //     const {params} = stub.getFunctionAndParameters();
-    //     // should exists validation parameter ['Org1MSP'] for key1
-    //     const epBuffer = await stub.getStateValidationParameter(params[0]);
-    //     const ep = new KeyEndorsementPolicy(epBuffer);
-
-    //     // should not exists validation parameter for key2
-    //     const epBuffer2 = await stub.getStateValidationParameter(params[1]);
-    //     return {ep, epBuffer2};
-    // }
+        // should not exists validation parameter for key2
+        const epBuffer2 = await stub.getStateValidationParameter(params[1]);
+        return {orgs, epBuffer2};
+    }
 
     async putKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
@@ -191,17 +188,12 @@ class CrudChaincode extends Contract {
         await stub.deleteState(compositeKey);
     }
 
-    /*
-    * This chaincode is to be implemented when the new basic network has been created,
-    * as key level endorsement is not enabled with this current basic_network
-    */
-
-    // async setStateValidationParameter({stub}) {
-    //     const {params} = stub.getFunctionAndParameters();
-    //     const ep = new KeyEndorsementPolicy();
-    //     ep.addOrgs('MEMBER', 'Org1MSP');
-    //     await stub.setStateValidationParameter(params[0], ep.getPolicy());
-    // }
+    async setStateValidationParameter({stub}) {
+        const {params} = stub.getFunctionAndParameters();
+        const ep = new KeyEndorsementPolicy();
+        ep.addOrgs('MEMBER', 'Org1MSP');
+        await stub.setStateValidationParameter(params[0], ep.getPolicy());
+    }
 
     async splitCompositeKey({stub}) {
         const {params} = stub.getFunctionAndParameters();
