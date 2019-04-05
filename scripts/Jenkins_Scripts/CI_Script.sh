@@ -230,30 +230,18 @@ e2e_Tests() {
         echo "#############################################"
 }
 
-# Publish nodeenv docker image after successful merge
-publish_Nodeenv_Image() {
-        echo
-        echo -e "\033[32m -----------> Publish nodeenv docker image" "\033[0m"
-        # 10003 points to docker.snapshot
-        DOCKER_REPOSITORY=nexus3.hyperledger.org:10003
-        # SETTINGS_FILE stores the nexus credentials
-        USER=$(xpath -e "//servers/server[id='$DOCKER_REPOSITORY']/username/text()" "$SETTINGS_FILE")
-        PASS=$(xpath -e "//servers/server[id='$DOCKER_REPOSITORY']/password/text()" "$SETTINGS_FILE")
-        docker login $DOCKER_REPOSITORY -u "$USER" -p "$PASS"
-        # tag nodeenv latest tag to nexus3 repo
-        docker tag hyperledger/fabric-nodeenv $DOCKER_REPOSITORY/hyperledger/fabric-nodeenv:$ARCH-latest
-        docker tag hyperledger/fabric-nodeenv $DOCKER_REPOSITORY/hyperledger/fabric-nodeenv:$ARCH-$VERSION-stable
-        # Push nodeenv image to nexus3 docker.snapshot
-        docker push $DOCKER_REPOSITORY/hyperledger/fabric-nodeenv:$ARCH-latest
-        docker push $DOCKER_REPOSITORY/hyperledger/fabric-nodeenv:$ARCH-$VERSION-stable
-        docker images
-}
-
 # Publish npm modules after successful merge on amd64
 publish_NpmModules() {
         echo
         echo -e "\033[32m -----------> Publish npm modules from amd64" "\033[0m"
         ./Publish_NPM_Modules.sh
+}
+
+# Publish nodenv image after successful merge on amd64
+publish_Nodeenv_Image() {
+        echo
+        echo -e "\033[32m -----------> Publish Nodeenv docker image" "\033[0m"
+        ./publish_Nodeenv_Image.sh
 }
 
 # Publish NODE_SDK API docs after successful merge on amd64
