@@ -134,6 +134,14 @@ class Bootstrap {
         }
         return metadata;
     }
+
+    static async injectTest() {
+        const opts = StartCommand.getArgs(yargs);
+        const {contracts, serializers, title, version} = this.getInfoFromContract(opts['module-path']);
+        const fileMetadata = await Bootstrap.getMetadata(opts['module-path']);
+        return new ChaincodeFromContract(contracts, serializers, fileMetadata, title, version);
+        // Bootstrap.register(contracts, serializers, fileMetadata, title, version);
+    }
 }
 
 module.exports = Bootstrap;

@@ -76,6 +76,25 @@ class Asset {
     }
 }
 
+@Object()
+class Person {
+    @Property()
+    private eyeColour: string;
+ }
+ 
+ @Object()
+ class Bob extends Person {
+    @Property()
+    private houseName: string;
+ 
+ }
+ 
+ @Object()
+ class Fred extends Person {
+     @Property()
+     private favouriteColour: string;
+ }
+
 export default class TestContract extends Contract {
     constructor() {
         super()
