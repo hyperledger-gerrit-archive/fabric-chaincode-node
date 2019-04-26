@@ -110,6 +110,26 @@
     },
     "components": {
         "schemas": {
+            "Bob": {
+                "$id": "Bob",
+                "additionalProperties": false,
+                "properties": {
+                    "houseName": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Fred": {
+                "$id": "Fred",
+                "additionalProperties": false,
+                "properties": {
+                    "favouriteColour": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "SomethingThatCouldBeAProperty": {
                 "$id": "SomethingThatCouldBeAProperty",
                 "type": "object",

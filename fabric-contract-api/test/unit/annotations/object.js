@@ -28,9 +28,11 @@ describe ('Object.js', () => {
     let sandbox;
     let defineMetadataStub;
     let getMetadataStub;
+    let getOwnMetadataStub;
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         getMetadataStub = sandbox.stub(Reflect, 'getMetadata');
+        getOwnMetadataStub = sandbox.stub(Reflect, 'getOwnMetadata');
         defineMetadataStub = sandbox.stub(Reflect, 'defineMetadata');
     });
 
@@ -93,12 +95,12 @@ describe ('Object.js', () => {
     describe('#Property', () => {
 
         it ('should use the type and name passed', () => {
-            getMetadataStub.onFirstCall().returns({'some': 'properties'});
+            getOwnMetadataStub.onFirstCall().returns({'some': 'properties'});
 
             Property('some name', 'SoMe tYPe')(mockTarget);
 
-            sinon.assert.calledOnce(getMetadataStub);
-            sinon.assert.calledWith(getMetadataStub, 'fabric:object-properties', mockTarget);
+            sinon.assert.calledOnce(getOwnMetadataStub);
+            sinon.assert.calledWith(getOwnMetadataStub, 'fabric:object-properties', mockTarget);
             sinon.assert.calledWith(defineMetadataStub, 'fabric:object-properties', {
                 'some': 'properties',
                 'some name': {
@@ -108,14 +110,16 @@ describe ('Object.js', () => {
         });
 
         it ('should handle the reflected type being a function when type not passed', () => {
+            getOwnMetadataStub
+                .onFirstCall().returns(undefined);
             getMetadataStub
-                .onFirstCall().returns(undefined)
-                .onSecondCall().returns(function Fred() {});
+                .onFirstCall().returns(function Fred() {});
 
 
             Property('some name')(mockTarget, 'some key');
-            sinon.assert.calledTwice(getMetadataStub);
-            sinon.assert.calledWith(getMetadataStub, 'fabric:object-properties', mockTarget);
+            sinon.assert.calledOnce(getOwnMetadataStub);
+            sinon.assert.calledOnce(getMetadataStub);
+            sinon.assert.calledWith(getOwnMetadataStub, 'fabric:object-properties', mockTarget);
             sinon.assert.calledWith(getMetadataStub, 'design:type', mockTarget, 'some key');
 
             sinon.assert.calledWith(defineMetadataStub, 'fabric:object-properties', {
@@ -126,14 +130,16 @@ describe ('Object.js', () => {
         });
 
         it ('should handle the reflected type being a function when type not passed', () => {
+            getOwnMetadataStub
+                .onFirstCall().returns(undefined);
             getMetadataStub
-                .onFirstCall().returns(undefined)
-                .onSecondCall().returns('soMe TyPe');
+                .onFirstCall().returns('soMe TyPe');
 
 
             Property()(mockTarget, 'some key');
-            sinon.assert.calledTwice(getMetadataStub);
-            sinon.assert.calledWith(getMetadataStub, 'fabric:object-properties', mockTarget);
+            sinon.assert.calledOnce(getOwnMetadataStub);
+            sinon.assert.calledOnce(getMetadataStub);
+            sinon.assert.calledWith(getOwnMetadataStub, 'fabric:object-properties', mockTarget);
             sinon.assert.calledWith(getMetadataStub, 'design:type', mockTarget, 'some key');
 
             sinon.assert.calledWith(defineMetadataStub, 'fabric:object-properties', {
