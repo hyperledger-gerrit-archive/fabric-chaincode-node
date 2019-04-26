@@ -19,7 +19,9 @@ if (typeof(results.thePromise) !== 'undefined') {
     results.thePromise.then(() => {
         logger.info('\nCommand succeeded\n');
     }).catch((error) => {
-        logger.info(error + '\nCommand failed\n');
+        logger.error(error);
+        console.error(error.stack);
+        console.error(error + '\nCommand failed\n');
         process.exit(1);
     });
 } else {
