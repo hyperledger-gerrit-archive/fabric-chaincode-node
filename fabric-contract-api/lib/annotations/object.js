@@ -45,7 +45,7 @@ module.exports.Property = function Property (name, type) {
     return (target, propertyKey) => {
         logger.debug('@Property args:', `Property Key -> ${propertyKey}, Name -> ${name}, Type -> ${type},`, 'Target ->', target.constructor.name);
 
-        const properties = Reflect.getMetadata('fabric:object-properties', target) || {};
+        const properties = Reflect.getOwnMetadata('fabric:object-properties', target) || {};
 
         logger.debug('Existing fabric:object-properties for target', properties);
 
