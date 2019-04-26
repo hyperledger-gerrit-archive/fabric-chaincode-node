@@ -31,7 +31,7 @@ describe('Typescript chaincode', () => {
             expect(payload).to.eql({id: 'GLD', name: 'GOLD_BAR', value: 200, extra: {id: 'EXTRA_ID', value: 100}});
         });
 
-        it('should handle the getMetadata', async function () {
+        it.only('should handle the getMetadata', async function () {
             const payload = JSON.parse(await utils.query(suite, 'org.hyperledger.fabric:GetMetadata'));
 
             const schema = fs.readFileSync(path.join(__dirname, '../../fabric-contract-api/schema/contract-schema.json'));
@@ -40,6 +40,7 @@ describe('Typescript chaincode', () => {
             ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'));
 
             if (!ajv.validate(JSON.parse(schema), payload)) {
+                console.log(ajv.errorsText());
                 throw new Error('Expected generated metadata to match the schema');
             }
 
