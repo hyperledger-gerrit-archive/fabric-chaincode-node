@@ -186,3 +186,5 @@ gulp.task('channel-init', gulp.series('channel-create', shell.task([
     'docker exec org1_cli /etc/hyperledger/fixtures/channel-init.sh',
     'docker exec org2_cli /etc/hyperledger/fixtures/channel-init.sh'
 ])));
+
+gulp.task('start-fabric', ['channel-init']);
