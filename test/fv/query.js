@@ -14,7 +14,6 @@ const {SHORT_STEP, LONG_STEP} = utils.TIMEOUTS;
 
 describe('Chaincode query', () => {
     const suite = 'query';
-
     before(async function () {
         this.timeout(LONG_STEP);
         return utils.installAndInstantiate(suite, 'org.mynamespace.query:instantiate');
@@ -27,10 +26,8 @@ describe('Chaincode query', () => {
                 value: 'value0'
             }
         });
-        let payload = await utils.query(suite, 'org.mynamespace.query:query', [query]);
-        payload = payload.replace(/\\+"/g, '\\"');
-
-        expect(JSON.parse(payload)).to.deep.equal([JSON.stringify({value: 'value0'})]);
+        const payload = await utils.query(suite, 'org.mynamespace.query:query', [query]);
+        expect(payload).to.deep.equal(JSON.stringify([{value: 'value0'}]));
     });
 
     it('should perform an regex query', async function () {
@@ -42,13 +39,14 @@ describe('Chaincode query', () => {
                 }
             }
         });
-        let payload = await utils.query(suite, 'org.mynamespace.query:query', [query]);
-        payload = payload.replace(/\\+"/g, '\\"');
-        expect(JSON.parse(payload)).to.deep.equal([
-            JSON.stringify({value: 'value0'}),
-            JSON.stringify({value: 'value1'}),
-            JSON.stringify({value: 'value2'})
-        ]);
+        const payload = await utils.query(suite, 'org.mynamespace.query:query', [query]);
+        expect(payload).to.deep.equal(JSON.stringify([
+            {value: 'value0'},
+            {value: 'value1'},
+            {value: 'value2'}
+
+        ])
+        );
     });
 
 });

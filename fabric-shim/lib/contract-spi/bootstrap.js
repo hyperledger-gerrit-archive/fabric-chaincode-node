@@ -132,6 +132,7 @@ class Bootstrap {
         }
         return metadata;
     }
+
 }
 
 module.exports = Bootstrap;
