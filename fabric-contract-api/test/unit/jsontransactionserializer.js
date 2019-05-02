@@ -51,15 +51,11 @@ describe('jsontransactionserializer.js', () => {
 
 
     const data = [
-        'HelloWorld',
-        42,
         {text:'hello', value: {i:'root -1'}},
         Buffer.from('hello')
     ];
 
     const dataForValidation = [
-        'HelloWorld',
-        42,
         {text:'hello', value: {i:'root -1'}},
         Buffer.from('hello')
     ];
@@ -91,6 +87,15 @@ describe('jsontransactionserializer.js', () => {
             expect(sc0.toBuffer('hello world', {type:'string'})).to.deep.equal(Buffer.from('hello world'));
         });
         it ('should return number from a number in result if schema given', () => {
+            const sc0 = new JSONSerializer();
+            expect(sc0.toBuffer(42, {type:'number'})).to.deep.equal(Buffer.from('42'));
+        });
+
+        it ('should return string from a string in result if JS can tell', () => {
+            const sc0 = new JSONSerializer();
+            expect(sc0.toBuffer('hello world')).to.deep.equal(Buffer.from('hello world'));
+        });
+        it ('should return number from a number in result if JS can tell', () => {
             const sc0 = new JSONSerializer();
             expect(sc0.toBuffer(42, {type:'number'})).to.deep.equal(Buffer.from('42'));
         });
@@ -156,6 +161,12 @@ describe('jsontransactionserializer.js', () => {
         it('should handle specific Number case', () => {
             const sc0 = new JSONSerializer();
             const v = sc0.fromBuffer(Buffer.from('102345679'), {type:'number'});
+            v.should.deep.equal({value:102345679, jsonForValidation:102345679});
+        });
+
+        it('should handle specific Number case', () => {
+            const sc0 = new JSONSerializer();
+            const v = sc0.fromBuffer(Buffer.from('102345679'));
             v.should.deep.equal({value:102345679, jsonForValidation:102345679});
         });
 
