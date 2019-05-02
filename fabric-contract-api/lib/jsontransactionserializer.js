@@ -38,6 +38,8 @@ module.exports = class JSONSerializer {
                     throw new Error(`Returned value is ${typeof result} does not match schema type of ${schema.type}`);
                 }
                 return Buffer.from(result.toString());
+            } else if (typeof result === 'number' || typeof result === 'string') {
+                return Buffer.from(result.toString());
             } else {
                 logger.info(`${loggerPrefix} toBuffer has no schema/lacks sufficient schema to validate against`, schema);
                 const payload = JSON.stringify(result);
