@@ -1005,6 +1005,16 @@ describe('chaincodefromcontract', () => {
             sinon.assert.calledWith(getMetadataStub, 'fabric:transactions', ci);
             transactions.should.deep.equal([{
                 name: 'alpha',
+                parameters: [
+                    {
+                        description: 'Argument 0',
+                        name: 'arg0'
+                    },
+                    {
+                        description: 'Argument 1',
+                        name: 'arg1'
+                    }
+                ],
                 tags: ['submitTx']
             }]);
 
@@ -1025,6 +1035,16 @@ describe('chaincodefromcontract', () => {
             sinon.assert.calledWith(getMetadataStub, 'fabric:transactions', ci);
             transactions.should.deep.equal([{
                 name: 'alpha',
+                parameters: [
+                    {
+                        description: 'Argument 0',
+                        name: 'arg0'
+                    },
+                    {
+                        description: 'Argument 1',
+                        name: 'arg1'
+                    }
+                ],
                 tags: ['submitTx']
             }]);
 
@@ -1045,7 +1065,17 @@ describe('chaincodefromcontract', () => {
             sinon.assert.calledOnce(getMetadataStub);
             sinon.assert.calledWith(getMetadataStub, 'fabric:transactions', ci);
             transactions.should.deep.equal([{
-                name: 'alpha'
+                name: 'alpha',
+                parameters: [
+                    {
+                        description: 'Argument 0',
+                        name: 'arg0'
+                    },
+                    {
+                        description: 'Argument 1',
+                        name: 'arg1'
+                    }
+                ],
             }]);
         });
 
@@ -1061,6 +1091,40 @@ describe('chaincodefromcontract', () => {
             transactions.should.deep.equal([{
                 some: 'transaction'
             }]);
+        });
+
+        it ('should handle transactions with no arguments', () => {
+            const getMetadataStub = sandbox.stub(Reflect, 'getMetadata').returns(null);
+
+            const ci = cc.contractImplementations.alpha.contractInstance;
+            Object.getPrototypeOf(ci).conga = (api) => {};
+
+            const transactions = ChaincodeFromContract.prototype._processContractTransactions(ci, []);
+
+            sinon.assert.calledOnce(getMetadataStub);
+            sinon.assert.calledWith(getMetadataStub, 'fabric:transactions', ci);
+            transactions.should.deep.equal([
+                {
+                    name: 'alpha',
+                    parameters: [
+                        {
+                            description: 'Argument 0',
+                            name: 'arg0'
+                        },
+                        {
+                            description: 'Argument 1',
+                            name: 'arg1'
+                        }
+                    ],
+                    tags: ['submitTx']
+                },
+                {
+                    name: 'conga',
+                    tags: ['submitTx']
+                }
+            ]);
+
+            delete Object.getPrototypeOf(ci).conga;
         });
     });
 
