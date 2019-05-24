@@ -10,7 +10,8 @@ node('hyp-z') {
      env.PROJECT_DIR = "gopath/src/github.com/hyperledger"
      env.PROJECT = "fabric-chaincode-node"
      env.GOPATH = "$WORKSPACE/gopath"
-     env.VERSION = sh(returnStdout: true, script: 'curl -O https://raw.githubusercontent.com/hyperledger/fabric/master/Makefile && cat Makefile | grep "BASE_VERSION =" | cut -d "=" -f2').trim()
+     env.VERSION = 2.0.0
+     //sh(returnStdout: true, script: 'curl -O https://raw.githubusercontent.com/hyperledger/fabric/master/Makefile && cat Makefile | grep "BASE_VERSION =" | cut -d "=" -f2').trim()
      env.NODE_VER = "10.15.2"
      env.ARCH = "s390x"
      env.IMAGE_TAG = "${ARCH}-${VERSION}-stable" // fabric latest stable version from nexus
@@ -120,7 +121,7 @@ node('hyp-z') {
      }
 
 // Publish hyperledger/fabric-nodeenv image from merged job only
-if (env.JOB_NAME == "fabric-chaincode-node-merge-s390x") {
+if (env.JOB_NAME == "fabric-chaincode-node-verify-s390x") {
       publishNodeenv()
 } else {
      echo "------> Don't publish nodeenv image from verify job"
