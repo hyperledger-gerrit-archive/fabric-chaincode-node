@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-ARG NODE_VER=10.15.2
+ARG NODE_VER=10.15.3
 FROM node:${NODE_VER}-alpine
 RUN apk add --no-cache \
 	make \
@@ -11,3 +11,6 @@ RUN apk add --no-cache \
 RUN mkdir -p /chaincode/input \
 	&& mkdir -p /chaincode/output \
 	&& mkdir -p /usr/local/src;
+
+# handle issue building modules under gcc8
+ENV CXXFLAGS -Wno-error
