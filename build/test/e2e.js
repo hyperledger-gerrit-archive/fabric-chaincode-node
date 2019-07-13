@@ -18,7 +18,7 @@ const wait = require('gulp-wait');
 const util = require('util');
 const fs = require('fs-extra');
 const path = require('path');
-
+const {shell: runcmds} = require('./../shell/cmd');
 const constants = require('../../test/constants.js');
 
 const packageJson = '{' +
@@ -49,6 +49,7 @@ function getTLSArgs() {
     }
     return args;
 }
+/**
 gulp.task('copy-shim', ['protos'], () => {
     // first ensure the chaincode folder has the latest shim code
     srcPath = path.join(__dirname, '../../fabric-shim/**');
@@ -452,3 +453,10 @@ gulp.task('test-fv-shim', ['fv-pre-test'], (done) => {
     });
 
 });
+**/
+const testfvshim = async () => {
+    const dir = path.join(__dirname, '../../test/fv');
+    await runcmds([`npx mocha --recursive ${dir}`]);
+};
+
+exports.testfvshim = testfvshim;
