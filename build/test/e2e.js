@@ -12,43 +12,45 @@
 // other error-inducing flows can be found in other files in this folder
 'use strict';
 
-const gulp = require('gulp');
-const shell = require('gulp-shell');
-const wait = require('gulp-wait');
-const util = require('util');
-const fs = require('fs-extra');
+// const gulp = require('gulp');
+// const shell = require('gulp-shell');
+// const wait = require('gulp-wait');
+// const util = require('util');
+// const fs = require('fs-extra');
 const path = require('path');
+const {shell: runcmds} = require('./../shell/cmd');
+// const constants = require('../../test/constants.js');
 
-const constants = require('../../test/constants.js');
-
-const packageJson = '{' +
-    '  "name": "fabric-shim-test",' +
-    '  "version": "1.0.0-snapshot",' +
-    '  "description": "Test suite for fabric-shim",' +
-    '  "license": "Apache-2.0",' +
-    '  "scripts": { "start" : "node test.js" },' +
-    '  "dependencies": {' +
-    '    "fabric-shim": "file:./fabric-shim",' +
-    '    "fabric-shim-crypto": "file:./fabric-shim-crypto",' +
-    //	'    "fabric-contract-api": "file:./fabric-contract-api",' +
-    '    "chai": "^4.1.1",' +
-    '    "chai-as-promised": "^7.1.1"' +
-    '  }' +
-    '}';
-const tls = process.env.TLS ? process.env.TLS : 'false';
-const CC_NAME = 'mycc';
-const CC2_NAME = 'mycc2';
-const CHANNEL_NAME = 'mychannel';
-let srcPath;
-let destPath;
-function getTLSArgs() {
-    let args = '';
-    if (tls === 'true') {
-        args = util.format('--tls %s --cafile %s', tls,
-            '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem');
-    }
-    return args;
-}
+// const packageJson = '{' +
+//     '  "name": "fabric-shim-test",' +
+//     '  "version": "1.0.0-snapshot",' +
+//     '  "description": "Test suite for fabric-shim",' +
+//     '  "license": "Apache-2.0",' +
+//     '  "scripts": { "start" : "node test.js" },' +
+//     '  "dependencies": {' +
+//     '    "fabric-shim": "file:./fabric-shim",' +
+//     '    "fabric-shim-crypto": "file:./fabric-shim-crypto",' +
+//     //	'    "fabric-contract-api": "file:./fabric-contract-api",' +
+//     '    "chai": "^4.1.1",' +
+//     '    "chai-as-promised": "^7.1.1"' +
+//     '  }' +
+//     '}';
+// const tls = process.env.TLS ? process.env.TLS : 'false';
+// const CC_NAME = 'mycc';
+// const CC2_NAME = 'mycc2';
+// const CHANNEL_NAME = 'mychannel';
+// let srcPath;
+// let destPath;
+// function getTLSArgs() {
+//     let args = '';
+//     if (tls === 'true') {
+//         args = util.format('--tls %s --cafile %s', tls,
+//             '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/
+// example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem');
+//     }
+//     return args;
+// }
+/**
 gulp.task('copy-shim', ['protos'], () => {
     // first ensure the chaincode folder has the latest shim code
     srcPath = path.join(__dirname, '../../fabric-shim/**');
@@ -452,3 +454,10 @@ gulp.task('test-fv-shim', ['fv-pre-test'], (done) => {
     });
 
 });
+**/
+const testfvshim = async () => {
+    const dir = path.join(__dirname, '../../test/fv');
+    await runcmds([`npx mocha --recursive ${dir}`]);
+};
+
+exports.testfvshim = testfvshim;
