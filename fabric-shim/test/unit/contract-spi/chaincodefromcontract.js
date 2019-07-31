@@ -384,6 +384,14 @@ describe('chaincodefromcontract', () => {
             sandbox.replace(shim, 'success', fakeSuccess);
             sandbox.replace(shim, 'error', fakeError);
         });
+
+        it('should handle no args', function() {
+            const cc = new ChaincodeFromContract([SCAlpha], defaultSerialization);
+
+            const mockStub = {getBufferArgs: sandbox.stub().returns()};
+            return cc.Init(mockStub).should.eventually.be.fulfilled;
+        });
+
         it('should handle a single class being passed as a contract', () => {
             const systemContract = new SystemContract();
             sandbox.stub(ChaincodeFromContract.prototype, '_resolveContractImplementations')
@@ -429,6 +437,14 @@ describe('chaincodefromcontract', () => {
     });
 
     describe('#invoke', () => {
+
+        it('should handle no args', function() {
+            const cc = new ChaincodeFromContract([SCAlpha], defaultSerialization);
+
+            const mockStub = {getBufferArgs: sandbox.stub().returns()};
+            return cc.Invoke(mockStub).should.eventually.be.fulfilled;
+        });
+
         it('should handle a single class being passed as a contract', () => {
             const systemContract = new SystemContract();
             sandbox.stub(ChaincodeFromContract.prototype, '_resolveContractImplementations')
@@ -604,7 +620,7 @@ describe('chaincodefromcontract', () => {
 
 
             const mockStub = {
-                getBufferArgs: sandbox.stub().returns([]),
+                getBufferArgs: sandbox.stub().returns(['name:missing', Buffer.from('args2')]),
                 getTxID: () => {
                     return 'a tx id';
                 },
@@ -612,7 +628,7 @@ describe('chaincodefromcontract', () => {
                     return 'a channel id';
                 }
             };
-            await cc.invokeFunctionality(mockStub, 'name:missing', [Buffer.from('args2')]);
+            await cc.invokeFunctionality(mockStub);
 
             sinon.assert.called(fakeError);
             sinon.assert.notCalled(fakeSuccess);
@@ -665,7 +681,7 @@ describe('chaincodefromcontract', () => {
             };
 
             const mockStub = {
-                getBufferArgs: sandbox.stub().returns([]),
+                getBufferArgs: sandbox.stub().returns(['name:fn', Buffer.from('args2')]),
                 getCreator: sandbox.stub().returns(mockSigningId),
                 getTxID: () => {
                     return 'a tx id';
@@ -676,7 +692,7 @@ describe('chaincodefromcontract', () => {
             };
             cc.contractImplementations.name = nameMetadata;
 
-            await cc.invokeFunctionality(mockStub, 'name:fn', [Buffer.from('args2')]);
+            await cc.invokeFunctionality(mockStub);
             sinon.assert.called(fakeSuccess);
             sinon.assert.notCalled(fakeError);
 
@@ -715,7 +731,7 @@ describe('chaincodefromcontract', () => {
             };
 
             const mockStub = {
-                getBufferArgs: sandbox.stub().returns([]),
+                getBufferArgs: sandbox.stub().returns(['name:fn', Buffer.from('args2')]),
                 getCreator: sandbox.stub().returns(mockSigningId),
                 getTxID: () => {
                     return 'a tx id';
@@ -739,7 +755,7 @@ describe('chaincodefromcontract', () => {
                 }
             };
 
-            await cc.invokeFunctionality(mockStub, 'name:fn', [Buffer.from('args2')]);
+            await cc.invokeFunctionality(mockStub);
             sinon.assert.called(fakeError);
             sinon.assert.notCalled(fakeSuccess);
 
@@ -779,7 +795,7 @@ describe('chaincodefromcontract', () => {
             };
 
             const mockStub = {
-                getBufferArgs: sandbox.stub().returns([]),
+                getBufferArgs: sandbox.stub().returns(['name:fn', Buffer.from('args2')]),
                 getCreator: sandbox.stub().returns(mockSigningId),
                 getTxID: () => {
                     return 'a tx id';
@@ -812,7 +828,7 @@ describe('chaincodefromcontract', () => {
                 }
             };
 
-            await cc.invokeFunctionality(mockStub, 'name:fn', [Buffer.from('args2')]);
+            await cc.invokeFunctionality(mockStub);
             sinon.assert.calledWith(cc.contractImplementations.name.dataMarshall.handleParameters, {name: 'fn'}, [Buffer.from('args2')], 'a logging prefix');
             sinon.assert.calledWith(cc.contractImplementations.name.dataMarshall.toWireBuffer, 'hello world', undefined, 'a logging prefix');
             sinon.assert.called(fakeSuccess);
@@ -851,7 +867,7 @@ describe('chaincodefromcontract', () => {
             };
 
             const mockStub = {
-                getBufferArgs: sandbox.stub().returns([]),
+                getBufferArgs: sandbox.stub().returns(['name:fn', Buffer.from('args2')]),
                 getCreator: sandbox.stub().returns(mockSigningId),
                 getTxID: () => {
                     return 'a tx id';
@@ -888,7 +904,7 @@ describe('chaincodefromcontract', () => {
                 }
             };
 
-            await cc.invokeFunctionality(mockStub, 'name:fn', [Buffer.from('args2')]);
+            await cc.invokeFunctionality(mockStub);
             sinon.assert.calledWith(cc.contractImplementations.name.dataMarshall.handleParameters, cc.contractImplementations.name.transactions[0], [Buffer.from('args2')], 'a logging prefix');
             sinon.assert.calledWith(cc.contractImplementations.name.dataMarshall.toWireBuffer, 'hello world', {type: 'string'}, 'a logging prefix');
             sinon.assert.called(fakeSuccess);

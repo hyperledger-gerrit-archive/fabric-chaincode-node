@@ -31,7 +31,7 @@ describe('Chaincode', () => {
             Chaincode.Init();
         });
 
-        it ('should be able to call the init method', () => {
+        it ('should be able to call the invoke method', () => {
             Chaincode = new (require(chaincodePath).ChaincodeInterface)();
             Chaincode.Invoke();
         });
