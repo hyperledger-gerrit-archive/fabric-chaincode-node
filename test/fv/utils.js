@@ -14,7 +14,7 @@ const getTLSArgs = require('../../build/test/utils').getTLSArgs;
 
 // Increase the timeouts on zLinux!
 const arch = require('os').arch();
-const multiplier = arch === 's390x' ? 2 : 1;
+const multiplier = arch === 's390x' ? 3 : 1;
 
 function getPackageVersion() {
     const packageJsonPath = path.join(__dirname, './../../package.json');
