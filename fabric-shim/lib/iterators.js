@@ -9,7 +9,7 @@ const _queryresultProto = ProtoLoader.load({
 }).queryresult;
 
 /**
- * CommonIterator allows a chaincode to check whether any more result(s)
+ *  CommonIterator allows a chaincode to check whether any more result(s)
  * need to be fetched from an iterator and close it when done.
  *
  * @class
