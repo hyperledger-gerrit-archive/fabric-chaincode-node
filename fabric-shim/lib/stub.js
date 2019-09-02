@@ -7,35 +7,9 @@
 // TODO: Need to add parameter validation to all calls.
 'use strict';
 
-const ProtoLoader = require('./protoloader');
-const path = require('path');
+const fabprotos = require('../bundle');
 const util = require('util');
 const crypto = require('crypto');
-
-const _commonProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'common/common.proto'
-}).common;
-
-const _proposalProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'peer/proposal.proto'
-}).protos;
-
-const _eventProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'peer/chaincode_event.proto'
-}).protos;
-
-const _idProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'msp/identities.proto'
-}).msp;
-
-const _serviceProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'peer/chaincode_shim.proto'
-}).protos;
 
 const logger = require('./logger').getLogger('lib/stub.js');
 
@@ -78,7 +52,7 @@ function validateSimpleKeys(...keys) {
 
 function computeProposalBinding(decodedSP) {
     const nonce = decodedSP.proposal.header.signature_header.nonce;
-    const creator = decodedSP.proposal.header.signature_header.creator.toBuffer();
+    const creator = fabprotos.msp.SerializedIdentity.encode(decodedSP.proposal.header.signature_header.creator).finish();
     const epoch = decodedSP.proposal.header.channel_header.epoch;
 
     // see github.com/hyperledger/fabric/protos/utils/proputils.go, computeProposalBindingInternal()
@@ -99,10 +73,7 @@ function computeProposalBinding(decodedSP) {
 
 // Construct the QueryMetadata with a page size and a bookmark needed for pagination
 function createQueryMetadata(pageSize, bookmark) {
-    const metadata = new _serviceProto.QueryMetadata();
-    metadata.setPageSize(pageSize);
-    metadata.setBookmark(bookmark);
-    return metadata.toBuffer();
+    return fabprotos.protos.QueryMetadata.encode({pageSize, bookmark}).finish();
 }
 
 // function to convert a promise that either will resolve to an iterator or an object
@@ -162,11 +133,11 @@ class ChaincodeStub {
         this.channel_id = channel_id;
         this.txId = txId;
         this.args = chaincodeInput.args.map((entry) => {
-            return entry.toBuffer().toString();
+            return Buffer.from(entry).toString();
         });
 
         this.bufferArgs = chaincodeInput.args.map((entry) => {
-            return entry.toBuffer();
+            return Buffer.from(entry);
         });
 
         this.handler = client;
@@ -179,24 +150,24 @@ class ChaincodeStub {
 
             let proposal;
             try {
-                proposal = _proposalProto.Proposal.decode(signedProposal.proposal_bytes);
+                proposal = fabprotos.protos.Proposal.decode(signedProposal.proposal_bytes);
                 decodedSP.proposal = {};
                 this.proposal = proposal;
             } catch (err) {
                 throw new Error(util.format('Failed extracting proposal from signedProposal. [%s]', err));
             }
 
-            if (!this.proposal.header || this.proposal.header.toBuffer().length === 0) {
+            if (!this.proposal.header || this.proposal.header.length === 0) {
                 throw new Error('Proposal header is empty');
             }
 
-            if (!this.proposal.payload || this.proposal.payload.toBuffer().length === 0) {
+            if (!this.proposal.payload || this.proposal.payload.length === 0) {
                 throw new Error('Proposal payload is empty');
             }
 
             let header;
             try {
-                header = _commonProto.Header.decode(this.proposal.header);
+                header = fabprotos.common.Header.decode(this.proposal.header);
                 decodedSP.proposal.header = {};
             } catch (err) {
                 throw new Error(util.format('Could not extract the header from the proposal: %s', err));
@@ -204,15 +175,15 @@ class ChaincodeStub {
 
             let signatureHeader;
             try {
-                signatureHeader = _commonProto.SignatureHeader.decode(header.signature_header);
-                decodedSP.proposal.header.signature_header = {nonce: signatureHeader.getNonce().toBuffer()};
+                signatureHeader = fabprotos.common.SignatureHeader.decode(header.signatureHeader);
+                decodedSP.proposal.header.signature_header = {nonce: signatureHeader.nonce};
             } catch (err) {
                 throw new Error(util.format('Decoding SignatureHeader failed: %s', err));
             }
 
             let creator;
             try {
-                creator = _idProto.SerializedIdentity.decode(signatureHeader.creator);
+                creator = fabprotos.msp.SerializedIdentity.decode(signatureHeader.creator);
                 decodedSP.proposal.header.signature_header.creator = creator;
                 this.creator = creator;
             } catch (err) {
@@ -221,7 +192,7 @@ class ChaincodeStub {
 
             let channelHeader;
             try {
-                channelHeader = _commonProto.ChannelHeader.decode(header.channel_header);
+                channelHeader = fabprotos.common.ChannelHeader.decode(header.channelHeader);
                 decodedSP.proposal.header.channel_header = channelHeader;
                 this.txTimestamp = channelHeader.timestamp;
             } catch (err) {
@@ -230,13 +201,13 @@ class ChaincodeStub {
 
             let ccpp;
             try {
-                ccpp = _proposalProto.ChaincodeProposalPayload.decode(this.proposal.payload);
+                ccpp = fabprotos.protos.ChaincodeProposalPayload.decode(this.proposal.payload);
                 decodedSP.proposal.payload = ccpp;
             } catch (err) {
                 throw new Error(util.format('Decoding ChaincodeProposalPayload failed: %s', err));
             }
 
-            this.transientMap = ccpp.getTransientMap();
+            this.transientMap = new Map(Object.entries(ccpp.TransientMap));
 
             this.signedProposal = decodedSP;
 
@@ -768,10 +739,10 @@ class ChaincodeStub {
             throw new Error('Event name must be a non-empty string');
         }
 
-        const event = new _eventProto.ChaincodeEvent();
-        event.setEventName(name);
-        event.setPayload(payload);
-        this.chaincodeEvent = event;
+        this.chaincodeEvent = {
+            eventName: name,
+            payload
+        };
     }
 
     /**

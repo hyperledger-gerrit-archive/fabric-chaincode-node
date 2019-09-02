@@ -6,8 +6,7 @@
 /* eslint-disable no-useless-escape */
 'use strict';
 
-const ProtoLoader = require('./protoloader');
-const path = require('path');
+const fabprotos = require('../bundle');
 const util = require('util');
 const X509 = require('@ampretia/x509');
 const jsrsasign = require('jsrsasign');
@@ -25,21 +24,6 @@ const fs = require('fs');
 const StartCommand = require('./cmds/startCommand.js');
 
 const yargs = require('yargs');
-
-const _chaincodeProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'peer/chaincode.proto'
-}).protos;
-
-const _serviceProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'peer/chaincode_shim.proto'
-}).protos;
-
-const _responseProto = ProtoLoader.load({
-    root: path.join(__dirname, './protos'),
-    file: 'peer/proposal_response.proto'
-}).protos;
 
 /**
  * Chaincodes must implement the methods in this interface. The Init() method is called during
@@ -139,14 +123,15 @@ class Shim {
 
         const chaincodeName = opts['chaincode-id-name'];
         const client = new Handler(chaincode, url, optsCpy);
-        const chaincodeID = new _chaincodeProto.ChaincodeID();
-        chaincodeID.setName(chaincodeName);
+        const chaincodeID = {
+            name: chaincodeName
+        };
 
         logger.info(util.format('Registering with peer %s as chaincode "%s"', opts['peer.address'], chaincodeName));
 
         client.chat({
-            type: _serviceProto.ChaincodeMessage.Type.REGISTER,
-            payload: chaincodeID.toBuffer()
+            type: fabprotos.protos.ChaincodeMessage.Type.REGISTER,
+            payload: fabprotos.protos.ChaincodeID.encode(chaincodeID).finish()
         });
 
         // return the client object to give the calling code
@@ -169,11 +154,10 @@ class Shim {
 	 * @returns {SuccessResponse}
 	 */
     static success(payload) {
-        const ret = new _responseProto.Response();
-        ret.status = ChaincodeStub.RESPONSE_CODE.OK;
-        ret.payload = payload ? payload : Buffer.from('');
-
-        return ret;
+        return {
+            status: ChaincodeStub.RESPONSE_CODE.OK,
+            payload: payload ? payload : Buffer.from('')
+        };
     }
 
     /**
@@ -191,11 +175,10 @@ class Shim {
 	 * @returns {ErrorResponse}
 	 */
     static error(msg) {
-        const ret = new _responseProto.Response();
-        ret.status = ChaincodeStub.RESPONSE_CODE.ERROR;
-        ret.message = msg;
-
-        return ret;
+        return {
+            status: ChaincodeStub.RESPONSE_CODE.ERROR,
+            message: msg
+        };
     }
 
     /**
@@ -246,9 +229,9 @@ class ClientIdentity {
         this.stub = stub;
         const signingId = stub.getCreator();
 
-        this.mspId = signingId.getMspid();
+        this.mspId = signingId.mspid;
 
-        const idBytes = signingId.getIdBytes().toBuffer();
+        const idBytes = signingId.idBytes;
         const normalizedCert = normalizeX509(idBytes.toString(), loggerPrefix);
         const cert = X509.parseCert(normalizedCert);
         this.cert = cert;
