@@ -37,7 +37,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@grpc/proto-loader": "^0.5.1",
-    "@types/google-protobuf": "^3.2.7",
     "@types/node": "^8.9.4",
     "@types/winston": "^2.3.9",
     "ajv": "^6.5.5",
