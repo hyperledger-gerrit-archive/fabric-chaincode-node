@@ -36,20 +36,18 @@
   "types": "./types/index.d.ts",
   "license": "Apache-2.0",
   "dependencies": {
+    "@fidm/x509": "^1.2.1",
     "@grpc/proto-loader": "^0.5.1",
     "@types/node": "^8.9.4",
-    "@types/winston": "^2.3.9",
     "ajv": "^6.5.5",
     "fabric-contract-api": "unstable",
     "fs-extra": "^7.0.1",
     "grpc": "^1.23.3",
-    "jsrsasign": "^8.0.4",
+    "protobufjs": "^6.8.8",
     "reflect-metadata": "^0.1.12",
     "winston": "^2.4.1",
-    "@ampretia/x509": "^0.4.0",
     "yargs": "^10.0.2",
-    "yargs-parser": "^11.0.0",
-    "protobufjs": "^6.8.8"
+    "yargs-parser": "^11.0.0"
   },
   "devDependencies": {
     "cpx": "^1.5.0",
