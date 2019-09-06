@@ -174,6 +174,7 @@ gulp.task('copy-published-to-chaincode', gulp.series('local-publish', () => {
         const stream = gulp.src([
             path.join(process.cwd(), `fabric-contract-api-${version}.tgz`),
             path.join(process.cwd(), `fabric-shim-${version}.tgz`),
+            path.join(process.cwd(), `fabric-shim-api-${version}.tgz`),
             path.join(process.cwd(), `fabric-shim-crypto-${version}.tgz`),
         ])
             .pipe(gulp.dest(directory));
@@ -184,6 +185,7 @@ gulp.task('copy-published-to-chaincode', gulp.series('local-publish', () => {
     const stream = gulp.src([
         path.join(process.cwd(), `fabric-contract-api-${version}.tgz`),
         path.join(process.cwd(), `fabric-shim-${version}.tgz`),
+        path.join(process.cwd(), `fabric-shim-api-${version}.tgz`),
         path.join(process.cwd(), `fabric-shim-crypto-${version}.tgz`),
     ])
         .pipe(gulp.dest(path.join(__dirname, '../../test/scenario')));

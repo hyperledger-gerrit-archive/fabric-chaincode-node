@@ -13,7 +13,6 @@ import { Shim,
     ChaincodeInterface,
     ChaincodeResponse,
     ClientIdentity,
-    X509,
     SplitCompositekey,
     SerializedIdentity,
     ChaincodeProposal,
@@ -230,34 +229,6 @@ class TestTS implements ChaincodeInterface {
         const id: string = cID.getID();
         const mspid: string = cID.getMSPID();
         const newAttributeValue: boolean = cID.assertAttributeValue(name, value);
-        const X509Certificate: X509.Certificate = cID.getX509Certificate();
-        this.testCert(X509Certificate);
-    }
-
-    testCert(cert: X509.Certificate) {
-        const subject: X509.Subject = cert.subject;
-        const issuer: X509.Issuer = cert.issuer;
-        const notAfter: string = cert.notAfter;
-        const notBefore: string = cert.notBefore;
-        const fingerPrint: string = cert.fingerPrint;
-        const publicKey: string = cert.publicKey;
-        const sigAlg: string = cert.signatureAlgorithm;
-
-        let commonName: string = issuer.commonName;
-        let countryName: string = issuer.countryName;
-        let localityName: string = issuer.localityName;
-        let organisationName: string = issuer.organizationName;
-        let stateOrProvinceName: string = issuer.stateOrProvinceName;
-
-        stateOrProvinceName = subject.stateOrProvinceName;
-        commonName = subject.commonName;
-        countryName = subject.countryName;
-        localityName = subject.localityName;
-        organisationName = subject.organizationName;
-        const organisationalUnitName: string = subject.organizationalUnitName;
-        const postcode: string = subject.postalCode;
-        const stateName: string = subject.stateOrProvinceName;
-        const address: string = subject.streetAddress;
     }
 
     testProposal(stub: ChaincodeStub): void {
