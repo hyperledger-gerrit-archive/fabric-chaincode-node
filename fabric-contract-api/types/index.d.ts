@@ -7,8 +7,8 @@
 
 declare module 'fabric-contract-api' {
     import { LoggerInstance } from 'winston';
-    import { ChaincodeStub, ClientIdentity } from 'fabric-shim';
-    
+    import { ChaincodeStub, ClientIdentity } from 'fabric-shim-api';
+
     export class Context {
         stub: ChaincodeStub;
         clientIdentity: ClientIdentity;
@@ -17,7 +17,7 @@ declare module 'fabric-contract-api' {
             getLogger: (name?: string) => LoggerInstance
         }
     }
-    
+
     export class Contract {
         constructor(name?: string);
 
