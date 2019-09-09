@@ -46,6 +46,7 @@
     "gulp-using": "^0.1.1",
     "gulp-wait": "0.0.2",
     "gulp-watch": "^5.0.1",
+    "ip": "^1.1.5",
     "istanbul-api": "^1.1.13",
     "jsdoc": "^3.5.5",
     "merge-stream": "^1.0.1",
