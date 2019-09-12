@@ -1,0 +1,23 @@
+[12:00:27] fs.js:114
+    throw err;
+    ^
+
+Error: ENOENT: no such file or directory, scandir './docs/tutorials'
+    at Object.readdirSync (fs.js:785:3)
+    at Object.exports.ls (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/lib/jsdoc/fs.js:38:20)
+    at Object.exports.load.filepath [as load] (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/lib/jsdoc/tutorial/resolver.js:99:22)
+    at Object.module.exports.cli.resolveTutorials (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/cli.js:406:22)
+    at Object.module.exports.cli.processParseResults (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/cli.js:390:17)
+    at module.exports.cli.main (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/cli.js:235:18)
+    at Object.module.exports.cli.runCommand.cb [as runCommand] (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/cli.js:186:9)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/jsdoc.js:93:9
+    at Object.<anonymous> (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/jsdoc/jsdoc.js:94:3)
+    at Module._compile (internal/modules/cjs/loader.js:701:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:712:10)
+    at Module.load (internal/modules/cjs/loader.js:600:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:539:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:531:3)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:754:12)
+    at startup (internal/bootstrap/node.js:283:19)
+
+[12:00:27] JSDoc returned with error code: 1

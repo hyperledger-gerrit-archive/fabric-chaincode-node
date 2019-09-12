@@ -102,16 +102,16 @@ node ('hyp-x') { // trigger build on x86_64 node
            }
          // }
       }
-// Run gulp tests (e2e tests)
-      stage("Run Headless & E2E tests") {
+// Run Full Builds
+      stage("Run Full Build") {
          // wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
-                 sh './CI_Script.sh --e2e_Tests'
+                 sh './CI_Script.sh --fullBuild'
                  }
                }
            catch (err) {
-                 failure_stage = "e2e_Tests"
+                 failure_stage = "fullBuild"
                  currentBuild.result = 'FAILURE'
                  throw err
            }

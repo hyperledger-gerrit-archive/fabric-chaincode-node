@@ -1,0 +1,64 @@
+>>> fabric-nodeenv
+gulp -f docker.js 
+[11:33:52] Using gulpfile ~/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv/docker.js
+[11:33:52] Starting 'default'...
+[11:33:52] Starting 'imageClean'...
+spawning:: docker rmi -f `docker images -q --filter=reference="hyperledger/fabric-nodeenv:2.0.0-snapshot*"` || echo ok  in /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv
+Untagged: hyperledger/fabric-nodeenv:2.0.0-snapshot
+Untagged: hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47
+Untagged: hyperledger/fabric-nodeenv:latest
+Deleted: sha256:88796cf928cd1ea193c06f272aaf77091d5a14841789eb55ae2546ce564089ef
+Deleted: sha256:7ac5568dce41a3fcebc8fb3c9dc3856c63300fde79f4f3f09e4c5562b8ad8826
+Deleted: sha256:67cbe8f5892bb831f86a629eaf97cf67a8fbcec0ccfd3b497e754634fcce9003
+Deleted: sha256:4768d160cc5b8aaf0927328e2afefc0d5e66a9fc88ad7b1939a05074596905ee
+spawning:: docker rmi -f `docker images -q --filter=reference="hyperledger/fabric-nodeenv:2.0.0-snapshot*"` || echo ok  code::0
+[11:33:52] Finished 'imageClean' after 250 ms
+[11:33:52] Starting 'imageBuild'...
+spawning:: docker build --build-arg NODE_VER=12.9.1 -t hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47 -f /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv/Dockerfile /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv  in /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv
+Sending build context to Docker daemon  283.6kB
+Step 1/4 : ARG NODE_VER=12.9.1
+Step 2/4 : FROM node:${NODE_VER}-alpine
+ ---> 39fd6822c84f
+Step 3/4 : RUN apk add --no-cache 	make 	python 	g++;
+ ---> Running in a8f2734a99ec
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.9/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.9/community/x86_64/APKINDEX.tar.gz
+(1/22) Installing binutils (2.31.1-r2)
+(2/22) Installing gmp (6.1.2-r1)
+(3/22) Installing isl (0.18-r0)
+(4/22) Installing libgomp (8.3.0-r0)
+(5/22) Installing libatomic (8.3.0-r0)
+(6/22) Installing mpfr3 (3.1.5-r1)
+(7/22) Installing mpc1 (1.0.3-r1)
+(8/22) Installing gcc (8.3.0-r0)
+(9/22) Installing musl-dev (1.1.20-r5)
+(10/22) Installing libc-dev (0.7.1-r0)
+(11/22) Installing g++ (8.3.0-r0)
+(12/22) Installing make (4.2.1-r2)
+(13/22) Installing libbz2 (1.0.6-r7)
+(14/22) Installing expat (2.2.7-r1)
+(15/22) Installing libffi (3.2.1-r6)
+(16/22) Installing gdbm (1.13-r1)
+(17/22) Installing ncurses-terminfo-base (6.1_p20190105-r0)
+(18/22) Installing ncurses-terminfo (6.1_p20190105-r0)
+(19/22) Installing ncurses-libs (6.1_p20190105-r0)
+(20/22) Installing readline (7.0.003-r1)
+(21/22) Installing sqlite-libs (3.28.0-r0)
+(22/22) Installing python2 (2.7.16-r1)
+Executing busybox-1.29.3-r10.trigger
+OK: 205 MiB in 38 packages
+Removing intermediate container a8f2734a99ec
+ ---> bc5e2f068ad2
+Step 4/4 : RUN mkdir -p /chaincode/input 	&& mkdir -p /chaincode/output 	&& mkdir -p /usr/local/src;
+ ---> Running in c098c9ef2b44
+Removing intermediate container c098c9ef2b44
+ ---> 57eea6ce3171
+Successfully built 57eea6ce3171
+Successfully tagged hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47
+spawning:: docker build --build-arg NODE_VER=12.9.1 -t hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47 -f /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv/Dockerfile /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv  code::0
+spawning:: docker tag hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47 hyperledger/fabric-nodeenv:2.0.0-snapshot  in /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv
+spawning:: docker tag hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47 hyperledger/fabric-nodeenv:2.0.0-snapshot  code::0
+spawning:: docker tag hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47 hyperledger/fabric-nodeenv:latest  in /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/docker/fabric-nodeenv
+spawning:: docker tag hyperledger/fabric-nodeenv:2.0.0-snapshot-a672f47 hyperledger/fabric-nodeenv:latest  code::0
+[11:34:46] Finished 'imageBuild' after 54 s
+[11:34:46] Finished 'default' after 54 s

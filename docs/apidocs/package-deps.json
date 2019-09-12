@@ -1,0 +1,17 @@
+{
+  "files": {
+    "docs/apidocs/README.md": "69d470b555f678bd0a34f21b806ef8b124bc4eec",
+    "docs/apidocs/bootstrap/contract-schema.json": "6359e4d8c752369082bb883074dd77bb4925e392",
+    "docs/apidocs/docs.js": "1e975de602feecbda53c8f10816f8f03aa0cc0fc",
+    "docs/apidocs/package.json": "5fc883a0b2578d4f3e1ce5af0d6312358ace1333",
+    "docs/apidocs/redirectTemplates/404.html": "718940b175cf8571550612ce8a3af2560ff39121",
+    "docs/apidocs/redirectTemplates/index.html": "8d3c9681a18c76f1847db797aa95fb354bb43d9d",
+    "docs/apidocs/tutorials/tutorials.json": "2f375af1b9eaa514f772043df3b50568d061c0eb",
+    "docs/apidocs/tutorials/using-chaincodeinterface.md": "2289afcd563f899044116bdf79952b3245617269",
+    "docs/apidocs/tutorials/using-contractinterface.md": "e5e084c74598ba402b6004b1ba0145a364c6eea2",
+    "docs/apidocs/tutorials/using-iterators.md": "c50e05feca8cb4d6549cf292ba9fdc54c046dd28",
+    "docs/apidocs/apidocs.build.error.log": "799c00dd92235a51c85038a882721e50a0096453",
+    "docs/apidocs/apidocs.build.log": "77455087fd292ba744e8deb2e9ed068e49ccdd4f"
+  },
+  "arguments": "gulp -f docs.js docs "
+}

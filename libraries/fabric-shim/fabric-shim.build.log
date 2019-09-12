@@ -1,0 +1,771 @@
+>>> fabric-shim
+npm test 
+
+> fabric-shim@2.0.0-snapshot test /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim
+> nyc mocha --recursive 'test/unit/**/*.js'
+
+../../../../../apis/fabric-contract-api/lib/jsontransactionserializer.js
+[Function: JSONSerializer]
+==============================================================================
+
+
+  Chaincode
+    Chaincode 'spi' interface
+      ✓ should be able to call the init method
+      ✓ should be able to call the init method
+      ✓ should only have the Init and Invoke
+    Start()
+      - should throw an error if no arguments passed
+      - should throw an error if string argument passed
+      - should throw an error if null argument passed
+      - should throw an error if object missing init passed as argument
+      - should throw an error if object missing invoke passed as argument
+      - should start when passed init and invoke
+      - should delete unnecessary arguments passed to the CLI before passing on
+      TLS handling
+        - should throw an error when CORE_TLS_CLIENT_KEY_PATH env var not set
+        - should throw an error when CORE_TLS_CLIENT_KEY_PATH env var set but CORE_TLS_CLIENT_CERT_PATH env var not set
+        - should call handler.chat() with the correct object and output a message
+        - should load the opts certificate attributes as JSON strings with the correct properties
+    parsePeerUrlFcn
+      ✓ should throw an error if peer.address not set
+      ✓ should throw an error if peer.address set to url
+      ✓ should use grpc when URL already has that prefix
+      ✓ should use grpcs when URL already has that prefix
+      ✓ should use grpc when CORE_PEER_TLS_ENABLED env var is not set
+      ✓ should use grpc when CORE_PEER_TLS_ENABLED env var is set to false
+      ✓ should use grpc when CORE_PEER_TLS_ENABLED env var is set to a string FALSE
+      ✓ should use grpcs when CORE_PEER_TLS_ENABLED env var is set to true
+      ✓ should use grpcs when CORE_PEER_TLS_ENABLED env var is set to a string TRUE
+    response
+      ✓ should let the code response an error
+      ✓ should handle an empty success
+      ✓ should handle a success with message
+    newLogger()
+      ✓ should use shim when calling getLogger and no name passed
+      ✓ should use shim when calling getLogger and name passed
+
+  fabric-chaincode-node cli
+    Main test
+      ✓ should setup yargs correctly
+
+  Client-Identity
+    ✓ should throw an error when using a bad cert
+    Certificate with values
+      ✓ should have correct mspId
+      ✓ should return correct ID bytes
+      ✓ should return correct value on getID()
+      ✓ should have correct attrs
+      ✓ should return the value when getAttributeValue() called with known attribute
+      ✓ should return null when getAttributeValue() called with unknown attribute
+      ✓ should return true when value provided matches known attribute in assertAttributeValue()
+      ✓ should return false when value provided does not match known attribute in assertAttributeValue()
+      ✓ should return false when unknown attribute in assertAttributeValue()
+    Certificate with multiple attributes
+      ✓ should have correct attributes
+    Certificate without values
+      ✓ should have correct mspId
+      ✓ should have not attributes
+    Certificate with long DNs
+      ✓ should return correct value on getID()
+
+  chaincode cmd
+`sandbox.create()` is deprecated. Use default sandbox at `sinon.sandbox` or create new sandboxes with `sinon.createSandbox()`
+    ✓ should configure the builder function
+`sandbox.create()` is deprecated. Use default sandbox at `sinon.sandbox` or create new sandboxes with `sinon.createSandbox()`
+    ✓ should handle correctly
+    #getArgs
+`sandbox.create()` is deprecated. Use default sandbox at `sinon.sandbox` or create new sandboxes with `sinon.createSandbox()`
+      ✓ should return yargs when called via cli name
+`sandbox.create()` is deprecated. Use default sandbox at `sinon.sandbox` or create new sandboxes with `sinon.createSandbox()`
+      ✓ should use yargs parser on process.argv when not called with cli name
+`sandbox.create()` is deprecated. Use default sandbox at `sinon.sandbox` or create new sandboxes with `sinon.createSandbox()`
+      ✓ should throw an error if a required field is missing
+
+  fabric-chaincode-node metadata cmd launcher
+    cmd method tests
+      ✓ should have the correct command and description
+      ✓ should call yargs correctly
+
+  GenerateCommand
+    #builder function
+      ✓ should have the correct command and description
+      ✓ should call yargs correctly
+    #handler function
+      ✓ should call the handler function correctly
+
+  generate
+    #handler
+      ✓ should write the contract metadata to a json file when no file extension is specified
+      ✓ should write the contract metadata to a json file when the .json file extension is specified
+      ✓ should write the contract metadata to the specified file extension when a non .json extension is specified
+      ✓ should log out the contract metadata to when no file-name arg is passed 
+
+  bootstrap.js
+    #register
+      ✓ should pass on the register to the shim
+    #bootstrap
+      ✓ should correctly call the register method
+    #getInfoFromContract
+      ✓ should use the main class defined in the package.json
+      ✓ should use the main class defined in the package.json with a single element
+      ✓ should throw an error if there is no json.main
+      ✓ should use the main class defined with contracts exported, and custom serialization
+      ✓ should throw an error if there is no transaction property
+    #getMetadata
+2019-09-16T10:33:56.623Z INFO [contracts-spi/bootstrap.js] Metadata file has been located 
+      ✓ should handle when there are files available
+2019-09-16T10:33:56.643Z INFO [contracts-spi/bootstrap.js] No metadata file supplied in contract, introspection will generate all the data 
+      ✓ should handle when files not available
+    #loadAndValidateMetadata
+2019-09-16T10:33:56.700Z INFO [contracts-spi/bootstrap.js] Metadata validated against schema correctly 
+      ✓ validate and return the metadata (41ms)
+      ✓ fail to validate and throw an error
+      - Correct schema path is pointed to in the validate method
+2019-09-16T10:33:56.755Z INFO [contracts-spi/bootstrap.js] Metadata validated against schema correctly 
+      ✓ Should correct validate a schema
+
+  chaincodefromcontract
+    #constructor
+      ✓ should handle no classes being passed in
+      ✓ should handle missing serialization information
+2019-09-16T10:33:56.762Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.763Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle a single class being passed as a contract
+2019-09-16T10:33:56.765Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.766Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle a case where the metadata is incompatible with code
+    #_compileSchemas
+2019-09-16T10:33:56.768Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.769Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle no complex objects being available
+2019-09-16T10:33:56.771Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.772Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle complex objects being available
+    #_resolveContractImplementations
+2019-09-16T10:33:56.774Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.775Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.775Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle a single class being passed as a contract
+2019-09-16T10:33:56.778Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle a single class being passed that is not valid
+2019-09-16T10:33:56.780Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.780Z INFO [./lib/contract.js] Creating new Contract beta 
+2019-09-16T10:33:56.780Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.780Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle a two classes being passed as a contract
+2019-09-16T10:33:56.784Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.784Z INFO [./lib/contract.js] Creating new Contract beta 
+2019-09-16T10:33:56.784Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.784Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle the default tag being used
+    #init
+2019-09-16T10:33:56.787Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.788Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+<Buffer 44 65 66 61 75 6c 74 20 69 6e 69 74 69 61 74 6f 72 20 73 75 63 63 65 73 73 66 75 6c 2e>
+      ✓ should handle a single class being passed as a contract
+2019-09-16T10:33:56.790Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.791Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle a single class being passed as a contract
+    #invoke
+2019-09-16T10:33:56.793Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.794Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+      ✓ should handle a single class being passed as a contract
+2019-09-16T10:33:56.797Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.797Z INFO [./lib/contract.js] Creating new Contract logging 
+2019-09-16T10:33:56.798Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.802Z INFO [logging] info 
+      ✓ should pass the logging object to contracts
+    #_splitFunctionName
+      ✓ should handle the usual case of ns:fn
+      ✓ should handle the case of no contractName explicit
+      ✓ should handle the case of no contractName implict
+      ✓ should handle the case of no input
+      ✓ should handle the case of multiple :
+    #invokeFunctionality
+2019-09-16T10:33:56.830Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.831Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+Error: Contract name is not known: name
+    at ChaincodeFromContract.invokeFunctionality (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim/lib/contract-spi/chaincodefromcontract.js:59:655)
+    at Context.it (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim/test/unit/contract-spi/chaincodefromcontract.js:617:22)
+    at callFn (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:372:21)
+    at Test.Runnable.run (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:364:7)
+    at Runner.runTest (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:455:10)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:573:12
+    at next (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:369:14)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:379:7
+    at next (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:303:14)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:342:7
+    at done (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:319:5)
+    at callFn (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:395:7)
+    at Hook.Runnable.run (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:364:7)
+    at next (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:317:10)
+    at Immediate._onImmediate (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:347:5)
+    at runCallback (timers.js:705:18)
+    at tryOnImmediate (timers.js:676:5)
+    at processImmediate (timers.js:658:5)
+      ✓ should handle missing function
+2019-09-16T10:33:56.835Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.836Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+undefined
+      ✓ should handle valid contract name, but missing function
+2019-09-16T10:33:56.839Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.840Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+{ error
+    at Object.fake.exceptionCreator (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/sinon/lib/sinon/default-behaviors.js:18:32)
+    at Object.invoke (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/sinon/lib/sinon/behavior.js:151:35)
+    at Object.functionStub (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/sinon/lib/sinon/stub.js:130:47)
+    at Function.invoke (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/sinon/lib/sinon/spy.js:297:51)
+    at Object.functionStub [as unknownTransaction] (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/sinon/lib/sinon/spy.js:152:22)
+    at ChaincodeFromContract.invokeFunctionality (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim/lib/contract-spi/chaincodefromcontract.js:72:24)
+    at Context.it (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim/test/unit/contract-spi/chaincodefromcontract.js:736:22)
+    at callFn (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:372:21)
+    at Test.Runnable.run (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:364:7)
+    at Runner.runTest (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:455:10)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:573:12
+    at next (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:369:14)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:379:7
+    at next (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:303:14)
+    at /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:342:7
+    at done (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:319:5)
+    at callFn (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:395:7)
+    at Hook.Runnable.run (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:364:7)
+    at next (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:317:10)
+    at Immediate._onImmediate (/home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:347:5)
+    at runCallback (timers.js:705:18)
+    at tryOnImmediate (timers.js:676:5)
+    at processImmediate (timers.js:658:5) name: 'error' }
+      ✓ should handle valid contract name, but missing function and throws error
+2019-09-16T10:33:56.845Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.845Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+undefined
+      ✓ should handle valid contract name, with valid function
+2019-09-16T10:33:56.850Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+2019-09-16T10:33:56.850Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+undefined
+      ✓ should handle functions with returned values schema
+    #_checkAgainstSuppliedMetadata
+      ✓ should return empty array when no issue
+      ✓ should return empty array when metadata has no field contracts
+      ✓ should return empty array when missing a contract
+    #_processContractInfo
+2019-09-16T10:33:56.865Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.865Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.865Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should be able to handle no annotations suppled
+2019-09-16T10:33:56.868Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.868Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.868Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should be able to handle no annotations suppled
+    #_processContractTransactions
+2019-09-16T10:33:56.872Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.872Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.872Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle no transaction annotations used, ignoring functions that match in name to ignore array
+2019-09-16T10:33:56.875Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.875Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.876Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle no transaction annotations used, ignoring functions that start with _
+2019-09-16T10:33:56.878Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.878Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.878Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should not add submitTx to the system contract functions
+2019-09-16T10:33:56.881Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.881Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.881Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle transaction annotations being used
+2019-09-16T10:33:56.884Z INFO [contracts-spi/chaincodefromcontract.js] Using serializers 
+	{"transaction":"jsonSerializer","serializers":{}}
+2019-09-16T10:33:56.884Z INFO [./lib/contract.js] Creating new Contract alpha 
+2019-09-16T10:33:56.884Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should handle transactions with no arguments
+    #_augmentMetadataFromCode
+      ✓ should not add extra detail for metadata, info and components when metadata supplied with those fields
+      ✓ should use passed info
+      ✓ should handle contracts and remove underscore lead properties of contractInstance
+      ✓ should correctly retrieve info with the constructor title and version data
+      ✓ should fill in info when there is no constructor title and version data
+      ✓ should fill in components field when not set
+      ✓ should fill in components field when not set and reflect fails
+      ✓ should fill in schema when not set
+    #helper constructors
+      ✓ should create the DataMarshall
+
+  datamarshall.js
+    #constructor
+      ✓ should create plain object ok
+      ✓ should create plain object ok
+    #toWireBuffer
+      ✓ should jsonSerialized buffering
+      ✓ should handle no schema passed
+    #fromWireBuffer
+      ✓ should return the same data as the serializer from buffer
+      ✓ should handle no validationData
+      ✓ should handle no schema
+    #handleParameters
+      ✓ should handle function with no parameters and none passed
+      ✓ should handle function with no parameters but some passed
+      ✓ should handle different length lists
+      ✓ should handle error when schema has not useful fields
+      ✓ should handle error when type invalid
+      ✓ should handle when type invalid for $ref
+      ✓ should push valid values to returned array for primitve types
+
+  SystemContract
+    #constructor
+2019-09-16T10:33:56.957Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should create correctly
+    #GetMetadata
+2019-09-16T10:33:56.958Z INFO [./lib/contract.js] Creating new Contract org.hyperledger.fabric 
+      ✓ should get the buffer
+
+  Handler
+    QMsg
+      ✓ should set its variables with values passed in the constructor
+      getMsg
+        ✓ should return the value of msg
+      getMsgTxContextId
+        ✓ should return the value of msg.channel_id concatenated with msg.txid
+      getMethod
+        ✓ should return the value of method
+      success
+        ✓ should call the resolve function
+      fail
+        ✓ should call the reject function
+    MsgQueueHandler
+      ✓ should setup its variables on construction
+      queueMsg
+        ✓ should add message to the queue and call sendMsg and handle when txContentId not in txQueues
+        ✓ should add message to the queue and not call call sendMsg when txContentId in txQueues and is empty array
+        ✓ should add message to the queue and not call call sendMsg when txContentId in txQueues and already has value in array
+      handleMsgResponse
+        ✓ should do nothing if qMsg does not exist for txContextId
+        ✓ should call qMsg success when parseResponse does not throw an error _removeCurrentAndSendNextMsg
+        ✓ should call qMsg fail when parseResponse does throw an error _removeCurrentAndSendNextMsg
+      _getCurrentMsg
+        ✓ should get the message at the top of the queue for a txContextId
+        ✓ should return undefined when queue is empty for a txContextId
+        ✓ should return undefined when queue does not exist for a txContextId
+      _removeCurrentAndSendNextMsg
+        ✓ should delete the current message and send the next for a txContentId
+        ✓ should delete the queue if no messages left after current is deleted for a txContentId
+        ✓ should do nothing if no queue is found for a txContentId
+      _sendMsg
+        ✓ should do nothing if no QMsg found for a txContextId
+        ✓ should write to the stream the current message
+        ✓ should call fail on the QMsg if stream write errors
+    ChaincodeSupportClient
+      ✓ should throw an error when chaincode not passed
+      ✓ should throw an error if argument does not match chaincode format
+      ✓ should throw an error if argument only part matches chaincode format
+      ✓ should throw an error if argument missing URL argument
+      ✓ should throw an error if URL argument does not use grpc as protocol
+      ✓ should set endpoint, client and default timeout
+      ✓ should override the default request timeout if value passed
+      ✓ should store additional grpc options
+      ✓ should preserve casing in handler addr
+      ✓ should throw an error if connection secure and certificate not passed
+      ✓ should throw an error if connection secure encoded private key not passed as opt
+      ✓ should throw an error if connection secure encoded private key not passed as opt
+      ✓ should set endpoint, client and default timeout for a secure connection
+      ✓ should set grpc ssl options when ssl-target-name-override passed
+      close
+        ✓ should call end on the stream
+      chat
+        ✓ should create instance of MsgQueueHandler, register the client, setup listeners and write
+        stream.on.data
+          ✓ should throw error when in state created and MSG_TYPE not REGISTERED
+2019-09-16T10:33:57.054Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+          ✓ should throw error when in state established and MSG_TYPE not READY
+2019-09-16T10:33:57.079Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.079Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should do nothing when in state ready and MSG_TYPE equals REGISTERED
+2019-09-16T10:33:57.109Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.109Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should do nothing when in state ready and MSG_TYPE equals READY
+2019-09-16T10:33:57.132Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.132Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should call handleMsgResponse when in state ready and MSG_TYPE equals RESPONSE
+2019-09-16T10:33:57.153Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.154Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should call handleMsgResponse when in state ready and MSG_TYPE equals ERROR
+2019-09-16T10:33:57.176Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.176Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should call handleInit when in state ready and MSG_TYPE equals INIT
+2019-09-16T10:33:57.201Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.201Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should call handleTransaction when in state ready and MSG_TYPE equals TRANSACTION
+2019-09-16T10:33:57.228Z INFO [lib/handler.js] Successfully registered with peer node. State transferred to "established" 
+2019-09-16T10:33:57.228Z INFO [lib/handler.js] Successfully established communication with peer node. State transferred to "ready" 
+          ✓ should end the process with value 1
+        stream.on.end
+          ✓ should cancel the stream
+        stream.on.error
+          ✓ should end the stream
+          ✓ should end the  with error
+      handleInit
+        ✓ should call handleMessage
+      handleTransaction
+        ✓ should call handleMessage
+      handleGetState
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen resolves
+      handlePutState
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen resolves
+      handleDeleteState
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen rejects
+      handlePutStateMetadata
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen rejects
+      handleGetPrivateDataHash
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen rejects
+      handleGetStateMetadata
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen rejects
+      handleGetStateByRange
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen resolves
+        ✓ should resolve with metadata when _askPeerAndListen resolves
+      handleQueryStateNext
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen resolves
+      handleQueryStateClose
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen resolves
+      handleGetQueryResult
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen rejects
+        ✓ handleGetQueryResult with metadata should resolve when _askPeerAndListen resolves
+      handleGetHistoryForKey
+        ✓ should resolve when _askPeerAndListen resolves
+        ✓ should reject when _askPeerAndListen resolves
+      handleInvokeChaincode
+        ✓ should return decoded response when chaincode message type COMPLETED
+        ✓ should throw an error when _askPeerAndListen resolves with an error
+        ✓ should reject when _askPeerAndListen resolves
+        ✓ should return nothing chaincode message type not COMPLETED or ERROR
+      _askPeerAndListen
+        ✓ should return a new promise with value of queueMsg result
+      toString
+        ✓ should return ChaincodeSupportClient object as a string with the URL
+    handleMessage
+      Error
+        ✓ should handle an error decoding the payload
+        ✓ should handle error creating a chaincode stub
+        ✓ should handle chaincode.Init returning nothing
+        ✓ should handle chaincode.Invoke returning nothing
+        ✓ should handle chaincode.Init returning no status
+        ✓ should handle chaincode.Invoke returning no status
+      Complete
+2019-09-16T10:33:57.697Z INFO [lib/handler.js] [theChannelID-aTX] Calling chaincode Init() succeeded. Sending COMPLETED message back to peer 
+        ✓ should write a COMPLETE message when successful init
+2019-09-16T10:33:57.698Z INFO [lib/handler.js] [theChannelID-aTX] Calling chaincode Invoke() succeeded. Sending COMPLETED message back to peer 
+        ✓ should write a COMPLETE message when successful invoke
+    createStub
+      ✓ should return a new instance of Stub
+    newErrorMsg
+      ✓ should return an object for the error message
+    handleGetStateMetadata
+      ✓ should success
+    parseResponse
+      ✓ should throw an error when type not MSG_TYPE RESPONSE or ERROR
+      ✓ should throw an error when type MSG_TYPE ERROR
+      ✓ should return the payload when using an unknown method
+      ✓ should return the payload when using GetState for method
+      ✓ should return the payload when using PutState for method
+      ✓ should return QueryResponse.decoded payload for QueryStateClose
+      ✓ should return QueryResponse.decoded payload for QueryStateNext
+      ✓ should return ChaincodeMessage.decoded payload for InvokeChaincode
+      ✓ should return a StateQueryIterator for GetStateByRange
+      ✓ should decode metadata
+      ✓ should return a StateQueryIterator for GetQueryResult
+      ✓ should return a HistoryQueryIterator for GetHistoryForKey
+      ✓ shold decode state metadata for GetStateMetadata
+
+  Iterator
+    CommonIterator
+      ✓ should set the variables using the arguments in the constructor
+      close
+        ✓ should return handler.handleQueryStateClose
+      _getResultFromBytes
+        ✓ should return KV decode on resultbytes for a QUERY type
+        ✓ should return KeyModification decode on resultbytes for a HISTORY type
+        ✓ should throw an error for unknown types
+      _createAndEmitResult
+        ✓ should return value of first element of results converted from bytes and done false when has_more false and results has no more elements after currentLoc
+        ✓ should return value of first element of results converted from bytes and done false when has_more true and results has no more elements after currentLoc
+        ✓ should return value of first element of results converted from bytes and done false when has_more false and results has elements after currentLoc
+        ✓ should return value of first element of results converted from bytes and done false when has_more true and results has elements after currentLoc
+        ✓ should return as expected with non-zero currentLoc
+        ✓ should return value of first element of results converted from bytes and done false
+      next
+        ✓ should return _createAndEmitResult when there are elements left in the result set
+        ✓ should return _createAndEmitResult when response has_more and no error occurs
+        ✓ should throw an error if error occurs when has_more and listenerCount for data = 0
+        ✓ should return done if response does not has_more and listenerCount for end > 0
+        ✓ should return done if response does not has_more and listenerCount for end = 0
+    StateQueryIterator
+      ✓ should extend CommonIterator using QUERY for type
+    HistoryQueryIterator
+      ✓ should extend CommonIterator using HISTORY for type
+
+  Logger
+    getLogger
+      ✓ should create a new logger name unknown
+      ✓ should return existing logger if known name used
+      ✓ should set the log level to fatal when env var set to CRITICAL
+      ✓ should set the log level to error when env var set to ERROR
+      ✓ should set the log level to warn when env var set to WARNING
+      ✓ should set the log level to debug when env var set to DEBUG
+    formatter
+      ✓ 
+      ✓ 
+
+  Exports
+    ✓ should export the start function
+    ✓ should export the success function
+    ✓ should export the error function
+    ✓ should export the Shim class
+    ✓ should export the Stub class
+    ✓ should export the ChaincodeInterface class
+    ✓ should export the ClientIdentity class
+    ✓ should export the Iterators.HistoryQueryIterator class
+    ✓ should export the HistoryQueryIterator class
+    ✓ should export the Iterators.StateQueryIterator class
+    ✓ should export the StateQueryIterator class
+
+  Stub
+    validateCompositeKeyAttribute
+      ✓ should throw an error if no attribute passed
+      ✓ should throw an error if attribute not string
+      ✓ should throw an error if attribute empty string
+    computeProposalBinding
+      ✓ should return hash of decodedSP
+    convertToAsyncIterator
+      ✓ should inject a function into the promise that returns an object with the correct methods
+      ✓ should be possible to iterate using async for of
+      ✓ should close the iterator if we break out of the loop
+      ✓ should close the iterator if we break out of the loop straight away
+      ✓ should close the iterator if we throw out of the loop
+      ✓ should work with a promise that returns an object with an iterator property deconstructed by the caller
+      ✓ should work with a promise that returns an object with an iterator property not deconstructed by caller
+      ✓ should handle a promise rejection
+    ChaincodeStub
+      ✓ should set up the vars and do nothing more with no signed proposal
+      ✓ should throw an error for an invalid proposal
+      ✓ should throw an error for a proposal with an empty header
+      ✓ should throw an error for a proposal with an empty payload
+      ✓ should throw an error for a proposal with an invalid header
+      ✓ should throw an error for a proposal with an invalid signature header
+      ✓ should throw an error for a proposal with an invalid creator
+      ✓ should throw an error for a proposal with an invalid channelHeader
+      ✓ should throw an error for a proposal with an invalid payload
+      ✓ should set all the env vars with a valid signed proposal
+      getArgs
+        ✓ should return the args
+      getStringArgs
+        ✓ should return the args
+      getBufferArgs
+        ✓ should return the args
+      getFunctionAndParameters
+        ✓ should return the function name parameters
+        ✓ should return string for function and empty array as param if only one arg
+        ✓ should return empty string for function and empty array for params if no args
+      getTxID
+        ✓ should return txId
+      getChannelID
+        ✓ should return channel_id
+      getCreator
+        ✓ should return creator
+      getTransient
+        ✓ should return transient map
+      getSignedProposal
+        ✓ should return signed proposal
+      getTxTimestamp
+        ✓ should return transaction timestamp
+      getBinding
+        ✓ should return binding
+      getState
+        ✓ should return handler.handleGetState
+      putState
+        ✓ should return handler.handlePutState
+        ✓ should return handler.handlePutState
+      deleteState
+        ✓ should return handler.handleDeleteState
+      setStateValidationParameter
+        ✓ should return handler.handlePutStateMetadata
+      getStateValidationParameter
+        ✓ should return handler.handleGetStateMetadata
+      getStateByRange
+        ✓ should return handler.handleGetStateByRange
+        ✓ should return handler.handleGetStateByRange using empty key substitute
+        ✓ should throw error if using compositekey
+      getStateByRangeWithPagination
+        ✓ should throw error if using compositekey
+        ✓ should have default startKey eqls EMPTY_KEY_SUBSTITUTE
+        ✓ should have default bookmark eqls an empty string
+        ✓ should have default bookmark eqls an empty string
+      getQueryResult
+        ✓ should return handler.handleGetQueryResult
+      getQueryResultWithPagination
+        ✓ should have default bookmark equals an empty string
+        ✓ should have default bookmark equals an empty string
+      getHistoryForKey
+        ✓ should return handler.handleGetHistoryForKey
+      invokeChaincode
+        ✓ should return handler.handleInvokeChaincode
+        ✓ should return handler.handleInvokeChaincode handling no channel passed
+      setEvent
+        ✓ should throw an error when name is not a string
+        ✓ should throw an error when name is empty string
+        ✓ should set an event
+      createCompositeKey
+        ✓ should throw an error if attributes is not an array
+        ✓ should return a composite key
+      splitCompositeKey
+        ✓ should return object with empty values when no composite key
+        ✓ should return object with empty values when composite key only has one character
+        ✓ should return object with empty values when composite key does not have first character as COMPOSITEKEY_NS
+        ✓ should return object with objectType set but no attributes
+        ✓ should return object with objectType set and array of attributes
+      getStateByPartialCompositeKey
+        ✓ should return handler.handleGetStateByRange using composite key
+      getStateByPartialCompositeKeyWithPagination
+        ✓ the default bookmark should equal an empty string
+        ✓ should return getStateByRangeWithPagination with bookmark and pageSize
+      getPrivateData
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if collection null
+        ✓ should return handler.handleGetState
+      getPrivateDataHash
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if collection null
+        ✓ should return handler.handleGetPrivateDataHash
+      putPrivateData
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if two arguments supplied
+        ✓ should throw an error if collection null
+        ✓ should throw an error if key null
+        ✓ should return handler.handlePutState with string
+        ✓ should return handler.handlePutState with object
+      deletePrivateData
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if collection null
+        ✓ should return handler.handleDeleteState
+      setPrivateDataValidationParameter
+        ✓ should return handler.handlePutStateMetadata
+      getPrivateDataValidationParameter
+        ✓ should return handler.handleGetStateMetadata
+      getPrivateDataByRange
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if two arguments supplied
+        ✓ should throw an error if collection null
+        ✓ should use a substitute start key if none provided
+        ✓ should return handler.handleGetStateByRange
+      getPrivateDataByPartialCompositeKey
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if two arguments supplied
+        ✓ should throw an error if collection null
+        ✓ should return stub.getPrivateDataByRange
+      getPrivateDataQueryResult
+        ✓ should throw an error if no arguments supplied
+        ✓ should throw an error if one argument supplied
+        ✓ should throw an error if collection null
+        ✓ should return handler.handleGetQueryResult
+
+  KeyEndorsementPolicy
+    #constructor
+      ✓ should success for no policy
+      ✓ should decode policy
+    #addOrgs
+      ✓ should throw error if role is not supported
+      ✓ should throw error if role is missing
+      ✓ should success add multiple orgs
+      ✓ should success add one org
+      ✓ should success add one peer org
+      ✓ should not throw error if no orgs
+    #_getPolicyFromMspId
+      ✓ should successfully get policy from mspIds
+    #_setMspIdsFromSPE
+      ✓ should successfully set mspIds from spe
+    #delOrgs
+      ✓ should successfully delete one org
+      ✓ should successfully delete multiple orgs
+    #getPolicy
+      ✓ should successfully get policy
+
+  utils
+    generateLoggingPrefix
+      ✓ should shorten txids over 8 letters
+      ✓ should leave txids shorter than 8 as was
+      ✓ should leave txids exactly 8 letters as was
+
+
+  379 passing (2s)
+  12 pending
+
+---------------------------|----------|----------|----------|----------|-------------------|
+File                       |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
+---------------------------|----------|----------|----------|----------|-------------------|
+All files                  |    97.04 |    96.13 |    99.44 |    97.02 |                   |
+ lib                       |    95.43 |    94.56 |    99.22 |     95.4 |                   |
+  chaincode.js             |    73.73 |    66.67 |    94.74 |     73.5 |... 26,130,132,139 |
+  handler.js               |      100 |      100 |      100 |      100 |                   |
+  iterators.js             |      100 |      100 |      100 |      100 |                   |
+  logger.js                |      100 |      100 |      100 |      100 |                   |
+  stub.js                  |      100 |      100 |      100 |      100 |                   |
+ lib/cmds                  |      100 |      100 |      100 |      100 |                   |
+  metadata.js              |      100 |      100 |      100 |      100 |                   |
+  startCommand.js          |      100 |      100 |      100 |      100 |                   |
+ lib/cmds/metadata         |      100 |      100 |      100 |      100 |                   |
+  generateCommand.js       |      100 |      100 |      100 |      100 |                   |
+ lib/cmds/metadata/lib     |      100 |      100 |      100 |      100 |                   |
+  generate.js              |      100 |      100 |      100 |      100 |                   |
+ lib/contract-spi          |      100 |      100 |      100 |      100 |                   |
+  bootstrap.js             |      100 |      100 |      100 |      100 |                   |
+  chaincodefromcontract.js |      100 |      100 |      100 |      100 |                   |
+  datamarshall.js          |      100 |      100 |      100 |      100 |                   |
+  systemcontract.js        |      100 |      100 |      100 |      100 |                   |
+ lib/utils                 |      100 |      100 |      100 |      100 |                   |
+  statebased.js            |      100 |      100 |      100 |      100 |                   |
+  utils.js                 |      100 |      100 |      100 |      100 |                   |
+---------------------------|----------|----------|----------|----------|-------------------|
+
+=============================== Coverage summary ===============================
+Statements   : 97.04% ( 1017/1048 )
+Branches     : 96.13% ( 397/413 )
+Functions    : 99.44% ( 177/178 )
+Lines        : 97.02% ( 1011/1042 )
+================================================================================

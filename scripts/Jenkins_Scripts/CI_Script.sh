@@ -42,6 +42,9 @@ Parse_Arguments() {
             --e2e_Tests)
                 e2e_Tests
                 ;;
+            --fullBuild)
+                fullBuild
+                ;;    
             --publish_NpmModules)
                 publish_NpmModules
                 ;;
@@ -232,6 +235,29 @@ publish_NpmModules() {
 publish_ApiDocs() {
     echo
     echo -e "\033[32m -----------> Publish NODE_SDK API docs after successful merge on amd64" "\033[0m"
-    ./Publish_API_Docs.sh
+    ${WORKSPACE}/gopath/src/github.com/hyperledger/fabric-chaincode-node/docs/apidocs/Publish_API_Docs.sh
 }
+
+fullBuild() {
+
+    echo -e "\033[32m Execute Chaincode Node Full Build" "\033[0m"
+    cd ${WORKSPACE}/gopath/src/github.com/hyperledger/fabric-chaincode-node
+
+    # Install NPM before start the tests
+    install_Npm
+
+    node common/scripts/install-run-rush.js install
+    node common/scripts/install-run-rush.js rebuild
+
+    # equivalent to the test-e2e
+    node common/scripts/install-run-rush.js start-fabric
+    node common/scripts/install-run-rush.js start-verdaccio
+    node common/scripts/install-run-rush.js test:fv
+
+    # dev mode tests
+    # node common/scripts/install-run-rush.js start-fabric --devmode
+    # node common/scripts/install-run-rush.js test:devmode
+    # node common/scripts/install-run-rush.js test:invctrl
+}
+
 Parse_Arguments $@
