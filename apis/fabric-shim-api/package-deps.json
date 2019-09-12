@@ -1,0 +1,10 @@
+{
+  "files": {
+    "apis/fabric-shim-api/index.js": "9bfebed3d9254206015c4ebc29b057a2b5bc612e",
+    "apis/fabric-shim-api/package-deps.json": "197b75b172560812157674127938f0f686e04e90",
+    "apis/fabric-shim-api/package.json": "adacc2ec5fc0d6acb163101acfa929a5e34a5539",
+    "apis/fabric-shim-api/types/index.d.ts": "d1d2fa7c1233f7b4dbed8b31e739daabb03823b2",
+    "apis/fabric-shim-api/types/tsconfig.json": "ed09ed38db1792491a70a0300a3790c5ad4ae7cc"
+  },
+  "arguments": "echo No Build needed "
+}

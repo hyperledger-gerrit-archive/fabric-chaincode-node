@@ -1,0 +1,17 @@
+{
+  "files": {
+    "docs/apidocs/Publish_API_Docs.sh": "cd92202c2dd416083b9794cc4fc100781140cd93",
+    "docs/apidocs/README.md": "69d470b555f678bd0a34f21b806ef8b124bc4eec",
+    "docs/apidocs/bootstrap/contract-schema.json": "6359e4d8c752369082bb883074dd77bb4925e392",
+    "docs/apidocs/docs.js": "4fe3acc3a56c86cee76dfbf5a2ecc5c3bb2328fd",
+    "docs/apidocs/package-deps.json": "d4f3f6508fd4304b7c59d69f67868608e70fc626",
+    "docs/apidocs/package.json": "85d80d4ee351402f9cce68ccc4eb08b0163fe853",
+    "docs/apidocs/redirectTemplates/404.html": "718940b175cf8571550612ce8a3af2560ff39121",
+    "docs/apidocs/redirectTemplates/index.html": "8d3c9681a18c76f1847db797aa95fb354bb43d9d",
+    "docs/apidocs/tutorials/tutorials.json": "4093e480c221f24bb97043f9b8fba9b13855ac73",
+    "docs/apidocs/tutorials/using-chaincodeinterface.md": "2289afcd563f899044116bdf79952b3245617269",
+    "docs/apidocs/tutorials/using-contractinterface.md": "809c05b7cae9717f51c1b261ae009f5ec5b0a8b5",
+    "docs/apidocs/tutorials/using-iterators.md": "c50e05feca8cb4d6549cf292ba9fdc54c046dd28"
+  },
+  "arguments": "gulp -f docs.js docs "
+}
