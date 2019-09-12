@@ -1,0 +1,59 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/command-line.schema.json",
+
+    "commands": [
+        {
+            "commandKind": "bulk",
+            "name": "test:unit",
+            "summary": "Imports translated strings into each project.",
+            "description": "Requests translated strings from the translation service and imports them into each project.",
+            "enableParallelism": true,
+            "ignoreMissingScript": true
+        },
+        {
+            "commandKind": "bulk",
+            "name": "test:fv",
+            "summary": "Imports translated strings into each project.",
+            "description": "Requests translated strings from the translation service and imports them into each project.",
+            "enableParallelism": true,
+            "ignoreMissingScript": true
+        },
+        {
+            "commandKind": "bulk",
+            "name": "test:e2e",
+            "summary": "end to end testing",
+            "description": "Requests translated strings from the translation service and imports them into each project.",
+            "enableParallelism": true,
+            "ignoreMissingScript": true
+        },        
+        {
+            "commandKind": "global",
+            "name": "update-protos",
+            "summary": "updates the protos from fabric",
+            "description": "Run this command to copy in proto definitions and build the matching code",
+            "shellCommand": "npm run --prefix ./libraries/fabric-shim update"
+        },
+        {
+            "commandKind": "bulk",
+            "name": "lint",
+            "summary": "lints the codebase",
+            "description": "Run this command to run eslint on the whole codebase",
+            "enableParallelism": true,
+            "ignoreMissingScript": true
+        },
+        {
+            "commandKind": "global",
+            "name": "start-verdaccio",
+            "summary": "Starts local npm regisry",
+            "description": "Run this command to start local npm registry (verdaccio) and publish modules",
+            "shellCommand": "gulp -f ./tools/toolchain/verdaccio/index.js start"
+        },
+        {
+            "commandKind": "global",
+            "name": "start-fabric",
+            "summary": "Starts local Fabric test network ",
+            "description": "Run this command to start local Fabric network for testing",
+            "shellCommand": "gulp -f ./tools/toolchain/fabric.js"
+        }
+    ]
+}
