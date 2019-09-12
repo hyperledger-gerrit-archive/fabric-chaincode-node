@@ -1,0 +1,9 @@
+{
+  "files": {
+    "docker/fabric-nodeenv/Dockerfile": "bf91ebd87a15958428c852a97ca4a4e28b332f82",
+    "docker/fabric-nodeenv/docker.js": "07db635f98e029618347ddbd46f6ecf63352b6fa",
+    "docker/fabric-nodeenv/package.json": "46df96f1542c124fdbce3eebb26fbbb8178a4c05",
+    "docker/fabric-nodeenv/package-deps.json": "526fc4f41f4cf6f53a896f41c1d7b9d326a83bcf"
+  },
+  "arguments": ""
+}
