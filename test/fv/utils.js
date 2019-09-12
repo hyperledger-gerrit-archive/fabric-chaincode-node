@@ -10,8 +10,19 @@ const childProcess = require('child_process');
 const exec = util.promisify(childProcess.exec);
 const fs = require('fs');
 const path = require('path');
-const getTLSArgs = require('../../build/test/utils').getTLSArgs;
 const ip = require('ip');
+
+
+const ordererCA = '/etc/hyperledger/config/crypto-config/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem';
+const tls = process.env.TLS && process.env.TLS.toLowerCase() === 'true' ? true : false;
+const getTLSArgs = () => {
+    if (tls) {
+        return '--tls true --cafile ' + ordererCA;
+    }
+
+    return '';
+};
+
 
 // Increase the timeouts on zLinux!
 const arch = require('os').arch();
@@ -21,7 +32,7 @@ async function install(ccName) {
     const npmrc = path.join(__dirname, ccName, '.npmrc');
     try {
         fs.writeFileSync(npmrc, `registry=http://${ip.address()}:4873`);
-        const folderName = '/opt/gopath/src/github.com/chaincode/fv/' + ccName;
+        const folderName = '/opt/gopath/src/github.com/chaincode/' + ccName;
         const cmd = `docker exec %s peer chaincode install -l node -n ${ccName} -v v0 -p ${folderName}`;
         await exec(util.format(cmd, 'org1_cli'));
         await exec(util.format(cmd, 'org2_cli'));
