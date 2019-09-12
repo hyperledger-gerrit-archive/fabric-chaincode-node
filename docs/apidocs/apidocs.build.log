@@ -1,0 +1,10 @@
+>>> apidocs
+gulp -f docs.js docs 
+[12:00:56] Using gulpfile ~/go/src/github.com/hyperledger/fabric-chaincode-node/docs/apidocs/docs.js
+[12:00:56] Starting 'docs'...
+[12:00:56] Starting 'clean'...
+[12:00:56] Finished 'clean' after 1.6 ms
+[12:00:56] Starting 'jsdocs'...
+[12:00:56] Finished 'jsdocs' after 21 ms
+[12:00:56] Finished 'docs' after 25 ms
+[12:00:57] Documented 14 files!

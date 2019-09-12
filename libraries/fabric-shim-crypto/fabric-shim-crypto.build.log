@@ -1,0 +1,87 @@
+>>> fabric-shim-crypto
+Found mismatch: "libraries/fabric-shim-crypto/fabric-shim-crypto.build.log": "80927e6e3ee4bba998798e8a6407561328fb34ef" !== "71baf8718813b7cc228aee9a7f312f773b43e9ca"
+npm test 
+
+> fabric-shim-crypto@2.0.0-snapshot test /home/matthew/go/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim-crypto
+> nyc mocha --recursive 'test/**/*.js'
+
+
+
+  ECDSA Key
+    ✓ should throw an error when missing key parameter
+    ✓ should throw an error when key does not have type property
+    ✓ should throw an error when key does not have type property value of EC
+    ✓ should throw an error when prvKeyHex missing
+    ✓ should throw an error when pubKeyHex missing
+    ✓ should throw an error when pubKeyHex null
+    ✓ should set the value of _key when valid key passed
+    isPrivate
+      ✓ should return true when _key has prvKeyHex
+      ✓ should return false when _key prvKeyHex is null
+    getPublicKey
+      ✓ should return the instance for public key (47ms)
+      ✓ should return a public key from ECDSA if using private key
+    toBytes
+      ✓ should return private key
+      ✓ should return public key
+
+  enc-sign
+    ChaincodeCryptoLibrary
+      ✓ should set no variables
+      ✓ should set key values when init vector in map
+      ✓ should set key values when init vector not in map
+      ✓ should set sign key values
+      encrypt
+        ✓ should throw an error if cipher not set
+        ✓ should return a buffer of encrypted plaintext
+      decrypt
+        ✓ should throw an error if cipher not set
+        ✓ should return a buffer of decrypted ciphertext
+        ✓ should be able to decrypt an encrypted value
+      sign
+        ✓ should throw an error when signKey not set
+        ✓ should throw an error if signKey is null
+        ✓ should throw an error if the message is not passed
+        ✓ should throw an error if the message is null
+        ✓ should sign the message
+      verify
+        ✓ should throw an error when signKey not set
+        ✓ should throw an error if signKey is null
+        ✓ should throw an error if the signature is not passed
+        ✓ should throw an error if the signature is null
+        ✓ should throw an error if the message is not passed
+        ✓ should throw an error if the message is null
+        ✓ should return an error if not malleable
+        ✓ should return ok true for verfied signed message
+        ✓ should return ok false and an error unverified signed message
+    hash
+      ✓ should hash a message
+    importKey
+      ✓ should throw an error if unable to parse PEM string
+      ✓ should throw an error if key does not have type
+      ✓ should throw an error if key type not EC
+      ✓ should return a new ECDSAKey
+    makeRealPem
+      ✓ should return null if pem not string
+      ✓ should make a real PEM
+    _preventMalleability
+      ✓ should throw an error if cannot find half order
+      ✓ should return sig for a low s
+      ✓ should handle s larger than half
+    _checkMalleability
+      ✓ should throw an error if cannot find half order
+      ✓ should throw an error if signature object fails to load correctly (no r)
+      ✓ should throw an error if signature object fails to load correctly (no s)
+      ✓ should return false when s is larger than half the order
+      ✓ should return false when s is lower than half the order
+
+
+  51 passing (230ms)
+
+
+=============================== Coverage summary ===============================
+Statements   : 99.17% ( 120/121 )
+Branches     : 100% ( 72/72 )
+Functions    : 100% ( 14/14 )
+Lines        : 99.17% ( 120/121 )
+================================================================================
