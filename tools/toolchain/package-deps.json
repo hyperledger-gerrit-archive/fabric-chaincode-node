@@ -1,0 +1,26 @@
+{
+  "files": {
+    "tools/toolchain/fabric.js": "493309aeff395eb9a8b920109a7c116b66f0ca7d",
+    "tools/toolchain/index.js": "fe8147dd5d7c003a9a23ca6b52833465dfbd1987",
+    "tools/toolchain/network/README.md": "d0e051c90bf8b427fd07c0636bdec8a48dcd488a",
+    "tools/toolchain/network/crypto-material/configtx.yaml": "65477c630d4ec797b8bfaa00cffacae12d9808b6",
+    "tools/toolchain/network/crypto-material/core.yaml": "35d7304afe3c8e55cdac0b659ba7b55fb4f31a84",
+    "tools/toolchain/network/crypto-material/crypto-config.yaml": "e132f5a94f20f0c8cf4aec43c2042c6144a21e6e",
+    "tools/toolchain/network/crypto-material/rename_sk.sh": "ce447dc08f16f1ef75ea409bc38c84429db5668d",
+    "tools/toolchain/network/docker-compose/docker-compose-base.yaml": "0b66f301d824dbf75559b776b398bced5fff33b4",
+    "tools/toolchain/network/docker-compose/docker-compose-cli.yaml": "42255430b61fb10bbe46a3db3b7229139fc93c70",
+    "tools/toolchain/network/docker-compose/docker-compose-tls.yaml": "2e68e3253ecfbe11e38bf83860b4092ebcccaa02",
+    "tools/toolchain/network/docker-compose/docker-compose.yaml": "de49acccf4134328b70b2ae387d05540c961c844",
+    "tools/toolchain/package-deps.json": "502fffbf12c27f15c0055b4c74f5d90ab2617b5f",
+    "tools/toolchain/package.json": "ccaee0ea9b4243aa7e643a2f7562f96bd0f6b544",
+    "tools/toolchain/shell/cmd.js": "32e86162c1fdca3d13d6a9e41a284f86af823fc1",
+    "tools/toolchain/shell/docker.js": "55ae39963d8fb3cb00309b819dbe68d64e13988d",
+    "tools/toolchain/shell/npm.js": "d6f6d11a854b7396caf72880e7e70f192b3e7da8",
+    "tools/toolchain/test/devmode.js": "526b71ff336c08d1a821c43f9dce4d776be06f4d",
+    "tools/toolchain/test/inversionOfControl.js": "f29386352238917fbec7269b4efcead68e27e4b2",
+    "tools/toolchain/utils.js": "f0e82c2305625dadfdd90d2f9f112582564fef7a",
+    "tools/toolchain/verdaccio/config.yaml": "e523dc28e6d9859f16ab95e8ed49306a9188860c",
+    "tools/toolchain/verdaccio/index.js": "d1ccb0749cce1bb530812332c9c9a0abeee77370"
+  },
+  "arguments": ""
+}
