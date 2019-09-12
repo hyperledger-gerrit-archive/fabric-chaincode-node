@@ -77,7 +77,7 @@ node ('hyp-x') { // trigger build on x86_64 node
          // wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
-                 sh './CI_Script.sh --clean_Environment --env_Info'
+                  sh './CI_Script.sh --clean_Environment --env_Info'
                  }
                }
            catch (err) {
@@ -102,42 +102,41 @@ node ('hyp-x') { // trigger build on x86_64 node
            }
          // }
       }
-// Run gulp tests (e2e tests)
-      stage("Run Headless & E2E tests") {
+// Run Full Builds
+      stage("Run Full Build") {
          // wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
            try {
                  dir("${ROOTDIR}/$PROJECT_DIR/fabric-chaincode-node/scripts/Jenkins_Scripts") {
-                 sh './CI_Script.sh --e2e_Tests'
+                    sh './CI_Script.sh --fullBuild'
                  }
-               }
-           catch (err) {
-                 failure_stage = "e2e_Tests"
-                 currentBuild.result = 'FAILURE'
-                 throw err
+           } catch (err) {
+               failure_stage = "fullBuild"
+               currentBuild.result = 'FAILURE'
+               throw err
            }
          // }
       }
 
 // Publish hyperledger/fabric-nodeenv image from merged job only
 if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
-      publishNodeenv()
+    publishNodeenv()
 } else {
-     echo "------> Don't publish nodeenv image from verify job"
-  }
+    echo "------> Don't publish nodeenv image from verify job"
+}
 
 // Publish npm modules from merged job
 if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
     publishNpm()
-}  else {
-     echo "------> Don't publish npm modules from verify job"
-   }
+} else {
+    echo "------> Don't publish npm modules from verify job"
+}
 
 // Publish API Docs from merged job only
 if (env.JOB_NAME == "fabric-chaincode-node-merge-x86_64") {
     apiDocs()
 } else {
-     echo "------> Don't publish API Docs from verify job"
-  }
+    echo "------> Don't publish API Docs from verify job"
+}
 
     } finally { // Code for coverage report
            step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/cobertura-coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])

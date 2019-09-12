@@ -1,0 +1,15 @@
+{
+  "files": {
+    "libraries/fabric-shim-crypto/.npmignore": "c3284eb3a1a72c8341d1bf9a13a798d290b57cdc",
+    "libraries/fabric-shim-crypto/fabric-shim-crypto.build.error.log": "12594785381af3bec8131cf66f3a06f21d531eeb",
+    "libraries/fabric-shim-crypto/fabric-shim-crypto.build.log": "cfc23f6f895dcdbfff57498d228a9da7c4f420ee",
+    "libraries/fabric-shim-crypto/index.js": "5208af1cd2ef3d3c6ec8c1a1d5c9939433e71fa6",
+    "libraries/fabric-shim-crypto/lib/ecdsa-key.js": "242ff7cdfd610569fd6bb6ed2f5240025659d914",
+    "libraries/fabric-shim-crypto/lib/enc-sign.js": "eb4fd10085f9a92f9cf4c4a238f26e94696979ca",
+    "libraries/fabric-shim-crypto/package-deps.json": "7e69fc7e8860ed776c0873c48302f687d70cce49",
+    "libraries/fabric-shim-crypto/package.json": "bd6a622f0b61b7b939cd51ae5226012b0a4440b8",
+    "libraries/fabric-shim-crypto/test/ecdsa-key.js": "c1fc3e7e2ac025055675f185d0884c5c0209b591",
+    "libraries/fabric-shim-crypto/test/shim-crypto.js": "fa91ad314ef7d08a3315240d817ae22a20f3bf32"
+  },
+  "arguments": "npm test "
+}

@@ -1,0 +1,74 @@
+(node:27044) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 uncaughtException listeners added. Use emitter.setMaxListeners() to increase limit
+2019-09-16T15:32:14.022Z ERROR [lib/chaincode.js] The "peer.address" program argument must be set to a legitimate value of <host>:<port> 
+2019-09-16T15:32:14.031Z ERROR [lib/chaincode.js] The "peer.address" program argument can not be set to an "http(s)" url, use grpc(s) or omit the protocol 
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored http://json-schema.org/draft-07/schema#
+schema $id ignored https://example.com/person.schema.json
+schema $id ignored https://example.com/person.schema.json
+schema $id ignored https://example.com/person.schema.json
+schema $id ignored https://example.com/person.schema.json
+2019-09-16T15:32:14.899Z ERROR [contracts-spi/chaincodefromcontract.js] a logging prefix Error: Contract name is not known: name 
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+2019-09-16T15:32:15.164Z ERROR [contracts-spi/datamarshall.js] undefined Expected 1 parameters, but 0 have been supplied 
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+WARNING: Replacing existing mock for module: ajv
+WARNING: loading non-allowed module: ./refs/json-schema-draft-07.json
+2019-09-16T15:32:15.211Z ERROR [lib/handler.js] Failed to find a message for transaction context id theChannelIDaTX 
+2019-09-16T15:32:15.360Z ERROR [lib/handler.js] Chaincode is in "created" state, can only process messages of type "registered", but received "NOT REGISTERED" 
+2019-09-16T15:32:15.448Z ERROR [lib/handler.js] Chaincode is in "ready" state, can only process messages of type "established", but received "NOT REGISTERED" 
+2019-09-16T15:32:15.998Z ERROR [lib/handler.js] Received unknown message from the peer. Exiting. 
+2019-09-16T15:32:16.228Z ERROR [lib/handler.js] Chat stream with peer - on error: {} 
+2019-09-16T15:32:16.369Z ERROR [lib/handler.js] Chat stream with peer - on error: "Error\n    at Context.it (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/libraries/fabric-shim/test/unit/handler.js:794:35)\n    at callFn (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:372:21)\n    at Test.Runnable.run (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runnable.js:364:7)\n    at Runner.runTest (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:455:10)\n    at /home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:573:12\n    at next (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:369:14)\n    at /home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:379:7\n    at next (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:303:14)\n    at Immediate._onImmediate (/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/common/temp/node_modules/mocha/lib/runner.js:347:5)\n    at runCallback (timers.js:705:18)\n    at tryOnImmediate (timers.js:676:5)\n    at processImmediate (timers.js:658:5)" 
+2019-09-16T15:32:17.481Z ERROR [lib/handler.js] [theChannelID-aTX] Incorrect payload format. Sending ERROR message back to peer 
+2019-09-16T15:32:17.483Z ERROR [lib/handler.js] Failed to construct a chaincode stub instance from the INIT message: an error 
+2019-09-16T15:32:17.485Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Init() has not called success or error. 
+2019-09-16T15:32:17.485Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Init() returned error response [[theChannelID-aTX] Calling chaincode Init() has not called success or error.]. Sending ERROR message back to peer 
+2019-09-16T15:32:17.487Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Invoke() has not called success or error. 
+2019-09-16T15:32:17.487Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Invoke() returned error response [[theChannelID-aTX] Calling chaincode Invoke() has not called success or error.]. Sending ERROR message back to peer 
+2019-09-16T15:32:17.489Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Init() has not called success or error. 
+2019-09-16T15:32:17.489Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Init() returned error response [[theChannelID-aTX] Calling chaincode Init() has not called success or error.]. Sending ERROR message back to peer 
+2019-09-16T15:32:17.491Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Invoke() has not called success or error. 
+2019-09-16T15:32:17.492Z ERROR [lib/handler.js] [theChannelID-aTX] Calling chaincode Invoke() returned error response [[theChannelID-aTX] Calling chaincode Invoke() has not called success or error.]. Sending ERROR message back to peer 
+2019-09-16T15:32:17.637Z ERROR [lib/iterators.js] unexpected error received getting next value: some error 
+2019-09-16T15:32:17.662Z DEBUG   
+2019-09-16T15:32:17.662Z DEBUG  hello 
+2019-09-16T15:32:17.663Z DEBUG  hello 
+	{"one":"two"}
+2019-09-16T15:32:17.663Z DEBUG [fred] hello fred 
