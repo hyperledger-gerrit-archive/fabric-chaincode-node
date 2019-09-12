@@ -1,0 +1,11 @@
+>>> apidocs
+Found mismatch: "docs/apidocs/apidocs.build.log": "152861c1d34674d8a63074bf64a2df1176969b48" !== "d46348dbcfbd809da2a326afd16ec66ee801f9d2"
+gulp -f docs.js docs 
+[16:32:06] Using gulpfile ~/go-master/src/github.com/hyperledger/fabric-chaincode-node/docs/apidocs/docs.js
+[16:32:06] Starting 'docs'...
+[16:32:06] Starting 'clean'...
+[16:32:06] Finished 'clean' after 14 ms
+[16:32:06] Starting 'jsdocs'...
+[16:32:06] Finished 'jsdocs' after 63 ms
+[16:32:06] Finished 'docs' after 80 ms
+[16:32:08] Documented 14 files!
