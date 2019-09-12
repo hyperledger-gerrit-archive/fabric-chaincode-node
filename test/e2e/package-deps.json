@@ -1,0 +1,8 @@
+{
+  "files": {
+    "test/e2e/package-deps.json": "fbe8b63553f920855fcbe958664381de3124ee16",
+    "test/e2e/package.json": "4c57bbd35a177b543740ed89bdd999365176a658",
+    "test/e2e/scenario.js": "9ff1c2c079b13259a04a496840fb13b1eefb60f2"
+  },
+  "arguments": ""
+}
