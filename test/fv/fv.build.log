@@ -1,0 +1,72 @@
+>>> fvtests
+mocha *.js 
+
+
+  Typescript chaincode
+    Scenario
+      ✓ should write an asset (48168ms)
+      ✓ should update an asset (2156ms)
+      1) should handle the getMetadata
+
+  Chaincode clientidentity
+    ✓ should create an instance of the client identity class (35683ms)
+
+  Chaincode crosschaincode
+    Invoke
+      ✓ should invoke chaincode (30901ms)
+      ✓ should throw an error when invoking chaincode (1180ms)
+
+  Chaincode CRUD
+    Get
+      ✓ should get single key value (34394ms)
+      ✓ should get a single key containing json data (1602ms)
+      ✓ should get multiple keys concurrently (1371ms)
+      ✓ should get a single composite key value (1483ms)
+      ✓ should return a list of results from a partial composite key using the old iterator style (1118ms)
+      ✓ should return a list of results from a partial composite key using the new iterator style (1416ms)
+      ✓ should return all keys between key1 and key3 using the old iterator style (1172ms)
+      ✓ should return all keys between key1 and key3 using the new iterator style (973ms)
+      ✓ should get the history for a key using the old and new iterator style (10079ms)
+      ✓ should get a query result with pagination without setting a bookmark using the old iterator style (912ms)
+      ✓ should get a query result with pagination without setting a bookmark using the new iterator style (801ms)
+      ✓ should get a query result with pagination with a set bookmark using the old iterator style (1642ms)
+      ✓ should get a query result with pagination with a set bookmark using the new iterator style (833ms)
+      ✓ should return a paginated list using the old iterator style (2144ms)
+      ✓ should return a paginated list using the new iterator style (2529ms)
+      ✓ should return a state from a partial composite key using the old iterator style (1475ms)
+      ✓ should return a state from a partial composite key using the new iterator style (1815ms)
+      ✓ should return a paginated list from partial composte key using the old iterator style (855ms)
+      ✓ should return a paginated list from partial composte key using the new iterator style (791ms)
+    Put
+      ✓ should add a key (2929ms)
+      ✓ should add a composite key (2373ms)
+      ✓ should update an existing key (2587ms)
+    Delete
+      ✓ should delete a key (3151ms)
+      ✓ should delete a composite key (3191ms)
+    Split
+      ✓ should split the composite key (2906ms)
+
+  Chaincode encryption
+    ✓ should encrypt and decrypt state values (36040ms)
+    ✓ should sign a value and verify the signature (2740ms)
+
+  Chaincode query
+    ✓ should perform an equals query (36277ms)
+    ✓ should perform an regex query (829ms)
+
+
+  34 passing (10m)
+  1 failing
+
+  1) Typescript chaincode
+       Scenario
+         should handle the getMetadata:
+     Error: ENOENT: no such file or directory, open '/home/matthew/go-master/src/github.com/hyperledger/fabric-chaincode-node/fabric-contract-api/schema/contract-schema.json'
+      at Object.openSync (fs.js:439:3)
+      at Object.readFileSync (fs.js:344:35)
+      at Context.<anonymous> (annotations.js:47:31)
+      at process._tickCallback (internal/process/next_tick.js:68:7)
+
+
+

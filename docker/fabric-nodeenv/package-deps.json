@@ -1,0 +1,11 @@
+{
+  "files": {
+    "docker/fabric-nodeenv/Dockerfile": "bf91ebd87a15958428c852a97ca4a4e28b332f82",
+    "docker/fabric-nodeenv/docker.js": "07db635f98e029618347ddbd46f6ecf63352b6fa",
+    "docker/fabric-nodeenv/fabric-nodeenv.build.error.log": "f015d4ea5052c6a709d12bf7ffe153cf11e3fa3b",
+    "docker/fabric-nodeenv/fabric-nodeenv.build.log": "d02daf7f17e630e212be2f070e55affd71439a8f",
+    "docker/fabric-nodeenv/package-deps.json": "452c5870ab666d2a5f73e06b7bd72e69138659d0",
+    "docker/fabric-nodeenv/package.json": "46df96f1542c124fdbce3eebb26fbbb8178a4c05"
+  },
+  "arguments": ""
+}
