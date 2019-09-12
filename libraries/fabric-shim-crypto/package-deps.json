@@ -1,0 +1,14 @@
+{
+  "files": {
+    "libraries/fabric-shim-crypto/.npmignore": "c3284eb3a1a72c8341d1bf9a13a798d290b57cdc",
+    "libraries/fabric-shim-crypto/index.js": "5208af1cd2ef3d3c6ec8c1a1d5c9939433e71fa6",
+    "libraries/fabric-shim-crypto/lib/ecdsa-key.js": "242ff7cdfd610569fd6bb6ed2f5240025659d914",
+    "libraries/fabric-shim-crypto/lib/enc-sign.js": "eb4fd10085f9a92f9cf4c4a238f26e94696979ca",
+    "libraries/fabric-shim-crypto/package-deps.json": "a5bb8eb9b4180f0d947aed830075fc9fba97a2bd",
+    "libraries/fabric-shim-crypto/package.json": "d29393187cd18c0f61365198e7823036115841b6",
+    "libraries/fabric-shim-crypto/test/ecdsa-key.js": "c1fc3e7e2ac025055675f185d0884c5c0209b591",
+    "libraries/fabric-shim-crypto/test/shim-crypto.js": "fa91ad314ef7d08a3315240d817ae22a20f3bf32",
+    "libraries/fabric-shim-crypto/test/index.js": "686ca1ef898fe0f0caaf48e7950496d8c7fcb5f7"
+  },
+  "arguments": "npm run lint && npm test "
+}
