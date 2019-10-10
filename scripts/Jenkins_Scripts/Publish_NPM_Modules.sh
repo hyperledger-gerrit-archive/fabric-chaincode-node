@@ -15,15 +15,18 @@ npmPublish() {
       echo "----> Don't publish npm modules on skip tag"
   elif [[ "$CURRENT_TAG" = *"unstable"* ]]; then
       echo
-      UNSTABLE_VER=$(npm dist-tags ls "$1" | awk "/$CURRENT_TAG"":"/'{
+
+      # lock step versions to fabric-shim
+      UNSTABLE_VER=$(npm dist-tags ls fabric-shim | awk "/$CURRENT_TAG"":"/'{
       ver=$NF
       sub(/.*\./,"",rel)
       sub(/\.[[:digit:]]+$/,"",ver)
       print ver}')
 
       echo "======> UNSTABLE VERSION:" $UNSTABLE_VER
-# Increment unstable version here
-      UNSTABLE_INCREMENT=$(npm dist-tags ls "$1" | awk "/$CURRENT_TAG"":"/'{
+      # Increment unstable version here
+      # lock step versions to fabric-shim
+      UNSTABLE_INCREMENT=$(npm dist-tags ls fabric-shim | awk "/$CURRENT_TAG"":"/'{
       ver=$NF
       rel=$NF
       sub(/.*\./,"",rel)
