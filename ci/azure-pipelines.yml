@@ -21,6 +21,7 @@ trigger:
 variables:
   component: fabric-chaincode-node
   pipeline: ci 
+  - group: Chaincode_Node_Vars   
 
 # Build on Ubutu
 pool:
